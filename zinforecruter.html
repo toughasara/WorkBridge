@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informations Recruteur - WorkBridge</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+        .autocomplete-results {
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: none;
+        }
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .autocomplete-item:hover {
+            background-color: #f3f4f6;
+        }
+        .autocomplete-item.active {
+            background-color: #e5e7eb;
+        }
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 2px solid #4f46e5;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        .input-with-icon {
+            position: relative;
+        }
+        .input-with-icon .spinner {
+            right: 12px;
+        }
+        .input-with-icon .clear-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            display: none;
+        }
+        .input-with-icon input:focus + .clear-btn,
+        .input-with-icon input:not(:placeholder-shown) + .clear-btn {
+            display: block;
+        }
+        .input-with-icon input:focus + .clear-btn + .spinner,
+        .input-with-icon input:not(:placeholder-shown) + .clear-btn + .spinner {
+            right: 36px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center mr-2">
+                            <span class="text-xl font-bold text-white">WB</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">WorkBridge</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <a href="login.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Se connecter</a>
+                    <a href="register.html" class="ml-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">S'inscrire</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-3xl">
+            <div class="bg-white py-8 px-6 shadow-xl rounded-xl">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-extrabold text-gray-900">Ajouter les informations de base</h2>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Ces informations nous aideront à mieux comprendre votre entreprise
+                    </p>
+                </div>
+
+                <form id="recruiter-form" class="space-y-6">
+                    <!-- Nom de l'entreprise -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">Nom de l'entreprise</label>
+                        <input id="name" name="name" type="text" required
+                            class="input-field block w-full rounded-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="name-error">Veuillez entrer le nom de l'entreprise</p>
+                    </div>
+
+                    <!-- Pays et Ville (sur la même ligne) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="country" class="form-label">Pays</label>
+                            <div class="input-with-icon">
+                                <input id="country" name="country" type="text" required
+                                    class="input-field block w-full rounded-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none"
+                                    placeholder="Sélectionner un pays...">
+                                <span class="clear-btn" id="clear-country">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                                <div class="spinner" id="country-spinner"></div>
+                            </div>
+                            <div class="autocomplete-results" id="country-results"></div>
+                            <input type="hidden" id="country-code" name="country-code">
+                            <p class="text-red-500 text-sm mt-1 hidden" id="country-error">Veuillez sélectionner un pays dans la liste</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city" class="form-label">Ville</label>
+                            <div class="input-with-icon">
+                                <input id="city" name="city" type="text" required
+                                    class="input-field block w-full rounded-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none"
+                                    placeholder="Sélectionner une ville..." disabled>
+                                <span class="clear-btn" id="clear-city">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                                <div class="spinner" id="city-spinner"></div>
+                            </div>
+                            <div class="autocomplete-results" id="city-results"></div>
+                            <input type="hidden" id="city-id" name="city-id">
+                            <p class="text-red-500 text-sm mt-1 hidden" id="city-error">Veuillez sélectionner une ville dans la liste</p>
+                        </div>
+                    </div>
+
+                    <!-- Secteur et Taille (sur la même ligne) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="sector" class="form-label">Secteur d'activité</label>
+                            <div class="input-with-icon">
+                                <input id="sector" name="sector" type="text" required
+                                    class="input-field block w-full rounded-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none"
+                                    placeholder="Sélectionner un secteur...">
+                                <span class="clear-btn" id="clear-sector">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                                <div class="spinner" id="sector-spinner"></div>
+                            </div>
+                            <div class="autocomplete-results" id="sector-results"></div>
+                            <input type="hidden" id="sector-code" name="sector-code">
+                            <p class="text-red-500 text-sm mt-1 hidden" id="sector-error">Veuillez sélectionner un secteur dans la liste</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="size" class="form-label">Taille de l'entreprise</label>
+                            <select id="size" name="size" required
+                                class="input-field block w-full rounded-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none">
+                                <option value="">Sélectionnez une taille</option>
+                                <option value="1-10">1-10 employés</option>
+                                <option value="11-50">11-50 employés</option>
+                                <option value="51-200">51-200 employés</option>
+                                <option value="201-500">201-500 employés</option>
+                                <option value="501-1000">501-1000 employés</option>
+                                <option value="1001+">Plus de 1000 employés</option>
+                            </select>
+                            <p class="text-red-500 text-sm mt-1 hidden" id="size-error">Veuillez sélectionner une taille</p>
+                        </div>
+                    </div>
+
+                    <!-- Site web -->
+                    <div class="form-group">
+                        <label for="website" class="form-label">Site web</label>
+                        <div class="flex rounded-lg shadow-sm">
+                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                https://
+                            </span>
+                            <input id="website" name="website" type="text"
+                                class="input-field flex-1 block w-full rounded-none rounded-r-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none"
+                                placeholder="www.votreentreprise.com">
+                        </div>
+                        <p class="text-red-500 text-sm mt-1 hidden" id="website-error">Veuillez entrer une URL valide</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description de l'entreprise</label>
+                        <textarea id="description" name="description" rows="4" 
+                            class="input-field block w-full rounded-lg border-gray-300 shadow-sm py-3 px-4 border focus:outline-none"
+                            placeholder="Décrivez brièvement votre entreprise, ses activités et sa culture..."></textarea>
+                        <p class="text-red-500 text-sm mt-1 hidden" id="description-error">Veuillez entrer une description</p>
+                        <p class="text-sm text-gray-500 mt-1">Maximum 500 caractères</p>
+                        <p class="text-sm text-gray-500 mt-1" id="char-count">0/500 caractères</p>
+                    </div>
+
+                    <div class="mt-8">
+                        <button type="submit" class="btn-primary w-full flex justify-center items-center">
+                            Continuer
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 overflow-hidden sm:px-6 lg:px-8">
+            <p class="text-center text-base text-gray-400">
+                &copy; 2023 WorkBridge, Inc. Tous droits réservés.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Éléments du formulaire
+            const form = document.getElementById('recruiter-form');
+            const nameField = document.getElementById('name');
+            const countryField = document.getElementById('country');
+            const countryCodeField = document.getElementById('country-code');
+            const cityField = document.getElementById('city');
+            const cityIdField = document.getElementById('city-id');
+            const sectorField = document.getElementById('sector');
+            const sectorCodeField = document.getElementById('sector-code');
+            const sizeField = document.getElementById('size');
+            const websiteField = document.getElementById('website');
+            const descriptionField = document.getElementById('description');
+            
+            // Messages d'erreur
+            const nameError = document.getElementById('name-error');
+            const countryError = document.getElementById('country-error');
+            const cityError = document.getElementById('city-error');
+            const sectorError = document.getElementById('sector-error');
+            const sizeError = document.getElementById('size-error');
+            const websiteError = document.getElementById('website-error');
+            const descriptionError = document.getElementById('description-error');
+            
+            // Résultats d'autocomplétion
+            const countryResults = document.getElementById('country-results');
+            const cityResults = document.getElementById('city-results');
+            const sectorResults = document.getElementById('sector-results');
+            
+            // Spinners
+            const countrySpinner = document.getElementById('country-spinner');
+            const citySpinner = document.getElementById('city-spinner');
+            const sectorSpinner = document.getElementById('sector-spinner');
+            
+            // Boutons de suppression
+            const clearCountryBtn = document.getElementById('clear-country');
+            const clearCityBtn = document.getElementById('clear-city');
+            const clearSectorBtn = document.getElementById('clear-sector');
+            
+            // Compteur de caractères
+            const charCount = document.getElementById('char-count');
+            const maxLength = 500;
+            
+            // Variables pour les timeouts
+            let countryTimeout = null;
+            let cityTimeout = null;
+            let sectorTimeout = null;
+            
+            // Base de données de villes par pays (pour remplacer l'API GeoNames)
+            const citiesByCountry = {
+                // France
+                "FR": [
+                    { id: "FR001", name: "Paris" },
+                    { id: "FR002", name: "Marseille" },
+                    { id: "FR003", name: "Lyon" },
+                    { id: "FR004", name: "Toulouse" },
+                    { id: "FR005", name: "Nice" },
+                    { id: "FR006", name: "Nantes" },
+                    { id: "FR007", name: "Strasbourg" },
+                    { id: "FR008", name: "Montpellier" },
+                    { id: "FR009", name: "Bordeaux" },
+                    { id: "FR010", name: "Lille" }
+                ],
+                // États-Unis
+                "US": [
+                    { id: "US001", name: "New York" },
+                    { id: "US002", name: "Los Angeles" },
+                    { id: "US003", name: "Chicago" },
+                    { id: "US004", name: "Houston" },
+                    { id: "US005", name: "Phoenix" },
+                    { id: "US006", name: "Philadelphia" },
+                    { id: "US007", name: "San Antonio" },
+                    { id: "US008", name: "San Diego" },
+                    { id: "US009", name: "Dallas" },
+                    { id: "US010", name: "San Francisco" }
+                ],
+                // Royaume-Uni
+                "GB": [
+                    { id: "GB001", name: "London" },
+                    { id: "GB002", name: "Birmingham" },
+                    { id: "GB003", name: "Manchester" },
+                    { id: "GB004", name: "Glasgow" },
+                    { id: "GB005", name: "Liverpool" },
+                    { id: "GB006", name: "Bristol" },
+                    { id: "GB007", name: "Edinburgh" },
+                    { id: "GB008", name: "Leeds" },
+                    { id: "GB009", name: "Sheffield" },
+                    { id: "GB010", name: "Cardiff" }
+                ],
+                // Allemagne
+                "DE": [
+                    { id: "DE001", name: "Berlin" },
+                    { id: "DE002", name: "Hamburg" },
+                    { id: "DE003", name: "Munich" },
+                    { id: "DE004", name: "Cologne" },
+                    { id: "DE005", name: "Frankfurt" },
+                    { id: "DE006", name: "Stuttgart" },
+                    { id: "DE007", name: "Düsseldorf" },
+                    { id: "DE008", name: "Leipzig" },
+                    { id: "DE009", name: "Dortmund" },
+                    { id: "DE010", name: "Essen" }
+                ],
+                // Espagne
+                "ES": [
+                    { id: "ES001", name: "Madrid" },
+                    { id: "ES002", name: "Barcelona" },
+                    { id: "ES003", name: "Valencia" },
+                    { id: "ES004", name: "Seville" },
+                    { id: "ES005", name: "Zaragoza" },
+                    { id: "ES006", name: "Málaga" },
+                    { id: "ES007", name: "Murcia" },
+                    { id: "ES008", name: "Palma" },
+                    { id: "ES009", name: "Las Palmas" },
+                    { id: "ES010", name: "Bilbao" }
+                ],
+                // Italie
+                "IT": [
+                    { id: "IT001", name: "Rome" },
+                    { id: "IT002", name: "Milan" },
+                    { id: "IT003", name: "Naples" },
+                    { id: "IT004", name: "Turin" },
+                    { id: "IT005", name: "Palermo" },
+                    { id: "IT006", name: "Genoa" },
+                    { id: "IT007", name: "Bologna" },
+                    { id: "IT008", name: "Florence" },
+                    { id: "IT009", name: "Bari" },
+                    { id: "IT010", name: "Catania" }
+                ],
+                // Canada
+                "CA": [
+                    { id: "CA001", name: "Toronto" },
+                    { id: "CA002", name: "Montreal" },
+                    { id: "CA003", name: "Vancouver" },
+                    { id: "CA004", name: "Calgary" },
+                    { id: "CA005", name: "Edmonton" },
+                    { id: "CA006", name: "Ottawa" },
+                    { id: "CA007", name: "Quebec City" },
+                    { id: "CA008", name: "Winnipeg" },
+                    { id: "CA009", name: "Hamilton" },
+                    { id: "CA010", name: "Halifax" }
+                ],
+                // Australie
+                "AU": [
+                    { id: "AU001", name: "Sydney" },
+                    { id: "AU002", name: "Melbourne" },
+                    { id: "AU003", name: "Brisbane" },
+                    { id: "AU004", name: "Perth" },
+                    { id: "AU005", name: "Adelaide" },
+                    { id: "AU006", name: "Gold Coast" },
+                    { id: "AU007", name: "Canberra" },
+                    { id: "AU008", name: "Newcastle" },
+                    { id: "AU009", name: "Wollongong" },
+                    { id: "AU010", name: "Hobart" }
+                ],
+                // Japon
+                "JP": [
+                    { id: "JP001", name: "Tokyo" },
+                    { id: "JP002", name: "Yokohama" },
+                    { id: "JP003", name: "Osaka" },
+                    { id: "JP004", name: "Nagoya" },
+                    { id: "JP005", name: "Sapporo" },
+                    { id: "JP006", name: "Kobe" },
+                    { id: "JP007", name: "Kyoto" },
+                    { id: "JP008", name: "Fukuoka" },
+                    { id: "JP009", name: "Kawasaki" },
+                    { id: "JP010", name: "Saitama" }
+                ],
+                // Brésil
+                "BR": [
+                    { id: "BR001", name: "São Paulo" },
+                    { id: "BR002", name: "Rio de Janeiro" },
+                    { id: "BR003", name: "Brasília" },
+                    { id: "BR004", name: "Salvador" },
+                    { id: "BR005", name: "Fortaleza" },
+                    { id: "BR006", name: "Belo Horizonte" },
+                    { id: "BR007", name: "Manaus" },
+                    { id: "BR008", name: "Curitiba" },
+                    { id: "BR009", name: "Recife" },
+                    { id: "BR010", name: "Porto Alegre" }
+                ],
+                // Chine
+                "CN": [
+                    { id: "CN001", name: "Shanghai" },
+                    { id: "CN002", name: "Beijing" },
+                    { id: "CN003", name: "Guangzhou" },
+                    { id: "CN004", name: "Shenzhen" },
+                    { id: "CN005", name: "Wuhan" },
+                    { id: "CN006", name: "Tianjin" },
+                    { id: "CN007", name: "Chongqing" },
+                    { id: "CN008", name: "Chengdu" },
+                    { id: "CN009", name: "Nanjing" },
+                    { id: "CN010", name: "Xi'an" }
+                ],
+                // Inde
+                "IN": [
+                    { id: "IN001", name: "Mumbai" },
+                    { id: "IN002", name: "Delhi" },
+                    { id: "IN003", name: "Bangalore" },
+                    { id: "IN004", name: "Hyderabad" },
+                    { id: "IN005", name: "Chennai" },
+                    { id: "IN006", name: "Kolkata" },
+                    { id: "IN007", name: "Ahmedabad" },
+                    { id: "IN008", name: "Pune" },
+                    { id: "IN009", name: "Jaipur" },
+                    { id: "IN010", name: "Surat" }
+                ],
+                // Maroc
+                "MA": [
+                    { id: "MA001", name: "Casablanca" },
+                    { id: "MA002", name: "Rabat" },
+                    { id: "MA003", name: "Fès" },
+                    { id: "MA004", name: "Marrakech" },
+                    { id: "MA005", name: "Tanger" },
+                    { id: "MA006", name: "Meknès" },
+                    { id: "MA007", name: "Agadir" },
+                    { id: "MA008", name: "Oujda" },
+                    { id: "MA009", name: "Tétouan" },
+                    { id: "MA010", name: "Kénitra" }
+                ],
+                // Algérie
+                "DZ": [
+                    { id: "DZ001", name: "Alger" },
+                    { id: "DZ002", name: "Oran" },
+                    { id: "DZ003", name: "Constantine" },
+                    { id: "DZ004", name: "Annaba" },
+                    { id: "DZ005", name: "Blida" },
+                    { id: "DZ006", name: "Batna" },
+                    { id: "DZ007", name: "Sétif" },
+                    { id: "DZ008", name: "Sidi Bel Abbès" },
+                    { id: "DZ009", name: "Biskra" },
+                    { id: "DZ010", name: "Tébessa" }
+                ],
+                // Tunisie
+                "TN": [
+                    { id: "TN001", name: "Tunis" },
+                    { id: "TN002", name: "Sfax" },
+                    { id: "TN003", name: "Sousse" },
+                    { id: "TN004", name: "Kairouan" },
+                    { id: "TN005", name: "Bizerte" },
+                    { id: "TN006", name: "Gabès" },
+                    { id: "TN007", name: "Ariana" },
+                    { id: "TN008", name: "Gafsa" },
+                    { id: "TN009", name: "Monastir" },
+                    { id: "TN010", name: "Zarzis" }
+                ]
+            };
+            
+            // Fonction pour débouncer les requêtes API
+            function debounce(func, delay) {
+                return function() {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(func.timeout);
+                    func.timeout = setTimeout(function() {
+                        func.apply(context, args);
+                    }, delay);
+                };
+            }
+            
+            // Fonction pour afficher/masquer les résultats d'autocomplétion
+            function toggleResults(resultsElement, show) {
+                resultsElement.style.display = show ? 'block' : 'none';
+            }
+            
+            // Fonction pour afficher/masquer le spinner
+            function toggleSpinner(spinnerElement, show) {
+                spinnerElement.style.display = show ? 'block' : 'none';
+            }
+            
+            // Fonction pour valider un champ
+            function validateField(field, errorElement) {
+                if (!field.value.trim()) {
+                    errorElement.classList.remove('hidden');
+                    field.classList.add('border-red-500');
+                    return false;
+                } else {
+                    errorElement.classList.add('hidden');
+                    field.classList.remove('border-red-500');
+                    return true;
+                }
+            }
+            
+            // Fonction pour valider un champ avec code caché
+            function validateFieldWithCode(field, codeField, errorElement) {
+                if (!field.value.trim() || !codeField.value.trim()) {
+                    errorElement.classList.remove('hidden');
+                    field.classList.add('border-red-500');
+                    return false;
+                } else {
+                    errorElement.classList.add('hidden');
+                    field.classList.remove('border-red-500');
+                    return true;
+                }
+            }
+            
+            // Mise à jour du compteur de caractères
+            descriptionField.addEventListener('input', function() {
+                const currentLength = this.value.length;
+                charCount.textContent = `${currentLength}/${maxLength} caractères`;
+                
+                if (currentLength > maxLength) {
+                    this.value = this.value.substring(0, maxLength);
+                    charCount.textContent = `${maxLength}/${maxLength} caractères`;
+                    charCount.classList.add('text-red-500');
+                } else {
+                    charCount.classList.remove('text-red-500');
+                }
+                
+                // Masquer le message d'erreur si le champ n'est plus vide
+                if (currentLength > 0) {
+                    descriptionError.classList.add('hidden');
+                    this.classList.remove('border-red-500');
+                }
+            });
+            
+            // Validation du site web (optionnel)
+            websiteField.addEventListener('blur', function() {
+                let value = this.value.trim();
+                
+                // Supprimer http:// ou https:// s'ils sont présents
+                value = value.replace(/^(https?:\/\/)?(www\.)?/i, '');
+                
+                // Mettre à jour le champ
+                this.value = value;
+            });
+            
+            // Fonction pour rechercher des pays via l'API REST Countries
+            const searchCountries = debounce(function(query) {
+                if (query.length < 2) {
+                    toggleResults(countryResults, false);
+                    toggleSpinner(countrySpinner, false);
+                    return;
+                }
+                
+                toggleSpinner(countrySpinner, true);
+                
+                fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        toggleSpinner(countrySpinner, false);
+                        
+                        // Vider les résultats précédents
+                        countryResults.innerHTML = '';
+                        
+                        if (data.length === 0) {
+                            toggleResults(countryResults, false);
+                            return;
+                        }
+                        
+                        // Trier les pays par nom
+                        data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+                        
+                        // Limiter à 10 résultats
+                        const limitedData = data.slice(0, 10);
+                        
+                        // Créer les éléments de résultat
+                        limitedData.forEach(country => {
+                            const item = document.createElement('div');
+                            item.className = 'autocomplete-item';
+                            item.innerHTML = `
+                                <div class="flex items-center">
+                                    <img src="${country.flags.svg}" alt="${country.name.common} flag" class="w-6 h-4 mr-2">
+                                    <span>${country.name.common}</span>
+                                </div>
+                            `;
+                            
+                            // Ajouter un événement de clic
+                            item.addEventListener('click', function() {
+                                countryField.value = country.name.common;
+                                countryCodeField.value = country.cca2;
+                                countryField.dataset.selectedValue = country.name.common;
+                                toggleResults(countryResults, false);
+                                validateFieldWithCode(countryField, countryCodeField, countryError);
+                                
+                                // Activer le champ ville
+                                cityField.disabled = false;
+                                cityField.placeholder = `Sélectionner une ville en ${country.name.common}...`;
+                                
+                                // Réinitialiser la ville
+                                cityField.value = '';
+                                cityIdField.value = '';
+                            });
+                            
+                            countryResults.appendChild(item);
+                        });
+                        
+                        toggleResults(countryResults, true);
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la recherche de pays:', error);
+                        toggleSpinner(countrySpinner, false);
+                        toggleResults(countryResults, false);
+                    });
+            }, 300);
+            
+            // Fonction pour rechercher des villes dans notre base de données locale
+            const searchCities = debounce(function(query, countryCode) {
+                if (query.length < 1 || !countryCode) {
+                    toggleResults(cityResults, false);
+                    toggleSpinner(citySpinner, false);
+                    return;
+                }
+                
+                toggleSpinner(citySpinner, true);
+                
+                // Simuler une requête API avec un délai
+                setTimeout(() => {
+                    toggleSpinner(citySpinner, false);
+                    
+                    // Vider les résultats précédents
+                    cityResults.innerHTML = '';
+                    
+                    // Vérifier si nous avons des villes pour ce pays
+                    const cities = citiesByCountry[countryCode] || [];
+                    
+                    if (cities.length === 0) {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'autocomplete-item text-gray-500';
+                        noResults.textContent = 'Aucune ville disponible pour ce pays';
+                        cityResults.appendChild(noResults);
+                        toggleResults(cityResults, true);
+                        return;
+                    }
+                    
+                    // Filtrer les villes qui correspondent à la requête
+                    const filteredCities = cities.filter(city => 
+                        city.name.toLowerCase().includes(query.toLowerCase())
+                    );
+                    
+                    if (filteredCities.length === 0) {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'autocomplete-item text-gray-500';
+                        noResults.textContent = 'Aucune ville trouvée';
+                        cityResults.appendChild(noResults);
+                        toggleResults(cityResults, true);
+                        return;
+                    }
+                    
+                    // Créer les éléments de résultat
+                    filteredCities.forEach(city => {
+                        const item = document.createElement('div');
+                        item.className = 'autocomplete-item';
+                        item.textContent = city.name;
+                        
+                        // Ajouter un événement de clic
+                        item.addEventListener('click', function() {
+                            cityField.value = city.name;
+                            cityIdField.value = city.id;
+                            cityField.dataset.selectedValue = city.name;
+                            toggleResults(cityResults, false);
+                            validateFieldWithCode(cityField, cityIdField, cityError);
+                        });
+                        
+                        cityResults.appendChild(item);
+                    });
+                    
+                    toggleResults(cityResults, true);
+                }, 300); // Simuler un délai de réseau
+            }, 300);
+            
+            // Simuler une API pour les secteurs d'activité (SIC)
+            const sicCodes = [
+                { code: "01", name: "Agriculture, foresterie et pêche" },
+                { code: "10", name: "Industries extractives" },
+                { code: "15", name: "Industries manufacturières" },
+                { code: "40", name: "Transports et entreposage" },
+                { code: "42", name: "Commerce de gros" },
+                { code: "44", name: "Commerce de détail" },
+                { code: "52", name: "Finance et assurance" },
+                { code: "54", name: "Services professionnels, scientifiques et techniques" },
+                { code: "60", name: "Information et communication" },
+                { code: "62", name: "Santé et action sociale" },
+                { code: "70", name: "Activités immobilières" },
+                { code: "72", name: "Hébergement et restauration" },
+                { code: "80", name: "Éducation" },
+                { code: "90", name: "Arts, spectacles et activités récréatives" },
+                { code: "99", name: "Autres services" }
+            ];
+            
+            // Fonction pour rechercher des secteurs d'activité
+            const searchSectors = debounce(function(query) {
+                if (query.length < 2) {
+                    toggleResults(sectorResults, false);
+                    toggleSpinner(sectorSpinner, false);
+                    return;
+                }
+                
+                toggleSpinner(sectorSpinner, true);
+                
+                // Simuler une requête API avec un délai
+                setTimeout(() => {
+                    toggleSpinner(sectorSpinner, false);
+                    
+                    // Vider les résultats précédents
+                    sectorResults.innerHTML = '';
+                    
+                    // Filtrer les secteurs qui correspondent à la requête
+                    const filteredSectors = sicCodes.filter(sector => 
+                        sector.name.toLowerCase().includes(query.toLowerCase())
+                    );
+                    
+                    if (filteredSectors.length === 0) {
+                        toggleResults(sectorResults, false);
+                        return;
+                    }
+                    
+                    // Créer les éléments de résultat
+                    filteredSectors.forEach(sector => {
+                        const item = document.createElement('div');
+                        item.className = 'autocomplete-item';
+                        item.textContent = sector.name;
+                        
+                        // Ajouter un événement de clic
+                        item.addEventListener('click', function() {
+                            sectorField.value = sector.name;
+                            sectorCodeField.value = sector.code;
+                            sectorField.dataset.selectedValue = sector.name;
+                            toggleResults(sectorResults, false);
+                            validateFieldWithCode(sectorField, sectorCodeField, sectorError);
+                        });
+                        
+                        sectorResults.appendChild(item);
+                    });
+                    
+                    toggleResults(sectorResults, true);
+                }, 300); // Simuler un délai de réseau
+            }, 300);
+            
+            // Événements pour les champs d'autocomplétion
+            countryField.addEventListener('input', function() {
+                const query = this.value.trim();
+                searchCountries(query);
+                
+                // Réinitialiser le code pays si le champ est modifié
+                if (countryCodeField.value && query !== countryField.dataset.selectedValue) {
+                    countryCodeField.value = '';
+                    
+                    // Désactiver et réinitialiser le champ ville
+                    cityField.disabled = true;
+                    cityField.value = '';
+                    cityIdField.value = '';
+                    cityField.placeholder = 'Sélectionner d\'abord un pays...';
+                }
+            });
+            
+            cityField.addEventListener('input', function() {
+                const query = this.value.trim();
+                const countryCode = countryCodeField.value;
+                searchCities(query, countryCode);
+                
+                // Réinitialiser l'ID de la ville si le champ est modifié
+                if (cityIdField.value && query !== cityField.dataset.selectedValue) {
+                    cityIdField.value = '';
+                }
+            });
+            
+            sectorField.addEventListener('input', function() {
+                const query = this.value.trim();
+                searchSectors(query);
+                
+                // Réinitialiser le code secteur si le champ est modifié
+                if (sectorCodeField.value && query !== sectorField.dataset.selectedValue) {
+                    sectorCodeField.value = '';
+                }
+            });
+            
+            // Événements pour les boutons de suppression
+            clearCountryBtn.addEventListener('click', function() {
+                countryField.value = '';
+                countryCodeField.value = '';
+                toggleResults(countryResults, false);
+                
+                // Désactiver et réinitialiser le champ ville
+                cityField.disabled = true;
+                cityField.value = '';
+                cityIdField.value = '';
+                cityField.placeholder = 'Sélectionner d\'abord un pays...';
+            });
+            
+            clearCityBtn.addEventListener('click', function() {
+                cityField.value = '';
+                cityIdField.value = '';
+                toggleResults(cityResults, false);
+            });
+            
+            clearSectorBtn.addEventListener('click', function() {
+                sectorField.value = '';
+                sectorCodeField.value = '';
+                toggleResults(sectorResults, false);
+            });
+            
+            // Fermer les résultats lorsqu'on clique ailleurs
+            document.addEventListener('click', function(event) {
+                if (!countryField.contains(event.target) && !countryResults.contains(event.target)) {
+                    toggleResults(countryResults, false);
+                }
+                
+                if (!cityField.contains(event.target) && !cityResults.contains(event.target)) {
+                    toggleResults(cityResults, false);
+                }
+                
+                if (!sectorField.contains(event.target) && !sectorResults.contains(event.target)) {
+                    toggleResults(sectorResults, false);
+                }
+            });
+            
+            // Validation des champs requis
+            nameField.addEventListener('input', function() {
+                validateField(this, nameError);
+            });
+            
+            sizeField.addEventListener('change', function() {
+                validateField(this, sizeError);
+            });
+            
+            // Soumission du formulaire
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Valider tous les champs requis
+                const isNameValid = validateField(nameField, nameError);
+                const isCountryValid = validateFieldWithCode(countryField, countryCodeField, countryError);
+                const isCityValid = validateFieldWithCode(cityField, cityIdField, cityError);
+                const isSectorValid = validateFieldWithCode(sectorField, sectorCodeField, sectorError);
+                const isSizeValid = validateField(sizeField, sizeError);
+                
+                // Valider la description (obligatoire)
+                const isDescriptionValid = validateField(descriptionField, descriptionError);
+                
+                // Si tous les champs requis sont valides
+                if (isNameValid && isCountryValid && isCityValid && isSectorValid && isSizeValid && isDescriptionValid) {
+                    // Simuler la soumission du formulaire
+                    alert('Informations enregistrées avec succès!\n\n' + 
+                          'Entreprise: ' + nameField.value + '\n' +
+                          'Pays: ' + countryField.value + ' (Code: ' + countryCodeField.value + ')\n' +
+                          'Ville: ' + cityField.value + ' (ID: ' + cityIdField.value + ')\n' +
+                          'Secteur: ' + sectorField.value + ' (Code: ' + sectorCodeField.value + ')\n' +
+                          'Taille: ' + sizeField.value + '\n' +
+                          'Site web: ' + (websiteField.value ? 'https://' + websiteField.value : 'Non spécifié') + '\n' +
+                          'Description: ' + descriptionField.value);
+                    
+                    // Dans un environnement réel, vous redirigeriez vers la page suivante
+                    // window.location.href = 'finalisation.html';
+                }
+            });
+            
+            // Initialiser l'état du champ ville
+            cityField.disabled = true;
+            cityField.placeholder = 'Sélectionner d\'abord un pays...';
+        });
+    </script>
+</body>
+</html>
+
