@@ -84,7 +84,7 @@ class AuthController extends Controller
             case 1:
                 return redirect()->route('admin');
             case 2:
-                return redirect()->route('candidat');
+                return redirect()->route('profil.candidat');
             case 3:
                 return redirect()->route('recruter');
             default:

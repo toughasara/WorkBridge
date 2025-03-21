@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Cv;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
 
 class CvController extends Controller
 {
@@ -35,7 +40,19 @@ class CvController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'cv_file' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        $user = Auth::user();
+        $filePath = $request->file('cv_file')->store('cvs');
+
+        Cv::create([
+            'user_id' => $user->id,
+            'filePath' => $filePath,
+        ]);
+
+        return redirect()->route('profil.candidat')->with('success', 'CV uploaded successfully.');
     }
 
     /**
@@ -69,7 +86,17 @@ class CvController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'cv_file' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        $cv = Cv::findOrFail($id);
+        Storage::delete($cv->filePath);
+
+        $filePath = $request->file('cv_file')->store('cvs');
+        $cv->update(['filePath' => $filePath]);
+
+        return redirect()->route('profil.candidat')->with('success', 'CV updated successfully.');
     }
 
     /**
@@ -80,6 +107,10 @@ class CvController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $cv = Cv::findOrFail($id);
+        Storage::delete($cv->filePath);
+        $cv->delete();
+
+        return redirect()->route('profil.candidat')->with('success', 'CV deleted successfully.');
     }
 }

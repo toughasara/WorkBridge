@@ -15,6 +15,7 @@ use App\Http\Controllers\Candidat\EducationController;
 
 
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,6 +57,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
     Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
 
+});
+
+// routes pour le profil de candidat
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/profil/candidat', [ProfilCandidatController::class, 'showProfil'])->name('profil.candidat');
+
+    Route::get('/profil/candidat/resume', [ProfilCandidatController::class, 'showProfil'])->name('resume.view');
+
+    Route::resource('cv', CvController::class)->only(['store', 'update', 'destroy']);
+
+    Route::resource('resume', WorkbridgeCVController::class)->except(['index']);
+
+    Route::resource('experience', ExperienceController::class)->except(['index', 'show']);
+
+    Route::resource('education', EducationController::class)->except(['index', 'show']);
+
+    Route::resource('skill', SkillController::class)->except(['index', 'show']);
+
+    Route::resource('language', LanguageController::class)->except(['index', 'show']);
 });
 
 

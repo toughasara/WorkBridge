@@ -171,6 +171,25 @@
     .file-input {
         display: none;
     }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.625rem 1.25rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        background-color: #2557a7;
+        color: white;
+        transition: background-color 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #1e4b8f;
+    }
 </style>
 @endsection
 
@@ -205,7 +224,6 @@
 
     <!-- Section CV -->
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 class="section-title">CV</h2>
         
         @if(isset($cv))
         <div class="cv-file">
@@ -225,21 +243,25 @@
                         <i class="fas fa-sync-alt"></i>
                         <span>Remplacer le fichier</span>
                     </label>
-                    <a href="{{ route('candidate.cv.delete', $cv->id) }}" class="cv-file-menu-item text-danger">
-                        <i class="fas fa-trash-alt"></i>
-                        <span>Supprimer</span>
-                    </a>
+                    <form action="{{ route('cv.destroy', $cv->id) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="cv-file-menu-item text-danger">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Supprimer</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <form action="{{ route('candidate.cv.update', $cv->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('cv.update', $cv->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <input type="file" name="cv_file" id="replace-cv" class="file-input" accept=".pdf" onchange="this.form.submit()">
         </form>
         @else
         <div class="cv-actions">
-            <form action="{{ route('candidate.cv.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('cv.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="cv_file" id="cv-file" class="file-input" accept=".pdf" onchange="updateFileName(this)">
                 <label for="cv-file" class="btn-primary flex items-center justify-center w-full">
@@ -257,34 +279,22 @@
 
     <!-- Section CV WorkBridge -->
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 class="section-title">CV WorkBridge</h2>
         
         <div class="cv-actions">
             @if(isset($resume))
-            <a href="{{ route('candidate.resume.view') }}" class="btn-primary flex items-center justify-center">
-                <i class="fas fa-eye mr-2"></i>
-                WorkBridge CV
-            </a>
+                <a href="{{ route('resume.view') }}" class="btn-primary flex items-center justify-center">
+                    <i class="fas fa-eye mr-2"></i>
+                    WorkBridge CV
+                </a>
             @else
-            <a href="{{ route('candidate.resume.create') }}" class="btn-primary flex items-center justify-center">
-                <i class="fas fa-plus mr-2"></i>
-                Créer WorkBridge CV
-            </a>
+                <a href="{{ route('resume.create') }}" class="btn-primary flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Créer WorkBridge CV
+                </a>
             @endif
         </div>
     </div>
 
-    <!-- Autres sections du profil -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <h2 class="section-title">Qualifications</h2>
-        <p class="text-gray-500 mb-4">
-            Mettez vos compétences et votre expérience en avant.
-        </p>
-        <a href="{{ route('candidate.qualifications') }}" class="btn-outline flex items-center justify-center w-full">
-            <i class="fas fa-plus mr-2"></i>
-            Ajouter des qualifications
-        </a>
-    </div>
 </div>
 @endsection
 
