@@ -29,7 +29,19 @@ class ProfilCandidatController extends Controller
 
     public function showResume()
     {
-        
+        $user = Auth::user();
+        $resume = $user->resume;
+
+        if (!$resume) {
+            return redirect()->route('profil.candidat')->with('error', 'Aucun CV WorkBridge trouvé.');
+        }
+
+        $experiences = $resume->experiences;
+        $educations = $resume->education;
+        $skills = $resume->skills;
+        $languages = $resume->languages;
+
+        return view('candidat.candidatresume', compact('user', 'resume', 'experiences', 'educations', 'skills', 'languages'));
     }
 
 

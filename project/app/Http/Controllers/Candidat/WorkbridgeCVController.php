@@ -76,7 +76,9 @@ class WorkbridgeCVController extends Controller
      */
     public function edit($id)
     {
-        //
+        $resume = Resume::findOrFail($id);
+
+        return view('candidat/resumeedit', compact('resume'));
     }
 
     /**
