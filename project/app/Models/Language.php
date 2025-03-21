@@ -11,7 +11,8 @@ class Language extends Model
 
     protected $fillable = ['name'];
 
-    public function candidates() {
-        return $this->belongsToMany(Candidate::class, 'candidate_skills');
+    public function resumes()
+    {
+        return $this->belongsToMany(Resume::class, 'resume_skill');
     }
 }

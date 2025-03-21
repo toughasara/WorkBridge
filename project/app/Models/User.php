@@ -48,9 +48,22 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    // Relation one-to-many avec la table `company`
     public function company()
     {
         return $this->hasOne(Company::class);
+    }
+
+    // Relation one-to-many avec la table `cvs`
+    public function cvs()
+    {
+        return $this->hasMany(Cv::class);
+    }
+
+    // Relation one-to-one avec la table `resumes`
+    public function resume()
+    {
+        return $this->hasOne(Resume::class);
     }
 
 }

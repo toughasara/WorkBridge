@@ -9,9 +9,19 @@ class Education extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['candidate_id', 'institution_name', 'degree', 'field_of_study', 'start_date', 'end_date'];
+    protected $fillable = [
+        'resume_id',
+        'institution_name',
+        'degree',
+        'field_of_study',
+        'start_date',
+        'end_date',
+    ];
 
-    public function candidate() {
-        return $this->belongsTo(Candidate::class);
+    // Relation belongsTo avec le modèle `Resume`
+    public function resume()
+    {
+        return $this->belongsTo(Resume::class);
     }
+
 }

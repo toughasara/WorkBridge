@@ -20,6 +20,7 @@ class CreateResumesTable extends Migration
             $table->string('ville');
             $table->string('phone');
             $table->date('birthDate');
+            $table->boolean('relocation_possible')->default(false);
             $table->timestamps();
         });
     }

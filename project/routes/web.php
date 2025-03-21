@@ -2,8 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SkillController ;
+use App\Http\Controllers\LanguageController;
+
 use App\Http\Controllers\Recruiter\CompanyController;
+
 use App\Http\Controllers\Candidat\ProfilCandidatController;
+use App\Http\Controllers\Candidat\CvController;
+use App\Http\Controllers\Candidat\WorkbridgeCVController;
+use App\Http\Controllers\Candidat\ExperienceController;
+use App\Http\Controllers\Candidat\EducationController;
+
 
 
 /*
@@ -31,6 +40,23 @@ Route::post('register', [AuthController::class, 'register'])->name('admin');
 // candidat
 Route::get('candidat', [ProfilCandidatController::class, 'index'])->name('candidat');
 Route::post('candidat/information/store', [ProfilCandidatController::class, 'store'])->name('candidat.info.store');
+
+// routes pour la navigation du candidat
+Route::middleware(['auth'])->group(function () {
+    Route::get('/candidat/home', [ProfilCandidatController::class, 'index'])->name('home');
+    
+    Route::get('/candidat/interviews', [ProfilCandidatController::class, 'index'])->name('interviews');
+    
+    Route::get('/candidat/saved-jobs', [ProfilCandidatController::class, 'index'])->name('saved.jobs');
+    
+    Route::get('/candidat/messages', [ProfilCandidatController::class, 'index'])->name('messages');
+    
+    Route::get('/candidat/notifications', [ProfilCandidatController::class, 'index'])->name('notifications');
+    
+    Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
+    Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
+
+});
 
 
 // recruiter
