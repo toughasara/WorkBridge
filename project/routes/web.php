@@ -64,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profil/candidat', [ProfilCandidatController::class, 'showProfil'])->name('profil.candidat');
 
-    Route::get('/profil/candidat/resume', [ProfilCandidatController::class, 'showProfil'])->name('resume.view');
+    Route::get('/profil/candidat/resume', [ProfilCandidatController::class, 'showResume'])->name('resume.view');
 
     Route::resource('cv', CvController::class)->only(['store', 'update', 'destroy']);
 

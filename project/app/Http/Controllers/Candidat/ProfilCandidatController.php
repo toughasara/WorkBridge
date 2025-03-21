@@ -27,5 +27,10 @@ class ProfilCandidatController extends Controller
         return view('candidat/profilcandidat', compact('cv', 'resume'));
     }
 
+    public function showResume()
+    {
+        
+    }
+
 
 }

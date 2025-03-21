@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Resume;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class WorkbridgeCVController extends Controller
 {
@@ -24,7 +27,7 @@ class WorkbridgeCVController extends Controller
      */
     public function create()
     {
-        //
+        return view('candidat/resumecreate');
     }
 
     /**
@@ -35,7 +38,23 @@ class WorkbridgeCVController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'pays' => 'required',
+            'ville' => 'required',
+            'phone' => 'required',
+            'birthDate' => 'required|date',
+        ]);
+
+        $user = Auth::user();
+        $resume = Resume::create([
+            'user_id' => $user->id,
+            'pays' => $request->pays,
+            'ville' => $request->ville,
+            'phone' => $request->phone,
+            'birthDate' => $request->birthDate,
+        ]);
+
+        return redirect()->route('resume.view')->with('success', 'Resume created successfully.');
     }
 
     /**
@@ -69,7 +88,17 @@ class WorkbridgeCVController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'pays' => 'required',
+            'ville' => 'required',
+            'phone' => 'required',
+            'birthDate' => 'required|date',
+        ]);
+
+        $resume = Resume::findOrFail($id);
+        $resume->update($request->all());
+
+        return redirect()->route('resume.view')->with('success', 'Resume updated successfully.');
     }
 
     /**
@@ -80,6 +109,9 @@ class WorkbridgeCVController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $resume = Resume::findOrFail($id);
+        $resume->delete();
+
+        return redirect()->route('profil.candidat')->with('success', 'Resume deleted successfully.');
     }
 }
