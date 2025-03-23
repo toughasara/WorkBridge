@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Candidat;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Resume;
+use App\Models\Skill;
+
 
 class SkillController extends Controller
 {
@@ -21,9 +25,17 @@ class SkillController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Resume $resume)
     {
-        //
+        $skills = Skill::all();
+
+        $selectedSkills = $resume->skills;
+        
+        return view('candidat.skillcreat', [
+            'resume' => $resume,
+            'skills' => $skills,
+            'selectedSkills' => $selectedSkills,
+        ]);
     }
 
     /**
@@ -32,9 +44,16 @@ class SkillController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Resume $resume)
     {
-        //
+        $request->validate([
+            'skills' => 'required|array',
+            'skills.*' => 'exists:skills,id',
+        ]);
+
+        $resume->skills()->sync($request->skills);
+
+        return redirect()->route('resume.view')->with('success', 'Compétences mises à jour avec succès.');
     }
 
     /**
@@ -77,8 +96,10 @@ class SkillController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Resume $resume, Skill $skill)
     {
-        //
+        $resume->skills()->detach($skill->id);
+
+        return redirect()->route('resume.view')->with('success', 'Compétence supprimée avec succès.');
     }
 }

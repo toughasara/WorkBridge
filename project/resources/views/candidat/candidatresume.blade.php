@@ -160,7 +160,7 @@
     <div class="mb-8 border border-gray-200 rounded-lg p-6 bg-gray-50">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800">Compétences</h2>
-            <a href="{{ route('skill.create', $resume->id) }}" class="text-blue-800 hover:text-blue-600" title="Ajouter">
+            <a href="{{ route('resumes.skills.create', $resume->id) }}" class="text-blue-800 hover:text-blue-600" title="Ajouter">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -172,7 +172,7 @@
                 @foreach($resume->skills as $skill)
                     <div class="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200 flex items-center">
                         <span class="text-gray-700">{{ $skill->name }}</span>
-                        <form action="{{ route('skill.delete', ['resume' => $resume->id, 'skill' => $skill->id]) }}" method="POST" class="ml-2">
+                        <form action="{{ route('resumes.skills.destroy', ['resume' => $resume->id, 'skill' => $skill->id]) }}" method="POST" class="ml-2">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-blue-800 hover:text-blue-600" title="Supprimer">

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SkillController ;
+use App\Http\Controllers\Candidat\SkillController ;
 use App\Http\Controllers\LanguageController;
 
 use App\Http\Controllers\Recruiter\CompanyController;
@@ -74,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('education', EducationController::class)->except(['index', 'show']);
 
-    Route::resource('skill', SkillController::class)->except(['index', 'show']);
+    Route::resource('resumes.skills', SkillController::class)->except(['index', 'show']);
 
     Route::resource('language', LanguageController::class)->except(['index', 'show']);
 });
