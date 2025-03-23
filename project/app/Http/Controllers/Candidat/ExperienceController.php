@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Experience;
+use App\Models\Resume;
+
 
 class ExperienceController extends Controller
 {
@@ -22,9 +25,9 @@ class ExperienceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Resume $resume)
     {
-        //
+        return view('candidat/experiencecreate', compact('resume'));
     }
 
     /**
@@ -33,9 +36,22 @@ class ExperienceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Resume $resume)
     {
-        //
+        // dd($request->all());
+        // dd($resume);
+        // dd($request);
+        $request->validate([
+            'company_name' => 'required',
+            'job_title' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date',
+            'description' => 'nullable',
+        ]);
+
+        $resume->experiences()->create($request->all());
+
+        return redirect()->route('resume.view')->with('success', 'Experience added successfully.');
     }
 
     /**
@@ -55,9 +71,9 @@ class ExperienceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Resume $resume, Experience $experience)
     {
-        //
+        return view('candidat/experienceedit', compact('experience', 'resume'));
     }
 
     /**
@@ -67,9 +83,19 @@ class ExperienceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Resume $resume, Experience $experience)
     {
-        //
+        $request->validate([
+            'company_name' => 'required',
+            'job_title' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date',
+            'description' => 'nullable',
+        ]);
+
+        $experience->update($request->all());
+
+        return redirect()->route('resume.view')->with('success', 'Experience updated successfully.');
     }
 
     /**
@@ -78,8 +104,16 @@ class ExperienceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Resume $resume, Experience $experience)
     {
-        //
+        // Vérifier que l'expérience appartient bien au CV
+        if ($experience->resume_id !== $resume->id) {
+            return redirect()->route('resume.view')->with('error', 'Unauthorized action.');
+        }
+
+        // Suppression
+        $experience->delete();
+
+        return redirect()->route('resume.view')->with('success', 'Experience deleted successfully.');
     }
 }

@@ -47,32 +47,13 @@
                 </form>
             </div>
         </div>
-    </div>
-
-    <!-- Récapitulatif -->
-    <div class="mb-8 border border-gray-200 rounded-lg p-6 bg-gray-50">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Récapitulatif</h2>
-            <a href="#" class="text-blue-800 hover:text-blue-600" title="Ajouter">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-            </a>
-        </div>
-        <div class="text-gray-600">
-            @if(isset($resume->summary) && !empty($resume->summary))
-                <p>{{ $resume->summary }}</p>
-            @else
-                <p class="text-gray-500 italic">Votre récapitulatif apparaîtra ici.</p>
-            @endif
-        </div>
-    </div>
+    </div>    
 
     <!-- Expérience professionnelle -->
     <div class="mb-8 border border-gray-200 rounded-lg p-6 bg-gray-50">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800">Expérience professionnelle</h2>
-            <a href="{{ route('experience.create', $resume->id) }}" class="text-blue-800 hover:text-blue-600" title="Ajouter">
+            <a href="{{ route('resumes.experiences.create', $resume->id) }}" class="text-blue-800 hover:text-blue-600" title="Ajouter">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -86,12 +67,12 @@
                 @foreach($resume->experiences as $experience)
                     <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 relative">
                         <div class="absolute right-3 top-3 flex space-x-3">
-                            <a href="{{ route('experience.update', $experience->id) }}" class="text-blue-800 hover:text-blue-600" title="Modifier">
+                            <a href="{{ route('resumes.experiences.edit', [$resume->id, $experience->id]) }}" class="text-blue-800 hover:text-blue-600" title="Modifier">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('experience.delete', $experience->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette expérience?');">
+                            <form action="{{ route('resumes.experiences.destroy', [$resume->id, $experience->id]) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette expérience?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-blue-800 hover:text-blue-600" title="Supprimer">

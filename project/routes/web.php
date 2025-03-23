@@ -70,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('resume', WorkbridgeCVController::class)->except(['index']);
 
-    Route::resource('experience', ExperienceController::class)->except(['index', 'show']);
+    Route::resource('resumes.experiences', ExperienceController::class)->except(['index', 'show']);
 
     Route::resource('education', EducationController::class)->except(['index', 'show']);
 
