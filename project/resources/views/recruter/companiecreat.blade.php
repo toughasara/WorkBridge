@@ -124,7 +124,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('recruiter.info.store') }}" id="recruiter-form" class="space-y-6">
+        <form method="POST" action="{{ route('company.store') }}" id="recruiter-form" class="space-y-6">
             @csrf
 
             <!-- Nom de l'entreprise -->

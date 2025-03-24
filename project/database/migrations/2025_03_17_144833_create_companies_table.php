@@ -15,7 +15,7 @@ class CreateCompaniesTable extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Relation avec users
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('pays');
             $table->string('ville');
@@ -24,7 +24,7 @@ class CreateCompaniesTable extends Migration
             $table->string('website')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
-            });
+        });
     }
 
     /**

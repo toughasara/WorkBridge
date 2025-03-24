@@ -5,7 +5,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Candidat\SkillController ;
 use App\Http\Controllers\LanguageController;
 
+
 use App\Http\Controllers\Recruiter\CompanyController;
+use App\Http\Controllers\Recruiter\OffresController;
+use App\Http\Controllers\Recruiter\ProfilRecruterController;
+
 
 use App\Http\Controllers\Candidat\ProfilCandidatController;
 use App\Http\Controllers\Candidat\CvController;
@@ -79,10 +83,16 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('language', LanguageController::class)->except(['index', 'show']);
 });
 
+// routes pour le profil de candidat
+Route::resource('company', CompanyController::class);
 
-// recruiter
-Route::get('recruiter', [CompanyController::class, 'index'])->name('recruter');
-Route::post('recruiter/information/store', [CompanyController::class, 'store'])->name('recruiter.info.store');
+Route::get('recruiter', [OffresController::class, 'create'])->name('recruter')->middleware(['auth', 'check.company']);
+
+Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
+
+
+Route::resource('recruiter/offers', OffresController::class);
+
 
 
 Route::get('/', function () {

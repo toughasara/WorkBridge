@@ -66,4 +66,10 @@ class User extends Authenticatable
         return $this->hasOne(Resume::class);
     }
 
+    // Relation one-to-many avec la table `offres`
+    public function offres()
+    {
+        return $this->hasMany(Offre::class);
+    }
+
 }
