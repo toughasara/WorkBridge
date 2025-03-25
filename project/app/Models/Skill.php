@@ -15,4 +15,10 @@ class Skill extends Model
     {
         return $this->belongsToMany(Resume::class, 'resume_skill');
     }
+
+    public function offres()
+    {
+        return $this->belongsToMany(Resume::class, 'offer_id');
+    }
+    
 }

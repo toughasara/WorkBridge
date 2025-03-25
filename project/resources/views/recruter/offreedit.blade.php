@@ -1,8 +1,8 @@
 @extends('layouts.recruteur')
 
-@section('title', 'Créer une offre d\'emploi')
+@section('title', 'Modifier une offre d\'emploi')
 
-@section('header-title', 'Créer une offre d\'emploi')
+@section('header-title', 'Modifier une offre d\'emploi')
 
 @section('styles')
 <style>
@@ -314,8 +314,9 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('offers.store') }}" id="offre-form">
+    <form method="POST" action="{{ route('offers.update', $offre->id) }}" id="offre-form">
         @csrf
+        @method('PUT')
         
         <div class="form-section">
             <h2 class="section-title">Informations générales</h2>
@@ -326,7 +327,7 @@
                     Titre de l'offre
                     <span class="required-star">*</span>
                 </label>
-                <input id="title" name="title" type="text" required value="{{ old('title') }}"
+                <input id="title" name="title" type="text" required value="{{ old('title', $offre->title) }}"
                     class="form-input @error('title') border-red-500 @enderror"
                     placeholder="Ex: Développeur Web Full Stack">
                 @error('title')
@@ -341,7 +342,7 @@
                         Nombre de postes à pourvoir
                         <span class="required-star">*</span>
                     </label>
-                    <input id="nombre_poste" name="nombre_poste" type="number" min="1" required value="{{ old('nombre_poste', 1) }}"
+                    <input id="nombre_poste" name="nombre_poste" type="number" min="1" required value="{{ old('nombre_poste', $offre->nombre_poste) }}"
                         class="form-input @error('nombre_poste') border-red-500 @enderror">
                     @error('nombre_poste')
                         <p class="form-error">{{ $message }}</p>
@@ -354,7 +355,7 @@
                         Lieu
                         <span class="required-star">*</span>
                     </label>
-                    <input id="location" name="location" type="text" required value="{{ old('location') }}"
+                    <input id="location" name="location" type="text" required value="{{ old('location', $offre->location) }}"
                         class="form-input @error('location') border-red-500 @enderror"
                         placeholder="Ex: Paris, France">
                     @error('location')
@@ -373,12 +374,12 @@
                     <select id="type_contrat" name="type_contrat" required 
                         class="form-select @error('type_contrat') border-red-500 @enderror">
                         <option value="">Sélectionnez un type de contrat</option>
-                        <option value="CDI" {{ old('type_contrat') == 'CDI' ? 'selected' : '' }}>CDI</option>
-                        <option value="CDD" {{ old('type_contrat') == 'CDD' ? 'selected' : '' }}>CDD</option>
-                        <option value="Intérim" {{ old('type_contrat') == 'Intérim' ? 'selected' : '' }}>Intérim</option>
-                        <option value="Stage" {{ old('type_contrat') == 'Stage' ? 'selected' : '' }}>Stage</option>
-                        <option value="Alternance" {{ old('type_contrat') == 'Alternance' ? 'selected' : '' }}>Alternance</option>
-                        <option value="Freelance" {{ old('type_contrat') == 'Freelance' ? 'selected' : '' }}>Freelance</option>
+                        <option value="CDI" {{ old('type_contrat', $offre->type_contrat) == 'CDI' ? 'selected' : '' }}>CDI</option>
+                        <option value="CDD" {{ old('type_contrat', $offre->type_contrat) == 'CDD' ? 'selected' : '' }}>CDD</option>
+                        <option value="Intérim" {{ old('type_contrat', $offre->type_contrat) == 'Intérim' ? 'selected' : '' }}>Intérim</option>
+                        <option value="Stage" {{ old('type_contrat', $offre->type_contrat) == 'Stage' ? 'selected' : '' }}>Stage</option>
+                        <option value="Alternance" {{ old('type_contrat', $offre->type_contrat) == 'Alternance' ? 'selected' : '' }}>Alternance</option>
+                        <option value="Freelance" {{ old('type_contrat', $offre->type_contrat) == 'Freelance' ? 'selected' : '' }}>Freelance</option>
                     </select>
                     @error('type_contrat')
                         <p class="form-error">{{ $message }}</p>
@@ -394,9 +395,9 @@
                     <select id="mode_travail" name="mode_travail" required 
                         class="form-select @error('mode_travail') border-red-500 @enderror">
                         <option value="">Sélectionnez un mode de travail</option>
-                        <option value="Sur site" {{ old('mode_travail') == 'Sur site' ? 'selected' : '' }}>Sur site</option>
-                        <option value="Hybride" {{ old('mode_travail') == 'Hybride' ? 'selected' : '' }}>Hybride</option>
-                        <option value="Télétravail" {{ old('mode_travail') == 'Télétravail' ? 'selected' : '' }}>Télétravail complet</option>
+                        <option value="Sur site" {{ old('mode_travail', $offre->mode_travail) == 'Sur site' ? 'selected' : '' }}>Sur site</option>
+                        <option value="Hybride" {{ old('mode_travail', $offre->mode_travail) == 'Hybride' ? 'selected' : '' }}>Hybride</option>
+                        <option value="Télétravail" {{ old('mode_travail', $offre->mode_travail) == 'Télétravail' ? 'selected' : '' }}>Télétravail complet</option>
                     </select>
                     @error('mode_travail')
                         <p class="form-error">{{ $message }}</p>
@@ -415,7 +416,7 @@
                         <div class="icon">
                             <i class="fas fa-euro-sign"></i>
                         </div>
-                        <input id="salaire" name="salaire" type="number" min="0" required value="{{ old('salaire') }}"
+                        <input id="salaire" name="salaire" type="number" min="0" required value="{{ old('salaire', $offre->salaire) }}"
                             class="form-input @error('salaire') border-red-500 @enderror"
                             placeholder="Ex: 45000">
                     </div>
@@ -433,13 +434,13 @@
                     <select id="experience" name="experience" required 
                         class="form-select @error('experience') border-red-500 @enderror">
                         <option value="">Sélectionnez l'expérience requise</option>
-                        <option value="0" {{ old('experience') == '0' ? 'selected' : '' }}>Débutant accepté</option>
-                        <option value="1" {{ old('experience') == '1' ? 'selected' : '' }}>1 an</option>
-                        <option value="2" {{ old('experience') == '2' ? 'selected' : '' }}>2 ans</option>
-                        <option value="3" {{ old('experience') == '3' ? 'selected' : '' }}>3 ans</option>
-                        <option value="5" {{ old('experience') == '5' ? 'selected' : '' }}>5 ans</option>
-                        <option value="7" {{ old('experience') == '7' ? 'selected' : '' }}>7 ans</option>
-                        <option value="10" {{ old('experience') == '10' ? 'selected' : '' }}>10 ans et plus</option>
+                        <option value="0" {{ old('experience', $offre->experience) == '0' ? 'selected' : '' }}>Débutant accepté</option>
+                        <option value="1" {{ old('experience', $offre->experience) == '1' ? 'selected' : '' }}>1 an</option>
+                        <option value="2" {{ old('experience', $offre->experience) == '2' ? 'selected' : '' }}>2 ans</option>
+                        <option value="3" {{ old('experience', $offre->experience) == '3' ? 'selected' : '' }}>3 ans</option>
+                        <option value="5" {{ old('experience', $offre->experience) == '5' ? 'selected' : '' }}>5 ans</option>
+                        <option value="7" {{ old('experience', $offre->experience) == '7' ? 'selected' : '' }}>7 ans</option>
+                        <option value="10" {{ old('experience', $offre->experience) == '10' ? 'selected' : '' }}>10 ans et plus</option>
                     </select>
                     @error('experience')
                         <p class="form-error">{{ $message }}</p>
@@ -452,7 +453,7 @@
                 <label for="date_expiration" class="form-label">
                     Date d'expiration de l'offre
                 </label>
-                <input id="date_expiration" name="date_expiration" type="date" value="{{ old('date_expiration') }}"
+                <input id="date_expiration" name="date_expiration" type="date" value="{{ old('date_expiration', $offre->date_expiration ? date('Y-m-d', strtotime($offre->date_expiration)) : '') }}"
                     class="form-input @error('date_expiration') border-red-500 @enderror"
                     min="{{ date('Y-m-d') }}">
                 <p class="form-help-text">Laissez vide si l'offre n'a pas de date d'expiration.</p>
@@ -473,7 +474,7 @@
                 </label>
                 <textarea id="description" name="description" rows="10" required 
                     class="form-textarea @error('description') border-red-500 @enderror"
-                    placeholder="Décrivez le poste, les responsabilités, les compétences requises, les avantages, etc.">{{ old('description') }}</textarea>
+                    placeholder="Décrivez le poste, les responsabilités, les compétences requises, les avantages, etc.">{{ old('description', $offre->description) }}</textarea>
                 <p class="form-help-text">Soyez précis et détaillé pour attirer les meilleurs candidats.</p>
                 @error('description')
                     <p class="form-error">{{ $message }}</p>
@@ -551,8 +552,26 @@
             </div>
         </div>
         
-        <!-- Champ caché pour le statut -->
-        <input type="hidden" name="statut" id="statut-field" value="brouillon">
+        <div class="form-section">
+            <h2 class="section-title">Statut de publication</h2>
+            
+            <!-- Statut -->
+            <div class="form-group">
+                <label for="statut" class="form-label">
+                    Statut de l'offre
+                    <span class="required-star">*</span>
+                </label>
+                <select id="statut" name="statut" required 
+                    class="form-select @error('statut') border-red-500 @enderror">
+                    <option value="brouillon" {{ old('statut', $offre->statut) == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
+                    <option value="publiée" {{ old('statut', $offre->statut) == 'publiée' ? 'selected' : '' }}>Publiée</option>
+                </select>
+                <p class="form-help-text">Les offres en brouillon ne sont pas visibles par les candidats.</p>
+                @error('statut')
+                    <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
         
         <div class="flex justify-end space-x-4 mb-6">
             <a href="{{ route('offers.index') }}" class="btn-secondary">
@@ -562,7 +581,7 @@
                 Enregistrer comme brouillon
             </button>
             <button type="submit" name="publish" value="1" class="btn-primary">
-                Publier l'offre
+                Mettre à jour l'offre
             </button>
         </div>
     </form>
@@ -575,15 +594,15 @@
         const form = document.getElementById('offre-form');
         const publishButton = document.querySelector('button[name="publish"]');
         const draftButton = document.querySelector('button[name="save_draft"]');
-        const statutField = document.getElementById('statut-field');
+        const statutSelect = document.getElementById('statut');
         
         // Mettre à jour le statut en fonction du bouton cliqué
         publishButton.addEventListener('click', function() {
-            statutField.value = 'en attente';
+            statutSelect.value = 'publiée';
         });
         
         draftButton.addEventListener('click', function() {
-            statutField.value = 'brouillon';
+            statutSelect.value = 'brouillon';
         });
         
         // Formater la date d'expiration minimale
@@ -600,13 +619,6 @@
         };
         
         dateExpirationField.min = formatDate(minDate);
-        
-        // Si aucune date n'est définie, suggérer une date d'expiration par défaut (30 jours)
-        if (!dateExpirationField.value) {
-            const defaultExpiration = new Date(today);
-            defaultExpiration.setDate(today.getDate() + 30);
-            dateExpirationField.value = formatDate(defaultExpiration);
-        }
         
         // ===== GESTION DES COMPÉTENCES =====
         
@@ -625,18 +637,13 @@
         // Ensemble pour suivre les compétences sélectionnées
         const selectedSkills = new Set();
         
-        // Initialiser les compétences sélectionnées depuis old()
-        @if(old('skill_ids'))
-            @foreach(old('skill_ids') as $skillId)
-                selectedSkills.add({{ $skillId }});
-                const skill = skills.find(s => s.id === {{ $skillId }});
-                if (skill) {
-                    addSkillTag(skill.id, skill.name);
-                    addSkillIdInput(skill.id);
-                }
-            @endforeach
-            updateSkillsPlaceholder();
-        @endif
+        // Initialiser les compétences sélectionnées depuis l'offre existante
+        @foreach($offre->skills as $skill)
+            selectedSkills.add({{ $skill->id }});
+            addSkillTag({{ $skill->id }}, "{{ $skill->name }}");
+            addSkillIdInput({{ $skill->id }});
+        @endforeach
+        updateSkillsPlaceholder();
         
         // Fonction pour ajouter un tag de compétence
         function addSkillTag(id, name) {
@@ -804,22 +811,17 @@
         // Map pour suivre les langues sélectionnées avec leurs niveaux
         const selectedLanguages = new Map();
         
-        // Initialiser les langues sélectionnées depuis old()
-        @if(old('language_ids'))
-            @foreach(old('language_ids') as $index => $languageId)
-                @php
-                    $level = old('language_levels')[$index] ?? 'courant';
-                @endphp
-                const language = languages.find(l => l.id === {{ $languageId }});
-                if (language) {
-                    selectedLanguages.set({{ $languageId }}, { name: language.name, level: '{{ $level }}' });
-                    addLanguageTag({{ $languageId }}, language.name);
-                    addLanguageLevel({{ $languageId }}, language.name, '{{ $level }}');
-                    addLanguageIdInput({{ $languageId }}, '{{ $level }}');
-                }
-            @endforeach
-            updateLanguagesPlaceholder();
-        @endif
+        // Initialiser les langues sélectionnées depuis l'offre existante
+        @foreach($offre->languages as $language)
+            selectedLanguages.set({{ $language->id }}, { 
+                name: "{{ $language->name }}", 
+                level: "{{ $language->pivot->level ?? 'courant' }}" 
+            });
+            addLanguageTag({{ $language->id }}, "{{ $language->name }}");
+            addLanguageLevel({{ $language->id }}, "{{ $language->name }}", "{{ $language->pivot->level ?? 'courant' }}");
+            addLanguageIdInput({{ $language->id }}, "{{ $language->pivot->level ?? 'courant' }}");
+        @endforeach
+        updateLanguagesPlaceholder();
         
         // Fonction pour ajouter un tag de langue
         function addLanguageTag(id, name) {

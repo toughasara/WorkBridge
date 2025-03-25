@@ -18,4 +18,18 @@ class Offre extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Relation many-to-many avec la table `skills`
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'offer_skill', 'offer_id', 'skill_id');
+    }
+
+    // Relation many-to-many avec la table `languages`
+    public function languages()
+    {
+        return $this->belongsToMany(Language::class, 'offer_language', 'offer_id', 'language_id')
+                    ->withPivot('level');
+    }
+    
 }
