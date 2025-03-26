@@ -91,7 +91,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::resource('company', CompanyController::class);
 
-    Route::get('recruiter', [OffresController::class, 'create'])->name('recruter')->middleware(['auth', 'check.company']);
+    Route::get('recruiter', [OffresController::class, 'create'])->name('recruiter')->middleware(['auth', 'check.company']);
     
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     

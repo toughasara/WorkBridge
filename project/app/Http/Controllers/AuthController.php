@@ -75,7 +75,7 @@ class AuthController extends Controller
     {
         Auth::logout();
 
-        return redirect()->route('loginUser');
+        return redirect()->route('register');
     }
 
     protected function redirectBasedOnRole($user)
