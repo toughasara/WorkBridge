@@ -10,7 +10,7 @@ class Offre extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title', 'nombre_poste', 'type_contrat', 'mode_travail', 'description',
+        'user_id', 'title', 'nombre_poste', 'type_contrat', 'mode_travail', 'description',
         'date_expiration', 'salaire', 'experience', 'location', 'statut', 'candidatures_count', 'company_id'
     ];
 
