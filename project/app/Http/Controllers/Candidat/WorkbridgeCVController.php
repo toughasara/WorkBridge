@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Resume;
-use App\Models\User;
+use App\Http\Requests\ResumeRequest;
+use App\Interfaces\Repositories\ResumeRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class WorkbridgeCVController extends Controller
 {
+
+    private $resumeRepository;
+
+    public function __construct(ResumeRepositoryInterface $resumeRepository)
+    {
+        $this->resumeRepository = $resumeRepository;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -36,23 +42,12 @@ class WorkbridgeCVController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ResumeRequest  $request)
     {
-        $request->validate([
-            'pays' => 'required',
-            'ville' => 'required',
-            'phone' => 'required',
-            'birthDate' => 'required|date',
-        ]);
-
-        $user = Auth::user();
-        $resume = Resume::create([
-            'user_id' => $user->id,
-            'pays' => $request->pays,
-            'ville' => $request->ville,
-            'phone' => $request->phone,
-            'birthDate' => $request->birthDate,
-        ]);
+        $this->resumeRepository->createForUser(
+            Auth::id(),
+            $request->validated()
+        );
 
         return redirect()->route('resume.view')->with('success', 'Resume created successfully.');
     }
@@ -76,8 +71,7 @@ class WorkbridgeCVController extends Controller
      */
     public function edit($id)
     {
-        $resume = Resume::findOrFail($id);
-
+        $resume = $this->resumeRepository->findById($id);
         return view('candidat/resumeedit', compact('resume'));
     }
 
@@ -88,18 +82,10 @@ class WorkbridgeCVController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ResumeRequest  $request, $id)
     {
-        $request->validate([
-            'pays' => 'required',
-            'ville' => 'required',
-            'phone' => 'required',
-            'birthDate' => 'required|date',
-        ]);
-
-        $resume = Resume::findOrFail($id);
-        $resume->update($request->all());
-
+        $this->resumeRepository->updateResume($id, $request->validated());
+        
         return redirect()->route('resume.view')->with('success', 'Resume updated successfully.');
     }
 
@@ -111,9 +97,7 @@ class WorkbridgeCVController extends Controller
      */
     public function destroy($id)
     {
-        $resume = Resume::findOrFail($id);
-        $resume->delete();
-
+        $this->resumeRepository->deleteResume($id);
         return redirect()->route('profil.candidat')->with('success', 'Resume deleted successfully.');
     }
 }
