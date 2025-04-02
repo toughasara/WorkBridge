@@ -82,7 +82,7 @@ class OffresController extends Controller
             $offre = $this->offreService->getOffreWithRelations($id, Auth::id());
             return view('recruter.offreshow', compact('offre'));
         } catch (\Exception $e) {
-            return redirect()->route('recruiter.offers.index')->with('error', $e->getMessage());
+            return redirect()->route('offers.index')->with('error', $e->getMessage());
         }
     }
 
@@ -100,7 +100,7 @@ class OffresController extends Controller
             $languages = Language::all();
             return view('recruter.offreedit', compact('offre', 'skills', 'languages'));
         } catch (\Exception $e) {
-            return redirect()->route('recruiter.offers.index')->with('error', $e->getMessage());
+            return redirect()->route('offers.index')->with('error', $e->getMessage());
         }
     }
 
