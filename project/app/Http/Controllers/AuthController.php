@@ -82,7 +82,7 @@ class AuthController extends Controller
     {
         switch ($user->role_id) {
             case 1:
-                return redirect()->route('admin');
+                return redirect()->route('admin.dashboard');
             case 2:
                 return redirect()->route('profil.candidat');
             case 3:

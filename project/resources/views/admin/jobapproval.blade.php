@@ -13,50 +13,6 @@
         margin-bottom: 1.5rem;
     }
     
-    .filters-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        align-items: center;
-    }
-    
-    .filter-select {
-        min-width: 180px;
-        padding: 0.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        background-color: white;
-    }
-    
-    .search-container {
-        display: flex;
-        margin-left: auto;
-    }
-    
-    .search-input {
-        padding: 0.5rem 1rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem 0 0 0.375rem;
-        min-width: 250px;
-    }
-    
-    .search-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f3f4f6;
-        border: 1px solid #d1d5db;
-        border-left: none;
-        border-radius: 0 0.375rem 0.375rem 0;
-        padding: 0 0.75rem;
-        cursor: pointer;
-    }
-    
-    .search-button:hover {
-        background-color: #e5e7eb;
-    }
-    
     .table-container {
         background-color: white;
         border-radius: 0.5rem;
@@ -271,11 +227,8 @@
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
     }
     
-    /* Styles pour la pagination personnalisée */
     .pagination-container {
         margin-top: 1.5rem;
-        display: flex;
-        justify-content: center;
     }
 </style>
 @endsection
@@ -285,25 +238,6 @@
     <!-- Header -->
     <div class="header-container">
         <h1 class="text-2xl font-bold text-gray-900">Offres d'emploi en attente d'approbation</h1>
-    </div>
-    
-    <!-- Filters -->
-    <div class="filters-container">
-        <select class="filter-select" id="company-filter">
-            <option value="">Toutes les entreprises</option>
-            @foreach($companies as $company)
-                <option value="{{ $company->id }}" {{ request('company') == $company->id ? 'selected' : '' }}>
-                    {{ $company->name }}
-                </option>
-            @endforeach
-        </select>
-        
-        <div class="search-container">
-            <input type="text" class="search-input" id="search-input" placeholder="Rechercher des offres..." value="{{ request('search') }}">
-            <button class="search-button" id="search-button">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
     </div>
     
     <!-- Table -->
@@ -365,7 +299,7 @@
         @endif
     </div>
     
-    <!-- Pagination avec les vues publiées -->
+    <!-- Pagination -->
     @if(count($pendingJobs) > 0)
         <div class="pagination-container">
             {{ $pendingJobs->links() }}
@@ -426,76 +360,6 @@
 
 @section('scripts')
 <script>
-    // Handle search
-    document.getElementById('search-button').addEventListener('click', function() {
-        const searchValue = document.getElementById('search-input').value;
-        const companyValue = document.getElementById('company-filter').value;
-        
-        let url = '{{ route("admin.jobs.approval") }}?';
-        if (searchValue) {
-            url += 'search=' + encodeURIComponent(searchValue);
-        }
-        
-        if (companyValue) {
-            url += (searchValue ? '&' : '') + 'company=' + encodeURIComponent(companyValue);
-        }
-        
-        window.location.href = url;
-    });
-    
-    // Handle company filter change
-    document.getElementById('company-filter').addEventListener('change', function() {
-        const searchValue = document.getElementById('search-input').value;
-        const companyValue = this.value;
-        
-        let url = '{{ route("admin.jobs.approval") }}?';
-        if (companyValue) {
-            url += 'company=' + encodeURIComponent(companyValue);
-        }
-        
-        if (searchValue) {
-            url += (companyValue ? '&' : '') + 'search=' + encodeURIComponent(searchValue);
-        }
-        
-        window.location.href = url;
-    });
-    
-    // Handle enter key in search input
-    document.getElementById('search-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            document.getElementById('search-button').click();
-        }
-    });
-    
-    // Handle sorting
-    document.querySelectorAll('.sortable').forEach(header => {
-        header.addEventListener('click', function() {
-            const sort = this.dataset.sort;
-            const currentSort = new URLSearchParams(window.location.search).get('sort') || '';
-            const currentDirection = new URLSearchParams(window.location.search).get('direction') || 'asc';
-            
-            let direction = 'asc';
-            if (sort === currentSort && currentDirection === 'asc') {
-                direction = 'desc';
-            }
-            
-            const searchValue = document.getElementById('search-input').value;
-            const companyValue = document.getElementById('company-filter').value;
-            
-            let url = '{{ route("admin.jobs.approval") }}?sort=' + sort + '&direction=' + direction;
-            
-            if (searchValue) {
-                url += '&search=' + encodeURIComponent(searchValue);
-            }
-            
-            if (companyValue) {
-                url += '&company=' + encodeURIComponent(companyValue);
-            }
-            
-            window.location.href = url;
-        });
-    });
-    
     // Modal functions
     function showApproveModal(jobId) {
         const modal = document.getElementById('approve-modal');

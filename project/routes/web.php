@@ -6,6 +6,12 @@ use App\Http\Controllers\Candidat\SkillController ;
 use App\Http\Controllers\LanguageController;
 
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\JobApprovalController;
+use App\Http\Controllers\Admin\UserManagementController;
+
+
+
 use App\Http\Controllers\Recruiter\CompanyController;
 use App\Http\Controllers\Recruiter\OffresController;
 use App\Http\Controllers\Recruiter\ProfilRecruterController;
@@ -102,6 +108,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);
     
 });
+
+
+
+
+// routes d'admine
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
 
 Route::get('/', function () {

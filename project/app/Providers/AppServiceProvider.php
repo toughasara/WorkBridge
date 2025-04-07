@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
+
 // Offres
 use App\Interfaces\Repositories\OffreRepositoryInterface;
 use App\Repositories\OffreRepository;

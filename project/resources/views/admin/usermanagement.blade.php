@@ -13,22 +13,6 @@
         margin-bottom: 1.5rem;
     }
     
-    .filters-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        align-items: center;
-    }
-    
-    .filter-select {
-        min-width: 180px;
-        padding: 0.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        background-color: white;
-    }
-    
     .search-container {
         display: flex;
         margin-left: auto;
@@ -64,12 +48,12 @@
         overflow: hidden;
     }
     
-    .recruiters-table {
+    .users-table {
         width: 100%;
         border-collapse: collapse;
     }
     
-    .recruiters-table th {
+    .users-table th {
         background-color: #f9fafb;
         padding: 0.75rem 1rem;
         text-align: left;
@@ -78,17 +62,17 @@
         border-bottom: 1px solid #e5e7eb;
     }
     
-    .recruiters-table td {
+    .users-table td {
         padding: 1rem;
         border-bottom: 1px solid #e5e7eb;
         color: #1f2937;
     }
     
-    .recruiters-table tr:last-child td {
+    .users-table tr:last-child td {
         border-bottom: none;
     }
     
-    .recruiters-table tr:hover {
+    .users-table tr:hover {
         background-color: #f9fafb;
     }
     
@@ -199,15 +183,15 @@
         gap: 0.5rem;
     }
     
-    .company-info {
+    .user-info {
         display: flex;
         align-items: center;
     }
     
-    .company-logo {
+    .user-avatar {
         width: 2.5rem;
         height: 2.5rem;
-        border-radius: 0.375rem;
+        border-radius: 9999px;
         background-color: #f3f4f6;
         display: flex;
         align-items: center;
@@ -215,6 +199,10 @@
         margin-right: 0.75rem;
         font-weight: bold;
         color: #4f46e5;
+    }
+    
+    .pagination-container {
+        margin-top: 1.5rem;
     }
 </style>
 @endsection
@@ -224,16 +212,6 @@
     <!-- Header -->
     <div class="header-container">
         <h1 class="text-2xl font-bold text-gray-900">Gestion des recruteurs</h1>
-    </div>
-    
-    <!-- Filters -->
-    <div class="filters-container">
-        <select class="filter-select" id="status-filter">
-            <option value="">Statut (Tous)</option>
-            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
-            <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspendu</option>
-            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-        </select>
         
         <div class="search-container">
             <input type="text" class="search-input" id="search-input" placeholder="Rechercher des recruteurs..." value="{{ request('search') }}">
@@ -246,13 +224,12 @@
     <!-- Table -->
     <div class="table-container">
         @if(count($recruiters) > 0)
-            <table class="recruiters-table">
+            <table class="users-table">
                 <thead>
                     <tr>
-                        <th class="sortable" data-sort="name">Entreprise / Recruteur</th>
+                        <th class="sortable" data-sort="name">Nom / Entreprise</th>
                         <th>Email</th>
                         <th class="sortable" data-sort="created_at">Date d'inscription</th>
-                        <th>Offres publiées</th>
                         <th>Statut</th>
                         <th>Actions</th>
                     </tr>
@@ -261,23 +238,22 @@
                     @foreach($recruiters as $recruiter)
                         <tr>
                             <td>
-                                <div class="company-info">
-                                    <div class="company-logo">
-                                        @if($recruiter->company && $recruiter->company->logo)
-                                            <img src="{{ asset('storage/' . $recruiter->company->logo) }}" alt="{{ $recruiter->company->name }}" class="w-full h-full object-cover rounded-md">
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        @if($recruiter->avatar)
+                                            <img src="{{ asset('storage/' . $recruiter->avatar) }}" alt="{{ $recruiter->name }}" class="w-full h-full object-cover rounded-full">
                                         @else
                                             {{ substr($recruiter->name, 0, 1) }}
                                         @endif
                                     </div>
                                     <div>
-                                        <div class="font-medium">{{ $recruiter->company ? $recruiter->company->name : $recruiter->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $recruiter->name }}</div>
+                                        <div class="font-medium">{{ $recruiter->name }}</div>
+                                        <div class="text-sm text-gray-500">{{ $recruiter->company->name ?? 'Aucune entreprise' }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td>{{ $recruiter->email }}</td>
                             <td>{{ $recruiter->created_at->format('d/m/Y') }}</td>
-                            <td>{{ $recruiter->offers_count ?? 0 }}</td>
                             <td>
                                 @if($recruiter->status == 'active')
                                     <span class="status-badge status-active">Actif</span>
@@ -325,7 +301,7 @@
         @else
             <div class="empty-state">
                 <div class="empty-state-icon">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-user-tie"></i>
                 </div>
                 <h3 class="text-lg font-medium mb-2">Aucun recruteur trouvé</h3>
                 <p class="mb-4">Aucun recruteur ne correspond à vos critères de recherche.</p>
@@ -335,7 +311,7 @@
     
     <!-- Pagination -->
     @if(count($recruiters) > 0)
-        <div class="mt-4">
+        <div class="pagination-container">
             {{ $recruiters->links() }}
         </div>
     @endif
@@ -347,32 +323,10 @@
     // Handle search
     document.getElementById('search-button').addEventListener('click', function() {
         const searchValue = document.getElementById('search-input').value;
-        const statusValue = document.getElementById('status-filter').value;
         
         let url = '{{ route("admin.recruiters.index") }}?';
         if (searchValue) {
             url += 'search=' + encodeURIComponent(searchValue);
-        }
-        
-        if (statusValue) {
-            url += (searchValue ? '&' : '') + 'status=' + encodeURIComponent(statusValue);
-        }
-        
-        window.location.href = url;
-    });
-    
-    // Handle status filter change
-    document.getElementById('status-filter').addEventListener('change', function() {
-        const searchValue = document.getElementById('search-input').value;
-        const statusValue = this.value;
-        
-        let url = '{{ route("admin.recruiters.index") }}?';
-        if (statusValue) {
-            url += 'status=' + encodeURIComponent(statusValue);
-        }
-        
-        if (searchValue) {
-            url += (statusValue ? '&' : '') + 'search=' + encodeURIComponent(searchValue);
         }
         
         window.location.href = url;
@@ -398,16 +352,11 @@
             }
             
             const searchValue = document.getElementById('search-input').value;
-            const statusValue = document.getElementById('status-filter').value;
             
             let url = '{{ route("admin.recruiters.index") }}?sort=' + sort + '&direction=' + direction;
             
             if (searchValue) {
                 url += '&search=' + encodeURIComponent(searchValue);
-            }
-            
-            if (statusValue) {
-                url += '&status=' + encodeURIComponent(statusValue);
             }
             
             window.location.href = url;

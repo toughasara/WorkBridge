@@ -121,27 +121,27 @@
                     <span>Statistiques</span>
                 </a>
                 
-                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                     <i class="fas fa-users nav-icon"></i>
                     <span>Gestion des utilisateurs</span>
                 </a>
                 
-                <a href="{{ route('admin.offers.index') }}" class="nav-link {{ request()->routeIs('admin.offers*') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.offers*') ? 'active' : '' }}">
                     <i class="fas fa-briefcase nav-icon"></i>
                     <span>Gestion des offres</span>
                 </a>
                 
-                <a href="{{ route('admin.companies.index') }}" class="nav-link {{ request()->routeIs('admin.companies*') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.companies*') ? 'active' : '' }}">
                     <i class="fas fa-building nav-icon"></i>
                     <span>Entreprises</span>
                 </a>
                 
-                <a href="{{ route('admin.skills.index') }}" class="nav-link {{ request()->routeIs('admin.skills*') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.skills*') ? 'active' : '' }}">
                     <i class="fas fa-tags nav-icon"></i>
                     <span>Compétences</span>
                 </a>
                 
-                <a href="{{ route('admin.languages.index') }}" class="nav-link {{ request()->routeIs('admin.languages*') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.languages*') ? 'active' : '' }}">
                     <i class="fas fa-language nav-icon"></i>
                     <span>Langues</span>
                 </a>
@@ -151,7 +151,7 @@
             <div class="px-2 mb-6">
                 <div class="border-t border-gray-200 my-2"></div>
                 
-                <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
                     <i class="fas fa-cog nav-icon"></i>
                     <span>Paramètres</span>
                 </a>
@@ -167,7 +167,7 @@
                 <div class="flex items-center space-x-6">
                     <!-- Notifications -->
                     <div class="relative">
-                        <a href="{{ route('admin.notifications') }}" class="text-gray-600 hover:text-gray-900 relative">
+                        <a href="{{ route('admin.dashboard') }}" class="text-gray-600 hover:text-gray-900 relative">
                             <i class="fas fa-bell text-xl"></i>
                             <span class="badge">3</span>
                         </a>
