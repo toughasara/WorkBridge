@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Candidat\SkillController ;
-use App\Http\Controllers\LanguageController;
-
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\JobApprovalController;
@@ -16,7 +14,6 @@ use App\Http\Controllers\Recruiter\CompanyController;
 use App\Http\Controllers\Recruiter\OffresController;
 use App\Http\Controllers\Recruiter\ProfilRecruterController;
 use App\Http\Controllers\Recruiter\SkillOffreController;
-use App\Http\Controllers\Recruiter\LanguageOffreController;
 
 
 
@@ -89,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('resumes.skills', SkillController::class)->except(['index', 'show']);
 
-    Route::resource('language', LanguageController::class)->except(['index', 'show']);
+    // Route::resource('language', LanguageController::class)->except(['index', 'show']);
 });
 
 // routes pour le profil de candidat
@@ -121,7 +118,7 @@ Route::put('/admin/UserManagement/{recruiter}/activate', [UserManagementControll
 Route::delete('/admin/UserManagement/{recruiter}/destroy', [UserManagementController::class, 'destroy'])->name('admin.UserManagement.destroy');
 
 Route::get('/admin/JobApproval', [JobApprovalController::class, 'index'])->name('admin.JobApproval');
-Route::get('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
+Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
 // Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
 
 
