@@ -121,7 +121,8 @@ Route::put('/admin/UserManagement/{recruiter}/activate', [UserManagementControll
 Route::delete('/admin/UserManagement/{recruiter}/destroy', [UserManagementController::class, 'destroy'])->name('admin.UserManagement.destroy');
 
 Route::get('/admin/JobApproval', [JobApprovalController::class, 'index'])->name('admin.JobApproval');
-
+Route::get('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
+// Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
 
 
 

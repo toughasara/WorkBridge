@@ -276,9 +276,18 @@
                                     <a href="{{ route('admin.JobApproval', $job->id) }}" class="btn-view">
                                         <i class="fas fa-eye mr-2"></i> Voir
                                     </a>
-                                    <button class="btn-approve" onclick="showApproveModal({{ $job->id }})">
+                                    <form action="{{ route('admin.JobApproval.approve', $job->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="btn-approve">
+                                            <i class="fas fa-check mr-2"></i> Approuver
+                                        </button>
+                                    </form>
+                                    <!-- <a href="{{ route('admin.JobApproval.approve', $job->id) }}" class="btn-approve">
+                                        <i class="fas fa-eye mr-2"></i> Approuver max
+                                    </a> -->
+                                    <!-- <button class="btn-approve" onclick="showApproveModal({{ $job->id }})">
                                         <i class="fas fa-check mr-2"></i> Approuver
-                                    </button>
+                                    </button> -->
                                     <button class="btn-reject" onclick="showRejectModal({{ $job->id }})">
                                         <i class="fas fa-times mr-2"></i> Rejeter
                                     </button>

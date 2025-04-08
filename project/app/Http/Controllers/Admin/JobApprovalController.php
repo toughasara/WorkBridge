@@ -18,4 +18,30 @@ class JobApprovalController extends Controller
 
         return view('admin.jobapproval', compact('pendingJobs'));
     }
+
+    public function approve(Request $request, Offre $job)
+    {
+        $validated = $request->validate([
+            'comment' => 'nullable|string|max:500'
+        ]);
+
+        $job->update([
+            'statut' => 'approved',
+        ]);
+
+        return redirect()->route('admin.JobApproval')->with('success', 'Offre approuvée avec succès.');
+    }
+
+    public function reject(Request $request, Offre $job)
+    {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
+        $job->update([
+            'statut' => 'rejected',
+        ]);
+
+        return redirect()->route('admin.jobs.approval')->with('success', 'Offre rejetée avec succès.');
+    }
 }
