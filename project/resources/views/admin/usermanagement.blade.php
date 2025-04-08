@@ -255,28 +255,28 @@
                             <td>{{ $recruiter->email }}</td>
                             <td>{{ $recruiter->created_at->format('d/m/Y') }}</td>
                             <td>
-                                @if($recruiter->status == 'active')
-                                    <span class="status-badge status-active">Actif</span>
-                                @elseif($recruiter->status == 'suspended')
-                                    <span class="status-badge status-suspended">Suspendu</span>
-                                @elseif($recruiter->status == 'pending')
-                                    <span class="status-badge status-pending">En attente</span>
+                                @if($recruiter->statut == 'active')
+                                    <span class="statut-badge statut-active">Actif</span>
+                                @elseif($recruiter->statut == 'suspended')
+                                    <span class="statut-badge statut-suspended">Suspendu</span>
+                                @elseif($recruiter->statut == 'en attente')
+                                    <span class="statut-badge statut-pending">En attente</span>
                                 @else
-                                    <span class="status-badge">{{ $recruiter->status }}</span>
+                                    <span class="statut-badge">{{ $recruiter->statut }}</span>
                                 @endif
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    @if($recruiter->status == 'active')
-                                        <form action="{{ route('admin.recruiters.suspend', $recruiter->id) }}" method="POST">
+                                    @if($recruiter->statut == 'active')
+                                        <form action="{{ route('admin.UserManagement.suspend', $recruiter->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Êtes-vous sûr de vouloir suspendre ce compte ?')">
                                                 <i class="fas fa-ban mr-1"></i> Suspendre
                                             </button>
                                         </form>
-                                    @elseif($recruiter->status == 'suspended' || $recruiter->status == 'pending')
-                                        <form action="{{ route('admin.recruiters.activate', $recruiter->id) }}" method="POST">
+                                    @elseif($recruiter->statut == 'suspended' || $recruiter->statut == 'pending')
+                                        <form action="{{ route('admin.UserManagement', $recruiter->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-sm btn-success">
@@ -285,7 +285,7 @@
                                         </form>
                                     @endif
                                     
-                                    <form action="{{ route('admin.recruiters.destroy', $recruiter->id) }}" method="POST">
+                                    <form action="{{ route('admin.UserManagement', $recruiter->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible.')">
@@ -324,7 +324,7 @@
     document.getElementById('search-button').addEventListener('click', function() {
         const searchValue = document.getElementById('search-input').value;
         
-        let url = '{{ route("admin.recruiters.index") }}?';
+        let url = '{{ route("admin.UserManagement") }}?';
         if (searchValue) {
             url += 'search=' + encodeURIComponent(searchValue);
         }
@@ -353,7 +353,7 @@
             
             const searchValue = document.getElementById('search-input').value;
             
-            let url = '{{ route("admin.recruiters.index") }}?sort=' + sort + '&direction=' + direction;
+            let url = '{{ route("admin.UserManagement") }}?sort=' + sort + '&direction=' + direction;
             
             if (searchValue) {
                 url += '&search=' + encodeURIComponent(searchValue);

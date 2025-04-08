@@ -114,6 +114,10 @@ Route::middleware(['auth'])->group(function () {
 
 // routes d'admine
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/UserManagement', [UserManagementController::class, 'index'])->name('admin.UserManagement');
+Route::put('/admin/UserManagement/{recruiter}/suspend', [UserManagementController::class, 'suspend'])->name('admin.UserManagement.suspend');
+
+
 
 
 Route::get('/', function () {

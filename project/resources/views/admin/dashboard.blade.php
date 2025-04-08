@@ -190,7 +190,7 @@
             <div class="stats-value">{{ $pendingJobs }}</div>
             <div class="stats-label">Offres en attente</div>
             @if($pendingJobs > 0)
-                <a href="{{ route('admin.jobs.approval') }}" class="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800">
+                <a href="{{ route('admin.dashboard') }}" class="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800">
                     Voir les offres en attente →
                 </a>
             @endif

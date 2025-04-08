@@ -23,7 +23,7 @@ class DashboardController extends Controller
         })->count();
         
         $totalJobs = Offre::count();
-        $pendingJobs = Offre::where('statut', 'pending')->count();
+        $pendingJobs = Offre::where('statut', 'en attente')->count();
 
         return view('admin.dashboard', compact(
             'totalUsers',
