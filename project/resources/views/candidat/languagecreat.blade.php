@@ -217,10 +217,54 @@
         color: #0369a1;
     }
     
-    .add-language-container {
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #e5e7eb;
+    .no-results {
+        text-align: center;
+        padding: 2rem;
+        color: #6b7280;
+        font-style: italic;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 1rem;
+        color: #6b7280;
+    }
+    
+    .spinner {
+        display: inline-block;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 50%;
+        border-top-color: #2557a7;
+        animation: spin 1s linear infinite;
+        margin-right: 0.5rem;
+    }
+    
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    
+    .show-more-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        text-align: center;
+        background-color: #f3f4f6;
+        border: 1px dashed #d1d5db;
+        border-radius: 0.375rem;
+        color: #4b5563;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 1rem;
+    }
+    
+    .show-more-btn:hover {
+        background-color: #e5e7eb;
+        color: #374151;
     }
 </style>
 @endsection
@@ -252,7 +296,7 @@
     </div>
     @endif
     
-    <form action="{{ route('resumes.languages.store', $resume->id) }}" method="POST">
+    <form action="{{ route('resumes.language.store', $resume->id) }}" method="POST">
         @csrf
         
         <div class="form-section">
@@ -268,71 +312,69 @@
                 <input type="text" id="search-languages" class="form-input search-input" placeholder="Rechercher des langues...">
             </div>
             
-            @if(count($languages) > 0)
-                <div id="languages-list">
-                    @foreach($languages->take(5) as $language)
-                        <div class="language-item {{ $selectedLanguages->contains('id', $language->id) ? 'selected' : '' }}" id="language-item-{{ $language->id }}">
-                            <input type="checkbox" id="language-{{ $language->id }}" name="languages[{{ $language->id }}][selected]" value="1" class="language-checkbox" {{ $selectedLanguages->contains('id', $language->id) ? 'checked' : '' }}>
-                            <div class="language-info">
-                                <div class="language-name">{{ $language->name }}</div>
-                            </div>
-                            <div class="language-level-select">
-                                <select name="languages[{{ $language->id }}][level]" class="form-select" {{ $selectedLanguages->contains('id', $language->id) ? '' : 'disabled' }}>
-                                    <option value="débutant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'débutant' ? 'selected' : '' }}>Débutant</option>
-                                    <option value="intermédiaire" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'intermédiaire' ? 'selected' : '' }}>Intermédiaire</option>
-                                    <option value="avancé" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'avancé' ? 'selected' : '' }}>Avancé</option>
-                                    <option value="courant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'courant' ? 'selected' : '' }}>Courant</option>
-                                    <option value="natif" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'natif' ? 'selected' : '' }}>Langue maternelle</option>
-                                </select>
-                            </div>
+            <div id="languages-list" class="space-y-4">
+                @foreach($languages->take(5) as $language)
+                    <div class="language-item {{ $selectedLanguages->contains('id', $language->id) ? 'selected' : '' }}" id="language-item-{{ $language->id }}">
+                        <input type="checkbox" id="language-{{ $language->id }}" name="languages[{{ $language->id }}][selected]" value="1" class="language-checkbox" {{ $selectedLanguages->contains('id', $language->id) ? 'checked' : '' }}>
+                        <div class="language-info">
+                            <div class="language-name">{{ $language->name }}</div>
+                        </div>
+                        <div class="language-level-select">
+                            <select name="languages[{{ $language->id }}][level]" class="form-select" {{ $selectedLanguages->contains('id', $language->id) ? '' : 'disabled' }}>
+                                <option value="débutant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'débutant' ? 'selected' : '' }}>Débutant</option>
+                                <option value="intermédiaire" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'intermédiaire' ? 'selected' : '' }}>Intermédiaire</option>
+                                <option value="avancé" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'avancé' ? 'selected' : '' }}>Avancé</option>
+                                <option value="courant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'courant' ? 'selected' : '' }}>Courant</option>
+                                <option value="natif" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'natif' ? 'selected' : '' }}>Langue maternelle</option>
+                            </select>
+                        </div>
+                    </div>
+                @endforeach
+                
+                @foreach($languages->skip(10) as $language)
+                    <div class="language-item {{ $selectedLanguages->contains('id', $language->id) ? 'selected' : '' }} hidden-language" id="language-item-{{ $language->id }}" style="display: none;">
+                        <input type="checkbox" id="language-{{ $language->id }}" name="languages[{{ $language->id }}][selected]" value="1" class="language-checkbox" {{ $selectedLanguages->contains('id', $language->id) ? 'checked' : '' }}>
+                        <div class="language-info">
+                            <div class="language-name">{{ $language->name }}</div>
+                        </div>
+                        <div class="language-level-select">
+                            <select name="languages[{{ $language->id }}][level]" class="form-select" {{ $selectedLanguages->contains('id', $language->id) ? '' : 'disabled' }}>
+                                <option value="débutant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'débutant' ? 'selected' : '' }}>Débutant</option>
+                                <option value="intermédiaire" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'intermédiaire' ? 'selected' : '' }}>Intermédiaire</option>
+                                <option value="avancé" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'avancé' ? 'selected' : '' }}>Avancé</option>
+                                <option value="courant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'courant' ? 'selected' : '' }}>Courant</option>
+                                <option value="natif" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'natif' ? 'selected' : '' }}>Langue maternelle</option>
+                            </select>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            @if($languages->count() > 10)
+                <button type="button" id="show-more-btn" class="show-more-btn">
+                    Afficher plus de langues
+                </button>
+            @endif
+            
+            <div id="no-results" class="no-results" style="display: none;">
+                <p>Aucune langue trouvée correspondant à votre recherche.</p>
+            </div>
+            
+            <div id="selected-languages-container" class="selected-languages" style="{{ count($selectedLanguages) > 0 ? '' : 'display: none;' }}">
+                <div class="selected-languages-title">Langues sélectionnées</div>
+                <div id="selected-languages-list" class="flex flex-wrap">
+                    @foreach($selectedLanguages as $language)
+                        <div class="selected-language-tag" data-language-id="{{ $language->id }}">
+                            {{ $language->name }}
+                            <span class="language-level-badge">{{ $language->pivot->level }}</span>
+                            <span class="remove-language" data-language-id="{{ $language->id }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     @endforeach
                 </div>
-                
-                <div id="selected-languages-container" class="selected-languages" style="{{ count($selectedLanguages) > 0 ? '' : 'display: none;' }}">
-                    <div class="selected-languages-title">Langues sélectionnées</div>
-                    <div id="selected-languages-list" class="flex flex-wrap">
-                        @foreach($selectedLanguages as $language)
-                            <div class="selected-language-tag" data-language-id="{{ $language->id }}">
-                                {{ $language->name }}
-                                <span class="language-level-badge">{{ $language->pivot->level }}</span>
-                                <span class="remove-language" data-language-id="{{ $language->id }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @else
-                <div class="text-center py-6 text-gray-500 bg-white rounded-lg shadow-sm border border-gray-200">
-                    <p>Aucune langue disponible. Vous pouvez en ajouter une nouvelle ci-dessous.</p>
-                </div>
-            @endif
-            
-            <div class="add-language-container">
-                <h3 class="text-lg font-medium text-gray-900 mb-3">Ajouter une nouvelle langue</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-group">
-                        <label for="new_language_name" class="form-label">Nom de la langue</label>
-                        <input type="text" id="new_language_name" name="new_language_name" class="form-input" value="{{ old('new_language_name') }}" placeholder="Ex: Espagnol, Allemand, Arabe...">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="new_language_level" class="form-label">Niveau</label>
-                        <select id="new_language_level" name="new_language_level" class="form-select">
-                            <option value="débutant" {{ old('new_language_level') == 'débutant' ? 'selected' : '' }}>Débutant</option>
-                            <option value="intermédiaire" {{ old('new_language_level') == 'intermédiaire' ? 'selected' : '' }}>Intermédiaire</option>
-                            <option value="avancé" {{ old('new_language_level') == 'avancé' ? 'selected' : '' }}>Avancé</option>
-                            <option value="courant" {{ old('new_language_level', 'courant') == 'courant' ? 'selected' : '' }}>Courant</option>
-                            <option value="natif" {{ old('new_language_level') == 'natif' ? 'selected' : '' }}>Langue maternelle</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <p class="form-help-text">Si la langue que vous souhaitez ajouter n'est pas dans la liste, vous pouvez l'ajouter ici.</p>
             </div>
         </div>
         
@@ -359,8 +401,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('search-languages');
         const languagesList = document.getElementById('languages-list');
+        const noResultsElement = document.getElementById('no-results');
         const selectedLanguagesContainer = document.getElementById('selected-languages-container');
         const selectedLanguagesList = document.getElementById('selected-languages-list');
+        const showMoreBtn = document.getElementById('show-more-btn');
         
         // Ensemble pour suivre les langues sélectionnées
         const selectedLanguages = new Set();
@@ -384,16 +428,48 @@
         
         // Fonction pour rechercher des langues
         function searchLanguages(query) {
-            const items = languagesList.querySelectorAll('.language-item');
+            query = query.toLowerCase();
+            let hasResults = false;
+            let allHidden = true;
             
-            items.forEach(item => {
+            // Afficher toutes les langues si la recherche est active
+            const isSearchActive = query.length > 0;
+            
+            // Parcourir toutes les langues et filtrer
+            document.querySelectorAll('.language-item').forEach(item => {
                 const languageName = item.querySelector('.language-name').textContent.toLowerCase();
-                if (languageName.includes(query.toLowerCase())) {
-                    item.style.display = '';
+                
+                if (isSearchActive) {
+                    // Mode recherche: afficher uniquement les correspondances
+                    if (languageName.includes(query)) {
+                        item.style.display = '';
+                        hasResults = true;
+                        allHidden = false;
+                    } else {
+                        item.style.display = 'none';
+                    }
                 } else {
-                    item.style.display = 'none';
+                    // Mode normal: respecter la limite initiale
+                    if (item.classList.contains('hidden-language')) {
+                        item.style.display = 'none';
+                    } else {
+                        item.style.display = '';
+                        allHidden = false;
+                    }
                 }
             });
+            
+            // Afficher ou masquer le message "Aucun résultat"
+            if (isSearchActive && !hasResults) {
+                noResultsElement.style.display = '';
+            } else {
+                noResultsElement.style.display = 'none';
+            }
+            
+            // Afficher ou masquer le bouton "Afficher plus"
+            if (showMoreBtn) {
+                showMoreBtn.style.display = isSearchActive ? 'none' : '';
+            }
         }
         
         // Fonction pour gérer la sélection d'une langue
@@ -477,8 +553,19 @@
         
         // Ajouter les écouteurs d'événements
         searchInput.addEventListener('input', function() {
-            searchLanguages(this.value);
+            searchLanguages(this.value.trim());
         });
+        
+        // Ajouter l'événement pour afficher plus de langues
+        if (showMoreBtn) {
+            showMoreBtn.addEventListener('click', function() {
+                document.querySelectorAll('.hidden-language').forEach(item => {
+                    item.style.display = '';
+                    item.classList.remove('hidden-language');
+                });
+                this.style.display = 'none';
+            });
+        }
         
         // Ajouter l'événement de sélection aux langues
         document.querySelectorAll('.language-checkbox').forEach(checkbox => {

@@ -24,7 +24,7 @@ class LanguageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Resume $resume)
     {
         $languages = Language::all();
         $selectedLanguages = $resume->languages()->withPivot('level')->get();
