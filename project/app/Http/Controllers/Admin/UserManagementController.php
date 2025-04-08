@@ -34,5 +34,11 @@ class UserManagementController extends Controller
         $recruiter->update(['statut' => 'suspended']);
         return redirect()->back()->with('success', 'Recruteur suspendu avec succès.');
     }
-    
+
+    public function activate(User $recruiter)
+    {
+        $recruiter->update(['statut' => 'active']);
+        return redirect()->back()->with('success', 'Recruteur activé avec succès.');
+    }
+
 }

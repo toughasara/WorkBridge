@@ -276,7 +276,7 @@
                                             </button>
                                         </form>
                                     @elseif($recruiter->statut == 'suspended' || $recruiter->statut == 'pending')
-                                        <form action="{{ route('admin.UserManagement', $recruiter->id) }}" method="POST">
+                                        <form action="{{ route('admin.UserManagement.activate', $recruiter->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-sm btn-success">
