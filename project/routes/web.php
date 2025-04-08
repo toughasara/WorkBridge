@@ -2,15 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Candidat\SkillController ;
-use App\Http\Controllers\LanguageController;
+
+
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\JobApprovalController;
+use App\Http\Controllers\Admin\UserManagementController;
+
 
 
 use App\Http\Controllers\Recruiter\CompanyController;
 use App\Http\Controllers\Recruiter\OffresController;
 use App\Http\Controllers\Recruiter\ProfilRecruterController;
 use App\Http\Controllers\Recruiter\SkillOffreController;
-use App\Http\Controllers\Recruiter\LanguageOffreController;
 
 
 
@@ -19,6 +22,9 @@ use App\Http\Controllers\Candidat\CvController;
 use App\Http\Controllers\Candidat\WorkbridgeCVController;
 use App\Http\Controllers\Candidat\ExperienceController;
 use App\Http\Controllers\Candidat\EducationController;
+use App\Http\Controllers\Candidat\SkillController ;
+use App\Http\Controllers\Candidat\LanguageController;
+
 
 
 
@@ -83,7 +89,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('resumes.skills', SkillController::class)->except(['index', 'show']);
 
-    Route::resource('language', LanguageController::class)->except(['index', 'show']);
+    Route::resource('resumes.language', LanguageController::class)->except(['index', 'show']);
+
 });
 
 // routes pour le profil de candidat
@@ -91,7 +98,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::resource('company', CompanyController::class);
 
-    Route::get('recruiter', [OffresController::class, 'create'])->name('recruter')->middleware(['auth', 'check.company']);
+    Route::get('recruiter', [OffresController::class, 'create'])->name('recruiter')->middleware(['auth', 'check.company']);
     
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     
@@ -102,6 +109,27 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);
     
 });
+
+
+
+
+// routes d'admine
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+    Route::get('/admin/UserManagement', [UserManagementController::class, 'index'])->name('admin.UserManagement');
+    Route::put('/admin/UserManagement/{recruiter}/suspend', [UserManagementController::class, 'suspend'])->name('admin.UserManagement.suspend');
+    Route::put('/admin/UserManagement/{recruiter}/activate', [UserManagementController::class, 'activate'])->name('admin.UserManagement.activate');
+    Route::delete('/admin/UserManagement/{recruiter}/destroy', [UserManagementController::class, 'destroy'])->name('admin.UserManagement.destroy');
+
+    Route::get('/admin/JobApproval', [JobApprovalController::class, 'index'])->name('admin.JobApproval');
+    Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
+    Route::post('/admin/JobApproval/{job}/reject', [JobApprovalController::class, 'reject'])->name('admin.JobApproval.reject');
+
+});
+
+
 
 
 Route::get('/', function () {
