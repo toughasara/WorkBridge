@@ -34,14 +34,11 @@ class JobApprovalController extends Controller
 
     public function reject(Request $request, Offre $job)
     {
-        $validated = $request->validate([
-            'reason' => 'required|string|max:500'
-        ]);
 
         $job->update([
             'statut' => 'rejected',
         ]);
 
-        return redirect()->route('admin.jobs.approval')->with('success', 'Offre rejetée avec succès.');
+        return redirect()->route('admin.JobApproval')->with('success', 'Offre rejetée avec succès.');
     }
 }

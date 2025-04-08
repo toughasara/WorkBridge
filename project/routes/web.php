@@ -119,7 +119,7 @@ Route::delete('/admin/UserManagement/{recruiter}/destroy', [UserManagementContro
 
 Route::get('/admin/JobApproval', [JobApprovalController::class, 'index'])->name('admin.JobApproval');
 Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
-// Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
+Route::post('/admin/JobApproval/{job}/reject', [JobApprovalController::class, 'reject'])->name('admin.JobApproval.reject');
 
 
 

@@ -282,15 +282,12 @@
                                             <i class="fas fa-check mr-2"></i> Approuver
                                         </button>
                                     </form>
-                                    <!-- <a href="{{ route('admin.JobApproval.approve', $job->id) }}" class="btn-approve">
-                                        <i class="fas fa-eye mr-2"></i> Approuver max
-                                    </a> -->
-                                    <!-- <button class="btn-approve" onclick="showApproveModal({{ $job->id }})">
-                                        <i class="fas fa-check mr-2"></i> Approuver
-                                    </button> -->
-                                    <button class="btn-reject" onclick="showRejectModal({{ $job->id }})">
-                                        <i class="fas fa-times mr-2"></i> Rejeter
-                                    </button>
+                                    <form action="{{ route('admin.JobApproval.reject', $job->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="btn-reject">
+                                            <i class="fas fa-times  mr-2"></i> Rejeter
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -367,43 +364,4 @@
 </div>
 @endsection
 
-@section('scripts')
-<script>
-    // Modal functions
-    function showApproveModal(jobId) {
-        const modal = document.getElementById('approve-modal');
-        const form = document.getElementById('approve-form');
-        
-        form.action = '{{ route("admin.JobApproval", "") }}/' + jobId;
-        modal.style.display = 'block';
-    }
-    
-    function showRejectModal(jobId) {
-        const modal = document.getElementById('reject-modal');
-        const form = document.getElementById('reject-form');
-        
-        form.action = '{{ route("admin.JobApproval", "") }}/' + jobId;
-        modal.style.display = 'block';
-    }
-    
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.style.display = 'none';
-    }
-    
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const approveModal = document.getElementById('approve-modal');
-        const rejectModal = document.getElementById('reject-modal');
-        
-        if (event.target === approveModal) {
-            approveModal.style.display = 'none';
-        }
-        
-        if (event.target === rejectModal) {
-            rejectModal.style.display = 'none';
-        }
-    }
-</script>
-@endsection
 
