@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Recruiter;
+namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Resume;
+use App\Models\Language;
 
-class LanguageOffreController extends Controller
+class LanguageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,9 +24,16 @@ class LanguageOffreController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Resume $resume)
     {
-        //
+        $languages = Language::all();
+        $selectedLanguages = $resume->languages()->withPivot('level')->get();
+        
+        return view('candidat.languagecreat', [
+            'resume' => $resume,
+            'languages' => $languages,
+            'selectedLanguages' => $selectedLanguages,
+        ]);
     }
 
     /**

@@ -59,7 +59,6 @@ class CompanyController extends Controller
             'website' => $request->website,
             'description' => $request->description,
         ]);
-        // dd($company);
 
 
         return redirect()->route('recruiter')->with('success', 'Informations de l\'entreprise enregistrées avec succès !');

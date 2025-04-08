@@ -75,18 +75,18 @@ class AuthController extends Controller
     {
         Auth::logout();
 
-        return redirect()->route('loginUser');
+        return redirect()->route('register');
     }
 
     protected function redirectBasedOnRole($user)
     {
         switch ($user->role_id) {
             case 1:
-                return redirect()->route('admin');
+                return redirect()->route('admin.dashboard');
             case 2:
                 return redirect()->route('profil.candidat');
             case 3:
-                return redirect()->route('recruter');
+                return redirect()->route('recruiter');
             default:
                 return redirect()->route('home');
         }
