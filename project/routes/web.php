@@ -93,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+
 // routes pour le profil de candidat
 Route::middleware(['auth'])->group(function () {
     
