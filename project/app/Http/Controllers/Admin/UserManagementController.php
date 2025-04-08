@@ -41,4 +41,9 @@ class UserManagementController extends Controller
         return redirect()->back()->with('success', 'Recruteur activé avec succès.');
     }
 
+    public function destroy(User $recruiter)
+    {
+        $recruiter->delete();
+        return redirect()->back()->with('success', 'Recruteur supprimé avec succès.');
+    }
 }

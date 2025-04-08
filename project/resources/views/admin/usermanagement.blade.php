@@ -285,7 +285,7 @@
                                         </form>
                                     @endif
                                     
-                                    <form action="{{ route('admin.UserManagement', $recruiter->id) }}" method="POST">
+                                    <form action="{{ route('admin.UserManagement.destroy', $recruiter->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible.')">
