@@ -31,5 +31,17 @@ class Offre extends Model
         return $this->belongsToMany(Language::class, 'offer_language', 'offer_id', 'language_id')
                     ->withPivot('level');
     }
+
+    public function company()
+    {
+        return $this->hasOneThrough(
+            Company::class,
+            User::class,
+            'id', // Clé étrangère sur la table users
+            'user_id', // Clé étrangère sur la table companies
+            'user_id', // Clé locale sur la table offres
+            'id' // Clé locale sur la table users
+        );
+    }
     
 }

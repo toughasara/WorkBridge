@@ -261,8 +261,8 @@
                                 <div class="text-sm text-gray-500">{{ $job->location }}</div>
                             </td>
                             <td>
-                                <div class="font-medium">{{ $job->company->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $job->user->name }}</div>
+                                <div class="font-medium">{{ $job->user->company->name ?? 'Entreprise non spécifiée' }}</div>
+                                <div class="text-sm text-gray-500">{{ $job->user->name ?? 'Utilisateur inconnu'}}</div>
                             </td>
                             <td>
                                 {{ $job->created_at->format('d/m/Y H:i') }}
@@ -273,7 +273,7 @@
                             </td>
                             <td>
                                 <div class="flex">
-                                    <a href="{{ route('admin.jobs.show', $job->id) }}" class="btn-view">
+                                    <a href="{{ route('admin.JobApproval', $job->id) }}" class="btn-view">
                                         <i class="fas fa-eye mr-2"></i> Voir
                                     </a>
                                     <button class="btn-approve" onclick="showApproveModal({{ $job->id }})">
@@ -365,7 +365,7 @@
         const modal = document.getElementById('approve-modal');
         const form = document.getElementById('approve-form');
         
-        form.action = '{{ route("admin.jobs.approve", "") }}/' + jobId;
+        form.action = '{{ route("admin.JobApproval", "") }}/' + jobId;
         modal.style.display = 'block';
     }
     
@@ -373,7 +373,7 @@
         const modal = document.getElementById('reject-modal');
         const form = document.getElementById('reject-form');
         
-        form.action = '{{ route("admin.jobs.reject", "") }}/' + jobId;
+        form.action = '{{ route("admin.JobApproval", "") }}/' + jobId;
         modal.style.display = 'block';
     }
     
