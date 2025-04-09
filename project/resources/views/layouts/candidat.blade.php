@@ -59,16 +59,16 @@
                     </a>
                     
                     <!-- Navigation Links -->
-                    <div class="hidden md:flex space-x-2">
+                    <div class="hidden md:flex space-x-6">
                         <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
                             Page d'accueil
                         </a>
-                        <a href="{{ route('interviews') }}" class="nav-link {{ request()->routeIs('interviews') ? 'active' : '' }}">
-                            Entretiens
+                        <a href="{{ route('candidatures') }}" class="nav-link {{ request()->routeIs('candidatures') ? 'active' : '' }}">
+                            Candidatures
                         </a>
-                        <a href="{{ route('saved.jobs') }}" class="nav-link {{ request()->routeIs('saved.jobs') ? 'active' : '' }}">
+                        <!-- <a href="{{ route('saved.jobs') }}" class="nav-link {{ request()->routeIs('saved.jobs') ? 'active' : '' }}">
                             Postes enregistrés
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                 

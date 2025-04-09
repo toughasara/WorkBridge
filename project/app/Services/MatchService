@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Services;
+
+class MatchService
+{
+    public function calculerScoreMatching($candidat, $offre)
+    {
+        // Logique de matching à implémenter ici
+    }
+}
