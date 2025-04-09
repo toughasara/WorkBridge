@@ -278,8 +278,7 @@
             <option value="publiée" {{ request('status') == 'publiée' ? 'selected' : '' }}>Publiée</option>
             <option value="brouillon" {{ request('status') == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
             <option value="en attente" {{ request('status') == 'en attente' ? 'selected' : '' }}>En attente</option>
-            <option value="ouvert" {{ request('status') == 'ouvert' ? 'selected' : '' }}>Ouvert</option>
-            <option value="fermé" {{ request('status') == 'fermé' ? 'selected' : '' }}>Fermé</option>
+            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
             <option value="suspendu" {{ request('status') == 'suspendu' ? 'selected' : '' }}>Suspendu</option>
         </select>
         
@@ -319,8 +318,8 @@
                                         <span class="application-message">Aucune candidature pour le moment</span>
                                     @elseif($offre->statut == 'brouillon')
                                         <span class="application-message">L'offre n'est pas encore publiée</span>
-                                    @elseif($offre->statut == 'fermé')
-                                        <span class="application-message">Offre fermée</span>
+                                    @elseif($offre->statut == 'rejected')
+                                        <span class="application-message">Votre Offre n'a pas accepter</span>
                                     @elseif($offre->statut == 'en attente')
                                         <span class="application-message">Votre offre d'emploi n'est pas encore publiée sur WorkBridge</span>
                                     @else
@@ -342,8 +341,8 @@
                                     <span class="status-badge status-draft">Brouillon</span>
                                 @elseif($offre->statut == 'en attente')
                                     <span class="status-badge status-pending">En attente</span>
-                                @elseif($offre->statut == 'fermé')
-                                    <span class="status-badge status-closed">Fermée</span>
+                                @elseif($offre->statut == 'rejected')
+                                    <span class="status-badge status-closed">Rejectede</span>
                                 @elseif($offre->statut == 'suspendu')
                                     <span class="status-badge status-suspended">Suspendue</span>
                                 @else

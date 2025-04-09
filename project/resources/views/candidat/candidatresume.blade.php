@@ -207,7 +207,7 @@
                 @foreach($resume->languages as $language)
                     <div class="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200 flex items-center">
                         <span class="text-gray-700">{{ $language->name }}</span>
-                        <form action="{{ route('resumes.language.delete', ['resume' => $resume->id, 'language' => $language->id]) }}" method="POST" class="ml-2">
+                        <form action="{{ route('resumes.language.destroy', ['resume' => $resume->id, 'language' => $language->id]) }}" method="POST" class="ml-2">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-blue-800 hover:text-blue-600" title="Supprimer">

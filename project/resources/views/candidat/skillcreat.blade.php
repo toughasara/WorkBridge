@@ -1,7 +1,6 @@
 @extends('layouts.candidat')
 
 @section('title', 'Sélectionner des compétences')
-
 @section('styles')
 <style>
     .form-group {

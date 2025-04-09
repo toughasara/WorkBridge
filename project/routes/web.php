@@ -115,7 +115,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 // routes d'admine
-Route::middleware(['auth'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -128,7 +128,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
     Route::post('/admin/JobApproval/{job}/reject', [JobApprovalController::class, 'reject'])->name('admin.JobApproval.reject');
 
-});
+// });
 
 
 
