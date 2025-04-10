@@ -18,6 +18,9 @@ class MatchService
 
     public function calculateMatchScore(Resume $resume, Offer $offer): float
     {
+        if (!$resume || !$offer) {
+            return 0;
+        }
         $skillsScore = $this->calculateSkillsScore($resume, $offer);
         $languagesScore = $this->calculateLanguagesScore($resume, $offer);
         $experienceScore = $this->calculateExperienceScore($resume, $offer);
@@ -37,16 +40,17 @@ class MatchService
     protected function calculateSkillsScore(Resume $resume, Offer $offer): float
     {
         $requiredSkills = $offer->skills->pluck('id')->toArray();
-        $userSkills = $resume->skills->pluck('id')->toArray();
         
         if (empty($requiredSkills)) {
             return 1.0;
         }
 
+        $userSkills = $resume->skills->pluck('id')->toArray();
         $matchingSkills = array_intersect($requiredSkills, $userSkills);
+
         $matchPercentage = count($matchingSkills) / count($requiredSkills);
         
-        return min(1.0, $matchPercentage);
+        return $matchPercentage;
     }
 
 
@@ -130,5 +134,6 @@ class MatchService
 
         return 0;
     }
+
 
 }

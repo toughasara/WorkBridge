@@ -239,6 +239,10 @@
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <div class="cv-file-menu" id="cvMenu">
+                    <a href="{{ route('cv.show', $cv->id) }}" class="cv-file-menu-item" target="_blank">
+                        <i class="fas fa-eye"></i>
+                        <span>Voir</span>
+                    </a>
                     <label for="replace-cv" class="cv-file-menu-item">
                         <i class="fas fa-sync-alt"></i>
                         <span>Remplacer le fichier</span>

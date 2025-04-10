@@ -63,9 +63,7 @@
                         <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
                             Page d'accueil
                         </a>
-                        <a href="{{ route('candidatures') }}" class="nav-link {{ request()->routeIs('candidatures') ? 'active' : '' }}">
-                            Candidatures
-                        </a>
+                        
                         <!-- <a href="{{ route('saved.jobs') }}" class="nav-link {{ request()->routeIs('saved.jobs') ? 'active' : '' }}">
                             Postes enregistrés
                         </a> -->

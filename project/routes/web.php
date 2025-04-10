@@ -79,7 +79,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profil/candidat/resume', [ProfilCandidatController::class, 'showResume'])->name('resume.view');
 
-    Route::resource('cv', CvController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('cv', CvController::class)->except(['index']);
 
     Route::resource('resume', WorkbridgeCVController::class)->except(['index']);
 
