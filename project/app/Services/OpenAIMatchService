@@ -73,6 +73,9 @@ class OpenAIMatchService
 
     protected function parseResponse($response): int
     {
+        if (!isset($response['choices'][0]['message']['content'])) {
+            throw new \Exception("Invalid OpenAI API response structure");
+        }
         $score = (int) trim($response->choices[0]->message->content);
         return min(100, max(0, $score));
     }
