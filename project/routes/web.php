@@ -108,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
     
     Route::resource('offres.skills', SkillController::class)->except(['index', 'show']);
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);
+
+    Route::get('/preference', [OffresController::class, 'create'])->name('preference.index');
+    // Route::get('preference.index', [OffresController::class, 'create'])->name('recruiter')->middleware(['auth', 'check.company']);
     
 });
 

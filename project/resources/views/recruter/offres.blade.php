@@ -253,6 +253,26 @@
         font-size: 0.875rem;
         font-style: italic;
     }
+    
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .settings-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        color: #4b5563;
+    }
+    
+    .settings-button:hover {
+        background-color: #f3f4f6;
+        color: #2557a7;
+    }
 </style>
 @endsection
 
@@ -350,30 +370,35 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="dropdown">
-                                    <button class="action-button" onclick="toggleDropdown('dropdown-{{ $offre->id }}')">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <div id="dropdown-{{ $offre->id }}" class="dropdown-content">
-                                        <a href="{{ route('offers.edit', $offre->id) }}">
-                                            <i class="fas fa-edit mr-2"></i> Modifier l'emploi
-                                        </a>
-                                        <a href="{{ route('offers.show', $offre->id) }}">
-                                            <i class="fas fa-eye mr-2"></i> Voir les détails
-                                        </a>
-                                        @if($offre->statut == 'brouillon')
-                                            <a href="#">
-                                                <i class="fas fa-paper-plane mr-2"></i> Publier l'offre
+                                <div class="action-buttons">
+                                    <a href="{{ route('preference.index', $offre->id) }}" class="settings-button" title="Paramètres de matching">
+                                        <i class="fas fa-cog"></i>
+                                    </a>
+                                    <div class="dropdown">
+                                        <button class="action-button" onclick="toggleDropdown('dropdown-{{ $offre->id }}')">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div id="dropdown-{{ $offre->id }}" class="dropdown-content">
+                                            <a href="{{ route('offers.edit', $offre->id) }}">
+                                                <i class="fas fa-edit mr-2"></i> Modifier l'emploi
                                             </a>
-                                        @endif
-                                        @if($offre->statut == 'publiée')
-                                            <a href="#">
-                                                <i class="fas fa-times-circle mr-2"></i> Fermer l'offre
+                                            <a href="{{ route('offers.show', $offre->id) }}">
+                                                <i class="fas fa-eye mr-2"></i> Voir les détails
                                             </a>
-                                        @endif
-                                        <a href="#" onclick="confirmDelete('{{ $offre->id }}')">
-                                            <i class="fas fa-trash-alt mr-2"></i> Supprimer
-                                        </a>
+                                            @if($offre->statut == 'brouillon')
+                                                <a href="#">
+                                                    <i class="fas fa-paper-plane mr-2"></i> Publier l'offre
+                                                </a>
+                                            @endif
+                                            @if($offre->statut == 'publiée')
+                                                <a href="#">
+                                                    <i class="fas fa-times-circle mr-2"></i> Fermer l'offre
+                                                </a>
+                                            @endif
+                                            <a href="#" onclick="confirmDelete('{{ $offre->id }}')">
+                                                <i class="fas fa-trash-alt mr-2"></i> Supprimer
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -552,4 +577,3 @@
     }
 </script>
 @endsection
-
