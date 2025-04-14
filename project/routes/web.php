@@ -14,6 +14,7 @@ use App\Http\Controllers\Recruiter\CompanyController;
 use App\Http\Controllers\Recruiter\OffresController;
 use App\Http\Controllers\Recruiter\ProfilRecruterController;
 use App\Http\Controllers\Recruiter\SkillOffreController;
+use App\Http\Controllers\Recruiter\MatchingPreferenceController;
 
 
 
@@ -93,8 +94,7 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-
-// routes pour le profil de candidat
+// routes pour le profil de recruiter
 Route::middleware(['auth'])->group(function () {
     
     Route::resource('company', CompanyController::class);
@@ -103,15 +103,16 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     
-    
     Route::resource('recruiter/offers', OffresController::class);
     
     Route::resource('offres.skills', SkillController::class)->except(['index', 'show']);
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);
 
     Route::get('/preference', [OffresController::class, 'create'])->name('preference.index');
-    // Route::get('preference.index', [OffresController::class, 'create'])->name('recruiter')->middleware(['auth', 'check.company']);
-    
+
+    // Routes pour les préférences de matching
+    Route::get('/offers/{offreId}/preferences', [MatchingPreferenceController::class, 'index'])->name('preference.index');
+    Route::post('/offers/{offreId}/preferences', [MatchingPreferenceController::class, 'storePreference'])->name('preference.store');
 });
 
 
