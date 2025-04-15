@@ -25,6 +25,7 @@ use App\Http\Controllers\Candidat\ExperienceController;
 use App\Http\Controllers\Candidat\EducationController;
 use App\Http\Controllers\Candidat\SkillController ;
 use App\Http\Controllers\Candidat\LanguageController;
+use App\Http\Controllers\Candidat\JobController;
 
 
 
@@ -70,6 +71,12 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
     Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
+    
+    //affichier les offres
+    Route::get('/candidat/offres', [App\Http\Controllers\Candidat\JobController::class, 'index'])->name('candidat.offres.index');
+
+    // affichier details d'une offres
+    Route::get('/candidat/offres/{id}', [App\Http\Controllers\Candidat\JobController::class, 'index'])->name('candidat.offres.details');
 
 });
 

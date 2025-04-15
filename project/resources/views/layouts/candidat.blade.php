@@ -60,7 +60,7 @@
                     
                     <!-- Navigation Links -->
                     <div class="hidden md:flex space-x-6">
-                        <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                        <a href="{{ route('candidat.offres.index') }}" class="nav-link {{ request()->routeIs('candidat.offres.index') ? 'active' : '' }}">
                             Page d'accueil
                         </a>
                         

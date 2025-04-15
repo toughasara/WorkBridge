@@ -1,4 +1,4 @@
-@extends('layouts.candidate')
+@extends('layouts.candidat')
 
 @section('title', 'Recherche d\'emploi')
 
@@ -94,7 +94,7 @@
     <div class="search-container py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <form action="{{ route('jobs.search') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form action="{{ route('candidat.offres.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label for="keywords" class="block text-sm font-medium text-gray-700 mb-1">Mots-clés</label>
                         <input type="text" name="keywords" id="keywords" placeholder="Titre, compétences ou entreprise" 
@@ -134,18 +134,22 @@
                     @if(count($jobs) > 0)
                         @foreach($jobs as $job)
                             <div class="job-card bg-white rounded-lg border p-4 mb-4 {{ request('job_id') == $job->id ? 'active' : '' }}"
-                                 onclick="window.location.href='{{ route('jobs.show', $job->id) }}'">
+                                onclick="window.location.href='{{ route('candidat.offres.details', $job->id) }}'">
                                 <div class="flex items-start">
                                     <div class="company-logo mr-4">
-                                        @if($job->company->logo)
-                                            <img src="{{ asset('storage/' . $job->company->logo) }}" alt="{{ $job->company->name }}">
-                                        @else
-                                            <div class="company-logo-placeholder">{{ substr($job->company->name, 0, 1) }}</div>
-                                        @endif
+                                    @if($job->company)
+                                        <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
+                                    @else
+                                        <p class="text-gray-600 text-sm">Entreprise non spécifiée</p>
+                                    @endif
                                     </div>
                                     <div class="flex-1">
                                         <h3 class="font-semibold text-gray-900">{{ $job->title }}</h3>
-                                        <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
+                                        @if($job->company)
+                                            <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
+                                        @else
+                                            <p class="text-gray-600 text-sm">Entreprise non spécifiée</p>
+                                        @endif
                                         <p class="text-gray-500 text-sm">{{ $job->location }}</p>
                                     </div>
                                     <div class="text-gray-500 text-xs">
@@ -155,7 +159,6 @@
                             </div>
                         @endforeach
                         <div class="mt-4">
-                            {{ $jobs->links() }}
                         </div>
                     @else
                         <div class="empty-state">
@@ -239,7 +242,7 @@
                                             <i class="fas fa-check mr-2"></i> Candidature envoyée
                                         </button>
                                     @else
-                                        <a href="{{ route('jobs.apply', $selectedJob->id) }}" class="btn-primary">
+                                        <a href="{{ route('candidat.offres.index', $selectedJob->id) }}" class="btn-primary">
                                             <i class="fas fa-paper-plane mr-2"></i> Postuler maintenant
                                         </a>
                                     @endif

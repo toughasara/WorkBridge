@@ -3,23 +3,23 @@
 namespace App\Services;
 
 use App\Models\Resume;
-use App\Models\Offer;
+use App\Models\Offre;
 use Illuminate\Support\Facades\Cache;
 
 class ManualMatchService
 {
-    public function calculate(int $resumeId, int $offerId, array $weights): int
+    public function calculate(int $resumeId, int $OfferId, array $weights): int
     {
-        $cacheKey = "manual_match_{$resumeId}_{$offerId}_" . md5(json_encode($weights));
+        $cacheKey = "manual_match_{$resumeId}_{$OfferId}_" . md5(json_encode($weights));
         
-        return Cache::remember($cacheKey, now()->addHours(6), function() use ($resumeId, $offerId, $weights) {
+        return Cache::remember($cacheKey, now()->addHours(6), function() use ($resumeId, $OfferId, $weights) {
             $resume = Resume::with(['skills', 'languages', 'experiences'])->findOrFail($resumeId);
-            $offer = Offer::with(['skills', 'languages'])->findOrFail($offerId);
+            $Offre = Offre::with(['skills', 'languages'])->findOrFail($OfferId);
 
-            $skillsScore = $this->calculateSkillsScore($resume, $offer);
-            $languagesScore = $this->calculateLanguagesScore($resume, $offer);
-            $experienceScore = $this->calculateExperienceScore($resume, $offer);
-            $locationScore = $this->calculateLocationScore($resume, $offer);
+            $skillsScore = $this->calculateSkillsScore($resume, $Offre);
+            $languagesScore = $this->calculateLanguagesScore($resume, $Offre);
+            $experienceScore = $this->calculateExperienceScore($resume, $Offre);
+            $locationScore = $this->calculateLocationScore($resume, $Offre);
 
             $totalScore = (
                 ($skillsScore * $weights['skills']) +
@@ -32,9 +32,9 @@ class ManualMatchService
         });
     }
 
-    protected function calculateSkillsScore(Resume $resume, Offer $offer): float
+    protected function calculateSkillsScore(Resume $resume, Offre $Offre): float
     {
-        $requiredSkills = $offer->skills->pluck('id')->toArray();
+        $requiredSkills = $Offre->skills->pluck('id')->toArray();
         
         if (empty($requiredSkills)) {
             return 1.0;
@@ -46,9 +46,9 @@ class ManualMatchService
         return count($matchingSkills) / count($requiredSkills);
     }
 
-    protected function calculateLanguagesScore(Resume $resume, Offer $offer): float
+    protected function calculateLanguagesScore(Resume $resume, Offre $Offre): float
     {
-        $requiredLanguages = $offer->languages->mapWithKeys(function($lang) {
+        $requiredLanguages = $Offre->languages->mapWithKeys(function($lang) {
             return [$lang->id => strtolower($lang->pivot->level)];
         });
 
@@ -84,9 +84,9 @@ class ManualMatchService
         return array_sum($scores) / count($scores);
     }
 
-    protected function calculateExperienceScore(Resume $resume, Offer $offer): float
+    protected function calculateExperienceScore(Resume $resume, Offre $Offre): float
     {
-        $requiredExperience = $offer->experience;
+        $requiredExperience = $Offre->experience;
         $userExperience = $resume->experiences->sum(function($exp) {
             return $exp->end_date 
                 ? $exp->start_date->diffInYears($exp->end_date)
@@ -104,20 +104,20 @@ class ManualMatchService
         return min(1.0, $userExperience / $requiredExperience);
     }
 
-    protected function calculateLocationScore(Resume $resume, Offer $offer): float
+    protected function calculateLocationScore(Resume $resume, Offre $Offre): float
     {
-        if (strtolower($resume->ville) === strtolower($offer->location)) {
+        if (strtolower($resume->ville) === strtolower($Offre->location)) {
             return 1.0;
         }
 
         if ($resume->relocation_possible) {
-            if (strtolower($resume->pays) === strtolower($offer->pays)) {
+            if (strtolower($resume->pays) === strtolower($Offre->pays)) {
                 return 0.8;
             }
             return 0.6;
         }
 
-        if (strtolower($offer->mode_travail) === 'remote') {
+        if (strtolower($Offre->mode_travail) === 'remote') {
             return 0.9;
         }
 

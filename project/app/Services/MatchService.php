@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Resume;
-use App\Models\Offer;
+use App\Models\Offre;
 use App\Models\MatchingPreference;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,7 +15,7 @@ class MatchService
         private OpenAIDataPreparer $dataPreparer
     ) {}
 
-    public function calculate(Resume $resume, Offer $offer): int
+    public function calculate(Resume $resume, Offre $offer): int
     {
         $cacheKey = "match_{$resume->id}_{$offer->id}";
         

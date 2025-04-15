@@ -28,9 +28,9 @@ class MatchingPreference extends Model
         ];
     }
 
-    public function offer()
+    public function Offre()
     {
-        return $this->belongsTo(Offer::class);
+        return $this->belongsTo(Offre::class);
     }
-    
+
 }
