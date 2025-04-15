@@ -152,6 +152,17 @@
                                         @endif
                                         <p class="text-gray-500 text-sm">{{ $job->location }}</p>
                                     </div>
+                                    @if(isset($job->match_score))
+                                        <div class="mt-3">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-xs font-medium text-indigo-700">Score de matching</span>
+                                                <span class="text-xs font-medium text-indigo-700">{{ $job->match_score }}%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: {{ $job->match_score }}%"></div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="text-gray-500 text-xs">
                                         {{ $job->created_at->diffForHumans() }}
                                     </div>

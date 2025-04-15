@@ -17,9 +17,9 @@ class MatchService
 
     public function calculate(Resume $resume, Offre $offer): int
     {
-        $cacheKey = "match_{$resume->id}_{$offer->id}";
+        // $cacheKey = "match_{$resume->id}_{$offer->id}";
         
-        return Cache::remember($cacheKey, now()->addHours(6), function() use ($resume, $offer) {
+        // return Cache::remember($cacheKey, now()->addHours(1), function() use ($resume, $offer) {
             $preferences = $offer->matchingPreference;
 
             if ($preferences && $preferences->use_ai) {
@@ -40,6 +40,6 @@ class MatchService
             ] : MatchingPreference::defaultWeights();
 
             return $this->manualService->calculate($resume->id, $offer->id, $weights);
-        });
+        // });
     }
 }
