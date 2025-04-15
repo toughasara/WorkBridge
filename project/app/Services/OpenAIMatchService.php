@@ -10,16 +10,16 @@ class OpenAIMatchService
 
     public function calculate(array $data): int
     {
-        $cacheKey = "ai_match_" . md5(json_encode($data));
+        // $cacheKey = "ai_match_" . md5(json_encode($data));
         
-        return Cache::remember($cacheKey, now()->addHours(6), function() use ($data) {
+        // return Cache::remember($cacheKey, now()->addHours(6), function() use ($data) {
             $prompt = $this->generatePrompt($data);
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.env('OPENAI_API_KEY'),
+                'Authorization' => 'Bearer '.config('services.openai.key'),
                 'Content-Type' => 'application/json'
             ])->post('https://api.openai.com/v1/chat/completions', [
-                'model' => 'gpt-4',
+                'model' => 'gpt-3.5-turbo',
                 'messages' => [
                     [
                         'role' => 'system',
@@ -34,22 +34,25 @@ class OpenAIMatchService
                 'max_tokens' => 5
             ]);
 
-            if (!$response->successful()) {
-                throw new \Exception("OpenAI API request failed: " . $response->body());
+            $responseData = $response->json();
+
+            if (!isset($responseData['choices'][0]['message']['content'])) {
+                throw new \Exception("Invalid OpenAI API response format");
             }
 
-            return $this->parseResponse($response->json());
-        });
+            return $this->parseResponse($responseData);
+        // });
     }
 
     protected function generatePrompt(array $data): string
     {
         $resume = $data['resume'];
-        $offer = $data['offer'];
+        $offer = $data['offre'];
 
         $prompt = "Calculate matching score (0-100) between candidate and job:\n\n";
         $prompt .= "Candidate Skills: " . implode(', ', $resume['skills']) . "\n";
         $prompt .= "Candidate Languages:\n";
+
         foreach ($resume['languages'] as $lang) {
             $prompt .= "- {$lang['name']} ({$lang['level']})\n";
         }
@@ -60,6 +63,7 @@ class OpenAIMatchService
         $prompt .= "Job Requirements:\n";
         $prompt .= "Required Skills: " . implode(', ', $offer['requirements']['skills']) . "\n";
         $prompt .= "Required Languages:\n";
+        
         foreach ($offer['requirements']['languages'] as $lang) {
             $prompt .= "- {$lang['name']} ({$lang['level']})\n";
         }

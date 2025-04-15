@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\Resume;
-use App\Models\Offer;
+use App\Models\Offre;
 
 class OpenAIDataPreparer
 {
-    public function prepare(Resume $resume, Offer $offer): array
+    public function prepare(Resume $resume, Offre $offre): array
     {
         return [
             'resume' => [
@@ -29,18 +29,18 @@ class OpenAIDataPreparer
                     'relocation' => $resume->relocation_possible
                 ]
             ],
-            'offer' => [
+            'offre' => [
                 'requirements' => [
-                    'skills' => $offer->skills->pluck('name')->toArray(),
-                    'languages' => $offer->languages->map(function($lang) {
+                    'skills' => $offre->skills->pluck('name')->toArray(),
+                    'languages' => $offre->languages->map(function($lang) {
                         return [
                             'name' => $lang->name,
                             'level' => $lang->pivot->level
                         ];
                     })->toArray(),
-                    'experience' => $offer->experience,
-                    'location' => $offer->location,
-                    'work_mode' => $offer->mode_travail
+                    'experience' => $offre->experience,
+                    'location' => $offre->location,
+                    'work_mode' => $offre->mode_travail
                 ]
             ]
         ];

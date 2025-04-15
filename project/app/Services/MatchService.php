@@ -25,6 +25,8 @@ class MatchService
             if ($preferences && $preferences->use_ai) {
                 try {
                     $data = $this->dataPreparer->prepare($resume, $offer);
+                    $result = $this->aiService->calculate($data);
+                    dd(hhhhhhh);
                     return $this->aiService->calculate($data);
                 } catch (\Exception $e) {
                     $weights = MatchingPreference::defaultWeights();
