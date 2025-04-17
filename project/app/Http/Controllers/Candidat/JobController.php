@@ -29,12 +29,12 @@ class JobController extends Controller
                 ->with('warning', 'Veuillez d\'abord créer votre CV pour voir les offres recommandées.');
         }
 
-        // Récupérer toutes les offres publiées
+        // recuperer toutes les offres publiées
         $allOffers = Offre::with(['company', 'skills', 'languages'])
             ->where('statut', 'publiée')
             ->get();
 
-        // filtrer les offres avec score de matching plus que 50%
+        // filter les offres avec score de matching plus que 50%
         $matchedOffers = collect();
         foreach ($allOffers as $offre) {
             $score = $this->matchService->calculate($resume, $offre);
@@ -44,19 +44,11 @@ class JobController extends Controller
             }
         }
 
-        // Classer les offres par score
+        // classer les offres par score
         $jobs = $matchedOffers->sortByDesc('match_score');
 
-        // Si une offre spécifique est demandée, la récupérer
-        $selectedJob = null;
-        if ($request->has('job_id')) {
-            $selectedJob = Offre::with(['company', 'skills', 'languages'])
-                ->where('id', $request->job_id)
-                ->where('statut', 'publiée')
-                ->first();
-        }
         
-        return view('candidat.pageaccueil', compact('jobs', 'selectedJob'));
+        return view('candidat.pageaccueil', compact('jobs'));
 
     }
 

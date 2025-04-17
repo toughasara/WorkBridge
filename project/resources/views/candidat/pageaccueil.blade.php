@@ -98,12 +98,12 @@
                     <div>
                         <label for="keywords" class="block text-sm font-medium text-gray-700 mb-1">Mots-clés</label>
                         <input type="text" name="keywords" id="keywords" placeholder="Titre, compétences ou entreprise" 
-                               class="search-input" value="{{ request('keywords') }}">
+                            class="search-input" value="{{ request('keywords') }}">
                     </div>
                     <div>
                         <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Lieu</label>
                         <input type="text" name="location" id="location" placeholder="Ville ou région" 
-                               class="search-input" value="{{ request('location') }}">
+                            class="search-input" value="{{ request('location') }}">
                     </div>
                     <div class="flex items-end">
                         <button type="submit" class="search-button w-full">
