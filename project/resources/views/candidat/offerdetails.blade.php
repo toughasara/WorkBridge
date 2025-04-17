@@ -31,10 +31,12 @@
         </div>
     </div>
 
-    <div class="flex flex-wrap gap-2 mb-6">
-        @foreach($offer->skills as $skill)
-            <span class="badge-skill">{{ $skill->name }}</span>
-        @endforeach
+    <div class="px-6 py-4">
+        <div class="flex flex-wrap gap-2 mb-6">
+            @foreach($offer->skills as $skill)
+                <span class="bg-sky-100 text-sky-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $skill->name }}</span>
+            @endforeach
+        </div>
     </div>
 
     <div class="mb-6">
@@ -51,7 +53,7 @@
             </div>
                 <form method="POST" action="{{ route('candidat.offres.postuler', $offer->id) }}">
                     @csrf
-                    <button type="submit" class="btn-primary">
+                    <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
                         <i class="fas fa-paper-plane mr-2"></i> Postuler maintenant
                     </button>
                 </form>
