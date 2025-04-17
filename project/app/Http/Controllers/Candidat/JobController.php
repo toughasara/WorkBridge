@@ -54,7 +54,7 @@ class JobController extends Controller
 
     public function getOfferDetails($id)
     {
-        try {
+        // try {
             $offer = Offre::with(['company', 'skills', 'languages'])
                 ->where('id', $id)
                 ->where('statut', 'publiée')
@@ -72,12 +72,13 @@ class JobController extends Controller
                 'html' => view('candidat.offerdetails', compact('offer'))->render()
             ]);
             
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur serveur'
-            ], 500);
-        }
+        // } catch (\Exception $e) {
+        //     \Log::error("Erreur dans getOfferDetails: " . $e->getMessage());
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Erreur serveur'
+        //     ], 500);
+        // }
     }
 
 }

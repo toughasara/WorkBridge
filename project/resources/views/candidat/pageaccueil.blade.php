@@ -220,7 +220,6 @@
     const headers = {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
     };
 
     fetch(`/candidat/offres/${jobId}`, { headers })

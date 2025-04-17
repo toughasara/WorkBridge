@@ -75,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
     
     
     // affichier details d'une offres
-    Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.ajax.details');
+    Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.details');
 
     // application
     Route::post('/candidat/offres/{id}/postuler', [JobController::class, 'postuler'])->name('candidat.offres.postuler');
