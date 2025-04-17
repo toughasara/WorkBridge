@@ -75,4 +75,13 @@ class User extends Authenticatable
         return $this->hasMany(Offre::class);
     }
 
+    public function hasAppliedToJob($offerId)
+    {
+        return $this->applications()->where('offer_id', $offerId)->exists();
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(\App\Models\Application::class);
+    }
 }

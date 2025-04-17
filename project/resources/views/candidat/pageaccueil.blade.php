@@ -5,12 +5,12 @@
 @section('styles')
 <style>
     .job-card {
-        transition: all 0.2s ease;
+        transition: all 0.2s;
         cursor: pointer;
     }
     .job-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .job-card.active {
         border-color: #4f46e5;
@@ -133,9 +133,9 @@
                 <div class="job-list">
                     @if(count($jobs) > 0)
                         @foreach($jobs as $job)
-                            <div class="job-card bg-white rounded-lg border p-4 mb-4 {{ request('job_id') == $job->id ? 'active' : '' }}"
-                                onclick="window.location.href='{{ route('candidat.offres.details', $job->id) }}'">
-                                <div class="flex items-start">
+                        <div class="job-card bg-white rounded-lg border p-4 mb-4 {{ request('job_id') == $job->id ? 'active' : '' }}" 
+                            data-job-id="{{ $job->id }}">                               
+                            <div class="flex items-start">
                                     <div class="company-logo mr-4">
                                     @if($job->company)
                                         <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
@@ -185,81 +185,9 @@
 
             <!-- Job Details -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg border h-full">
+                <div class="bg-white rounded-lg border h-full" id="job-details-container">
                     @if(isset($selectedJob))
-                        <div class="job-details p-6">
-                            <div class="flex items-start justify-between mb-6">
-                                <div class="flex items-start">
-                                    <div class="company-logo mr-4">
-                                        @if($selectedJob->company->logo)
-                                            <img src="{{ asset('storage/' . $selectedJob->company->logo) }}" alt="{{ $selectedJob->company->name }}">
-                                        @else
-                                            <div class="company-logo-placeholder">{{ substr($selectedJob->company->name, 0, 1) }}</div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <h1 class="text-2xl font-bold text-gray-900">{{ $selectedJob->title }}</h1>
-                                        <p class="text-gray-600">{{ $selectedJob->company->name }} • {{ $selectedJob->location }}</p>
-                                        <div class="flex items-center text-gray-500 text-sm mt-1">
-                                            <span class="mr-3"><i class="far fa-clock mr-1"></i> {{ $selectedJob->job_type }}</span>
-                                            <span><i class="far fa-calendar-alt mr-1"></i> Publié {{ $selectedJob->created_at->diffForHumans() }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button class="btn-secondary text-sm">
-                                        <i class="far fa-bookmark"></i>
-                                    </button>
-                                    <button class="btn-secondary text-sm">
-                                        <i class="fas fa-share-alt"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                @foreach($selectedJob->skills as $skill)
-                                    <span class="badge-skill">{{ $skill->name }}</span>
-                                @endforeach
-                            </div>
-
-                            <div class="mb-6">
-                                <h2 class="text-lg font-semibold text-gray-900 mb-3">Description du poste</h2>
-                                <div class="prose max-w-none text-gray-700">
-                                    {!! $selectedJob->description !!}
-                                </div>
-                            </div>
-
-                            <div class="mb-6">
-                                <h2 class="text-lg font-semibold text-gray-900 mb-3">Compétences requises</h2>
-                                <div class="prose max-w-none text-gray-700">
-                                    {!! $selectedJob->requirements !!}
-                                </div>
-                            </div>
-
-                            <div class="mb-6">
-                                <h2 class="text-lg font-semibold text-gray-900 mb-3">Ce que nous offrons</h2>
-                                <div class="prose max-w-none text-gray-700">
-                                    {!! $selectedJob->benefits !!}
-                                </div>
-                            </div>
-
-                            <div class="border-t pt-6 mt-6">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="text-gray-500 text-sm">Soyez parmi les premiers à postuler</p>
-                                    </div>
-                                    @if(auth()->user()->hasAppliedToJob($selectedJob->id))
-                                        <button class="btn-secondary" disabled>
-                                            <i class="fas fa-check mr-2"></i> Candidature envoyée
-                                        </button>
-                                    @else
-                                        <a href="{{ route('candidat.offres.index', $selectedJob->id) }}" class="btn-primary">
-                                            <i class="fas fa-paper-plane mr-2"></i> Postuler maintenant
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+                        @include('candidat.partials.offer_details', ['offer' => $selectedJob])
                     @else
                         <div class="empty-state">
                             <div class="empty-icon">
@@ -278,11 +206,80 @@
 
 @section('scripts')
 <script>
+    function loadOfferDetails(jobId, element) {
+    // Afficher le loader
+    const detailsContainer = document.getElementById('job-details-container');
+    detailsContainer.innerHTML = `
+        <div class="empty-state">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+            <p class="text-gray-500 mt-4">Chargement des détails...</p>
+        </div>
+    `;
+
+    // Configuration de la requête
+    const headers = {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    };
+
+    fetch(`/candidat/offres/${jobId}`, { headers })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Erreur serveur');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                detailsContainer.innerHTML = data.html;
+                // Mettre à jour l'URL
+                const url = new URL(window.location);
+                url.searchParams.set('job_id', jobId);
+                window.history.pushState({}, '', url);
+                
+                // Gestion des classes actives
+                document.querySelectorAll('.job-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                element.classList.add('active');
+            } else {
+                throw new Error(data.message || 'Réponse inattendue');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            detailsContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900">Erreur</h3>
+                    <p class="text-gray-500 mt-1">${error.message}</p>
+                </div>
+            `;
+        });
+}
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Scroll to active job card if exists
-        const activeCard = document.querySelector('.job-card.active');
-        if (activeCard) {
-            activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Gestion du clic sur les cartes
+        document.querySelectorAll('.job-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const jobId = this.getAttribute('data-job-id');
+                loadOfferDetails(jobId, this);
+            });
+        });
+
+        // Gestion du clic initial si une offre est sélectionnée
+        const initialJobId = new URLSearchParams(window.location.search).get('job_id');
+        if (initialJobId) {
+            const card = document.querySelector(`.job-card[data-job-id="${initialJobId}"]`);
+            if (card) {
+                card.classList.add('active');
+                loadOfferDetails(initialJobId, card);
+            }
         }
     });
 </script>
