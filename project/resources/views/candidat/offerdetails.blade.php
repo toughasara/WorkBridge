@@ -16,7 +16,7 @@
                     <p class="text-gray-600">Entreprise non spécifiée • {{ $offer->location }}</p>                
                 @endif
                 <div class="flex items-center text-gray-500 text-sm mt-1">
-                    <span class="mr-3"><i class="far fa-clock mr-1"></i> {{ $offer->job_type }}</span>
+                    <span class="mr-3"><i class="far fa-clock mr-1"></i> {{ $offer->mode_travail }}</span>
                     <span><i class="far fa-calendar-alt mr-1"></i> Publié {{ $offer->created_at->diffForHumans() }}</span>
                 </div>
             </div>

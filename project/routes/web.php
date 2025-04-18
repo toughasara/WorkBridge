@@ -26,7 +26,7 @@ use App\Http\Controllers\Candidat\EducationController;
 use App\Http\Controllers\Candidat\SkillController ;
 use App\Http\Controllers\Candidat\LanguageController;
 use App\Http\Controllers\Candidat\JobController;
-use App\Http\Controllers\Candidat\CandidatureController;
+use App\Http\Controllers\Candidat\CondidatureController;
 
 
 
@@ -77,11 +77,12 @@ Route::middleware(['auth'])->group(function () {
     // affichier details d'une offres
     Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.details');
 
-    // application
-    Route::post('/candidat/offres/{id}/postuler', [JobController::class, 'postuler'])->name('candidat.offres.postuler');
-
     //affichier les offres
     Route::get('/candidat/offres', [JobController::class, 'index'])->name('candidat.offres.index');
+
+    // application
+    Route::post('/candidat/offres/{id}/postuler', [CondidatureController::class, 'postuler'])->name('candidat.offres.postuler');
+
 });
 
 // routes pour le profil de candidat
@@ -97,7 +98,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('resumes.experiences', ExperienceController::class)->except(['index', 'show']);
 
-    Route::resource('education', EducationController::class)->except(['index', 'show']);
+    Route::resource('resumes.education', EducationController::class)->except(['index', 'show']);
 
     Route::resource('resumes.skills', SkillController::class)->except(['index', 'show']);
 
