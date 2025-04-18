@@ -26,7 +26,7 @@ class JobApprovalController extends Controller
         ]);
 
         $job->update([
-            'statut' => 'approved',
+            'statut' => 'publiée',
         ]);
 
         return redirect()->route('admin.JobApproval')->with('success', 'Offre approuvée avec succès.');

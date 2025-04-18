@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'WorkBridge') - Administration</title>
+    <title>@yield('title', 'WorkBridge') - Espace Employeur</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -39,7 +39,7 @@
             align-items: center;
             border-radius: 0.375rem;
             margin-bottom: 0.25rem;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.2s;
         }
         
         .nav-link:hover {
@@ -47,8 +47,8 @@
         }
         
         .nav-link.active {
-            background-color: #4f46e5;
-            color: white;
+            background-color: #f3f4f6;
+            color: #4f46e5;
             font-weight: 500;
         }
         
@@ -114,36 +114,34 @@
             <!-- Divider -->
             <div class="border-t border-gray-200 my-2"></div>
             
+            <!-- Create Button -->
+            <div class="px-4 mb-4">
+                <a href="{{ route('offers.create') }}" class="flex items-center justify-between w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition duration-150 ease-in-out">
+                    <span>Créer</span>
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            
             <!-- Navigation Links -->
             <nav class="flex-1 px-2">
-                <a href="#" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-chart-line nav-icon"></i>
-                    <span>Statistiques</span>
-                </a>
-                
-                <a href="#" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
-                    <i class="fas fa-users nav-icon"></i>
-                    <span>Gestion des utilisateurs</span>
-                </a>
-                
-                <a href="#" class="nav-link {{ request()->routeIs('admin.offers*') ? 'active' : '' }}">
+                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('offre') && !request()->routeIs('offre.create') ? 'active' : '' }}">
                     <i class="fas fa-briefcase nav-icon"></i>
-                    <span>Gestion des offres</span>
+                    <span>Emplois</span>
                 </a>
                 
-                <a href="#" class="nav-link {{ request()->routeIs('admin.companies*') ? 'active' : '' }}">
-                    <i class="fas fa-building nav-icon"></i>
-                    <span>Entreprises</span>
+                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('candidature*') ? 'active' : '' }}">
+                    <i class="fas fa-user-tie nav-icon"></i>
+                    <span>Candidatures</span>
                 </a>
                 
-                <a href="#" class="nav-link {{ request()->routeIs('admin.skills*') ? 'active' : '' }}">
-                    <i class="fas fa-tags nav-icon"></i>
-                    <span>Compétences</span>
+                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('entretien*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-check nav-icon"></i>
+                    <span>Entretiens</span>
                 </a>
                 
-                <a href="#" class="nav-link {{ request()->routeIs('admin.languages*') ? 'active' : '' }}">
-                    <i class="fas fa-language nav-icon"></i>
-                    <span>Langues</span>
+                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('analyse*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <span>Analyses</span>
                 </a>
             </nav>
             
@@ -151,7 +149,12 @@
             <div class="px-2 mb-6">
                 <div class="border-t border-gray-200 my-2"></div>
                 
-                <a href="#" class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                <a href="{{ route('recruiter.profile') }}" class="nav-link {{ request()->routeIs('recruiter.profile*') ? 'active' : '' }}">
+                    <i class="fas fa-building nav-icon"></i>
+                    <span>Profil Entreprise</span>
+                </a>
+                
+                <a href="{{ route('recruiter.profile') }}" class="nav-link {{ request()->routeIs('employer.settings*') ? 'active' : '' }}">
                     <i class="fas fa-cog nav-icon"></i>
                     <span>Paramètres</span>
                 </a>
@@ -165,22 +168,43 @@
                 <h1 class="text-xl font-semibold text-gray-800">@yield('header-title', 'Tableau de bord')</h1>
                 
                 <div class="flex items-center space-x-6">
+                    <!-- Messages -->
+                    <div class="relative">
+                        <a href="{{ route('messages') }}" class="text-gray-600 hover:text-gray-900 relative">
+                            <i class="fas fa-comment-alt text-xl"></i>
+                            <span class="badge">2</span>
+                        </a>
+                    </div>
+                    
                     <!-- Notifications -->
                     <div class="relative">
-                        <a href="#" class="text-gray-600 hover:text-gray-900 relative">
+                        <a href="{{ route('notifications') }}" class="text-gray-600 hover:text-gray-900 relative">
                             <i class="fas fa-bell text-xl"></i>
                             <span class="badge">3</span>
                         </a>
                     </div>
                     
-                    <!-- Logout Button -->
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="flex items-center text-gray-700 hover:text-gray-900">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            <span>Déconnexion</span>
+                    <!-- Profile Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                            <img src="https://ui-avatars.com/api/?name=T&background=4f46e5&color=fff" alt="Profile" class="h-8 w-8 rounded-full">
+                            <span class="font-medium">testo</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
                         </button>
-                    </form>
+                        
+                        <div x-show="open" @click.away="open = false" class="dropdown-menu">
+                            <a href="{{ route('recruiter.profile') }}" class="dropdown-item">
+                                <i class="fas fa-user-circle mr-2"></i> Profil
+                            </a>
+                            <div class="border-t border-gray-200"></div>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item w-full text-left">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </header>
             
@@ -214,4 +238,3 @@
     @yield('scripts')
 </body>
 </html>
-

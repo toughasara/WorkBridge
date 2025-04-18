@@ -43,5 +43,10 @@ class Offre extends Model
             'id' // Clé locale sur la table users
         );
     }
+
+    public function matchingPreference()
+    {
+        return $this->hasOne(MatchingPreference::class, 'offer_id');
+    }
     
 }

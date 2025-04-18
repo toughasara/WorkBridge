@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'WorkBridge') - Connect with Top Talent</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -59,16 +60,14 @@
                     </a>
                     
                     <!-- Navigation Links -->
-                    <div class="hidden md:flex space-x-2">
-                        <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <div class="hidden md:flex space-x-6">
+                        <a href="{{ route('candidat.offres.index') }}" class="nav-link {{ request()->routeIs('candidat.offres.index') ? 'active' : '' }}">
                             Page d'accueil
                         </a>
-                        <a href="{{ route('interviews') }}" class="nav-link {{ request()->routeIs('interviews') ? 'active' : '' }}">
-                            Entretiens
-                        </a>
-                        <a href="{{ route('saved.jobs') }}" class="nav-link {{ request()->routeIs('saved.jobs') ? 'active' : '' }}">
+                        
+                        <!-- <a href="{{ route('saved.jobs') }}" class="nav-link {{ request()->routeIs('saved.jobs') ? 'active' : '' }}">
                             Postes enregistrés
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                 

@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Offres
         $this->app->bind(
-            OffreRepositoryInterface::class,  // <-- Ajoutez ce binding
+            OffreRepositoryInterface::class,
             OffreRepository::class
         );
         

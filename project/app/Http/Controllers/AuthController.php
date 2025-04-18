@@ -70,12 +70,11 @@ class AuthController extends Controller
         ]);
     }
 
-    // Déconnexion
     public function logout()
     {
         Auth::logout();
 
-        return redirect()->route('register');
+        return redirect()->route('login');
     }
 
     protected function redirectBasedOnRole($user)

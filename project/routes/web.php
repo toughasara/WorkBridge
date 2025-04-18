@@ -14,6 +14,7 @@ use App\Http\Controllers\Recruiter\CompanyController;
 use App\Http\Controllers\Recruiter\OffresController;
 use App\Http\Controllers\Recruiter\ProfilRecruterController;
 use App\Http\Controllers\Recruiter\SkillOffreController;
+use App\Http\Controllers\Recruiter\MatchingPreferenceController;
 
 
 
@@ -24,6 +25,8 @@ use App\Http\Controllers\Candidat\ExperienceController;
 use App\Http\Controllers\Candidat\EducationController;
 use App\Http\Controllers\Candidat\SkillController ;
 use App\Http\Controllers\Candidat\LanguageController;
+use App\Http\Controllers\Candidat\JobController;
+use App\Http\Controllers\Candidat\CondidatureController;
 
 
 
@@ -69,6 +72,16 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
     Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
+    
+    
+    // affichier details d'une offres
+    Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.details');
+
+    //affichier les offres
+    Route::get('/candidat/offres', [JobController::class, 'index'])->name('candidat.offres.index');
+
+    // application
+    Route::post('/candidat/offres/{id}/postuler', [CondidatureController::class, 'postuler'])->name('candidat.offres.postuler');
 
 });
 
@@ -79,13 +92,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profil/candidat/resume', [ProfilCandidatController::class, 'showResume'])->name('resume.view');
 
-    Route::resource('cv', CvController::class)->only(['store', 'update', 'destroy']);
+    Route::resource('cv', CvController::class)->except(['index']);
 
     Route::resource('resume', WorkbridgeCVController::class)->except(['index']);
 
     Route::resource('resumes.experiences', ExperienceController::class)->except(['index', 'show']);
 
-    Route::resource('education', EducationController::class)->except(['index', 'show']);
+    Route::resource('resumes.education', EducationController::class)->except(['index', 'show']);
 
     Route::resource('resumes.skills', SkillController::class)->except(['index', 'show']);
 
@@ -93,7 +106,7 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-// routes pour le profil de candidat
+// routes pour le profil de recruiter
 Route::middleware(['auth'])->group(function () {
     
     Route::resource('company', CompanyController::class);
@@ -102,19 +115,23 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     
-    
     Route::resource('recruiter/offers', OffresController::class);
     
     Route::resource('offres.skills', SkillController::class)->except(['index', 'show']);
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);
-    
+
+    Route::get('/preference', [OffresController::class, 'create'])->name('preference.index');
+
+    // Routes pour les préférences de matching
+    Route::get('/offers/{offreId}/preferences', [MatchingPreferenceController::class, 'index'])->name('preference.index');
+    Route::post('/offers/{offreId}/preferences', [MatchingPreferenceController::class, 'storePreference'])->name('preference.store');
 });
 
 
 
 
 // routes d'admine
-Route::middleware(['auth'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -127,7 +144,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
     Route::post('/admin/JobApproval/{job}/reject', [JobApprovalController::class, 'reject'])->name('admin.JobApproval.reject');
 
-});
+// });
 
 
 

@@ -18,6 +18,11 @@ class Experience extends Model
         'description',
     ];
 
+    protected $casts = [
+        'start_date' => 'datetime:Y-m-d',
+        'end_date' => 'datetime:Y-m-d',
+    ];
+
     public function resume()
     {
         return $this->belongsTo(Resume::class);

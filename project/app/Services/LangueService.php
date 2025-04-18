@@ -17,7 +17,7 @@ class LangueService
             foreach ($data as $country) {
                 if (isset($country['languages'])) {
                     foreach ($country['languages'] as $code => $langue) {
-                        $langues[$code] = $langue; // Évite les doublons
+                        $langues[$code] = $langue; 
                     }
                 }
             }

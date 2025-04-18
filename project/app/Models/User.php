@@ -60,7 +60,7 @@ class User extends Authenticatable
     // Relation one-to-many avec la table `cvs`
     public function cvs()
     {
-        return $this->hasMany(Cv::class);
+        return $this->hasOne(Cv::class);
     }
 
     // Relation one-to-one avec la table `resumes`
@@ -75,4 +75,13 @@ class User extends Authenticatable
         return $this->hasMany(Offre::class);
     }
 
+    public function hasAppliedToJob($offerId)
+    {
+        return $this->applications()->where('offre_id', $offerId)->exists();
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
 }
