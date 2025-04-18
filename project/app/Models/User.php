@@ -77,11 +77,11 @@ class User extends Authenticatable
 
     public function hasAppliedToJob($offerId)
     {
-        return $this->applications()->where('offer_id', $offerId)->exists();
+        return $this->applications()->where('offre_id', $offerId)->exists();
     }
 
     public function applications()
     {
-        return $this->hasMany(\App\Models\Application::class);
+        return $this->hasMany(Application::class);
     }
 }

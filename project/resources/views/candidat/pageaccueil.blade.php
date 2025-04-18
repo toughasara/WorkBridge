@@ -206,6 +206,83 @@
 
 @section('scripts')
 <script>
+    function handleApplication(event, offerId) 
+    {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const form = event.target;
+        const button = form.querySelector('button[type="submit"]');
+        const originalButtonText = button.innerHTML;
+
+        // Afficher le loader sur le bouton
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi en cours...';
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Afficher un message de succès
+                showNotification(data.message, 'success');
+                
+                // Mettre à jour le bouton
+                button.innerHTML = '<i class="fas fa-check mr-2"></i> Candidature envoyée';
+                button.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+                button.classList.add('bg-gray-400', 'cursor-not-allowed');
+            } else {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    showNotification(data.message, 'error');
+                    button.disabled = false;
+                    button.innerHTML = originalButtonText;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification(error.message || 'Une erreur est survenue', 'error');
+            button.disabled = false;
+            button.innerHTML = originalButtonText;
+        });
+    }
+
+    // Fonction pour afficher les notifications
+    function showNotification(message, type) 
+    {
+        const notification = document.getElementById('notification-message');
+        const notificationText = document.getElementById('notification-text');
+        
+        notificationText.textContent = message;
+        notification.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
+        
+        if (type === 'success') {
+            notification.classList.add('bg-green-100', 'text-green-800');
+        } else {
+            notification.classList.add('bg-red-100', 'text-red-800');
+        }
+        
+        notification.classList.remove('hidden');
+        
+        // Cacher la notification après 5 secondes
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 5000);
+    }
     function loadOfferDetails(jobId, element) {
     // Afficher le loader
     const detailsContainer = document.getElementById('job-details-container');
@@ -234,6 +311,9 @@
         .then(data => {
             if (data.success) {
                 detailsContainer.innerHTML = data.html;
+                document.querySelectorAll('form[data-ajax-application]').forEach(form => {
+                    form.addEventListener('submit', (e) => handleApplication(e, jobId));
+                });
                 // Mettre à jour l'URL
                 const url = new URL(window.location);
                 url.searchParams.set('job_id', jobId);

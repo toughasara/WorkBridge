@@ -11,7 +11,7 @@ class Application extends Model
 
     protected $fillable = [
         'user_id',
-        'offer_id',
+        'offre_id',
         'resume_id',
         'cv_id',
         'status',
@@ -36,7 +36,7 @@ class Application extends Model
 
     public function offer()
     {
-        return $this->belongsTo(Offre::class, 'offer_id');
+        return $this->belongsTo(Offre::class, 'offre_id');
     }
 
     public function resume()

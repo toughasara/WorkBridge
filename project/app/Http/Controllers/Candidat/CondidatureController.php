@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Candidat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Offre;
-use App\Models\applications;
+use App\Models\Application;
 use App\Models\Cv;
 use App\Models\Resume;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CondidatureController extends Controller
 {
@@ -27,20 +28,23 @@ class CondidatureController extends Controller
         $resume = Resume::where('user_id', $user->id)->first();
 
         if (!$cv) {
-            return redirect()->route('cv.create')
-                ->with('warning', 'Veuillez d\'abord télécharger votre CV pour postuler.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Veuillez compléter votre profil en ajoutant votre CV avant de postuler.',
+                'redirect' => route('cv.create')
+            ]);
         }
 
         // Creer la candidature
         $application = new Application();
         $application->user_id = $user->id;
-        $application->offer_id = $id;
+        $application->offre_id = $id;
         $application->cv_id = $cv->id;
         $application->resume_id = $resume->id;
         $application->status = 'pending';
         $application->save();
 
-        $offer->increment('candidatures_count');
+        $offre->increment('candidatures_count');
 
         return response()->json([
             'success' => true,
