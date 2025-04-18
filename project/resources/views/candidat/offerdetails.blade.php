@@ -46,6 +46,20 @@
         </div>
     </div>
 
+    <div class="mb-6">
+        <div class="flex flex-wrap gap-2">
+            @if(count($offer->languages) > 0)
+                @foreach($offer->languages as $language)
+                    <span class="inline-flex items-center rounded-full bg-green-100 text-green-800 text-xs px-2 py-1">
+                        {{ $language->name }} ({{ $language->pivot->level }})
+                    </span>
+                @endforeach
+            @else
+                <p class="text-gray-500">Aucune langue spécifique requise.</p>
+            @endif
+        </div>
+    </div>
+
     <div class="border-t pt-6 mt-6">
         <div class="flex justify-between items-center">
             <div>
@@ -59,4 +73,5 @@
                 </form>
         </div>
     </div>
+    
 </div>

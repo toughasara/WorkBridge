@@ -87,7 +87,10 @@ class ManualMatchService
     protected function calculateExperienceScore(Resume $resume, Offre $Offre): float
     {
         $requiredExperience = $Offre->experience;
+      
         $userExperience = $resume->experiences->sum(function($exp) {
+
+            
             return $exp->end_date 
                 ? $exp->start_date->diffInYears($exp->end_date)
                 : $exp->start_date->diffInYears(now());
