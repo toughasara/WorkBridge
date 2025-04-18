@@ -66,7 +66,7 @@
                 <p class="text-gray-500 text-sm">Soyez parmi les premiers à postuler</p>
             </div>
             @if(auth()->user()->hasAppliedToJob($offer->id))
-                <button class="btn-secondary" disabled>
+                <button class="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out" disabled>
                     <i class="fas fa-check mr-2"></i> Candidature envoyée
                 </button>
             @else
