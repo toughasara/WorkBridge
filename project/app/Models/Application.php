@@ -13,6 +13,7 @@ class Application extends Model
         'user_id',
         'offer_id',
         'resume_id',
+        'cv_id',
         'status',
         'match_score',
         'feedback',
@@ -41,5 +42,10 @@ class Application extends Model
     public function resume()
     {
         return $this->belongsTo(Resume::class);
+    }
+
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class);
     }
 }

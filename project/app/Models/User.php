@@ -60,7 +60,7 @@ class User extends Authenticatable
     // Relation one-to-many avec la table `cvs`
     public function cvs()
     {
-        return $this->hasMany(Cv::class);
+        return $this->hasOne(Cv::class);
     }
 
     // Relation one-to-one avec la table `resumes`

@@ -18,9 +18,9 @@ class CreateApplicationsTable extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('offre_id')->constrained()->onDelete('cascade');
             $table->foreignId('resume_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('cv_id')->nullable()->constrained()->onDelete('set null');
         
             $table->string('status')->default('en attente');
-            $table->integer('match_score')->nullable();
             $table->text('feedback')->nullable();
             $table->timestamp('applied_at')->useCurrent();
         
