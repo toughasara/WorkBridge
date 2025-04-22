@@ -81,4 +81,31 @@ class JobController extends Controller
         // }
     }
 
+    public function search(Request $request)
+    {
+        $query = Offre::with(['company', 'skills', 'languages'])
+            ->where('statut', 'publiée');
+
+        // Filtrer par mots-clés
+        if ($request->has('keywords') && !empty($request->keywords)) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->keywords . '%')
+                    ->orWhereHas('company', function ($q) use ($request) {
+                        $q->where('name', 'like', '%' . $request->keywords . '%');
+                })
+                ->orWhere('location', 'like', '%' . $request->keywords . '%');
+            });
+        }
+
+        // Filtrer par lieu
+        if ($request->has('location') && !empty($request->location)) {
+            $query->where('location', 'like', '%' . $request->location . '%');
+        }
+
+        // Trier par date de publication
+        $offers = $query->orderBy('created_at', 'desc')->get();
+
+        return view('candidat.pageaccueil', compact('offers'));    
+    }
+
 }

@@ -50,7 +50,6 @@ use App\Http\Controllers\Candidat\CondidatureController;
 //     Route::get('register', [AuthController::class, 'register'])->name('register');
 // });
 
-
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('store', [AuthController::class, 'store'])->name('store');
@@ -110,6 +109,9 @@ Route::middleware(['auth', 'role:candidat'])->group(function () {
     // application
     Route::post('/candidat/offres/{id}/postuler', [CondidatureController::class, 'postuler'])->name('candidat.offres.postuler');
 
+    // search offres
+    Route::get('/candidat/offres/search', [JobController::class, 'search'])->name('candidat.offres.search');
+
 });
 
 
@@ -118,11 +120,11 @@ Route::middleware(['auth', 'role:recruteur'])->group(function () {
     
     Route::resource('company', CompanyController::class);
 
-    Route::get('recruiter', [OffresController::class, 'create'])->name('recruiter')->middleware(['auth', 'check.company']);
+    Route::get('recruiter', [OffresController::class, 'create'])->name('recruiter')->middleware(['check.company']);
     
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     
-    Route::resource('recruiter/offers', OffresController::class);
+    Route::resource('recruiter/offers', OffresController::class)->middleware(['offer.owner']);
     
     Route::resource('offres.skills', SkillController::class)->except(['index', 'show']);
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);
