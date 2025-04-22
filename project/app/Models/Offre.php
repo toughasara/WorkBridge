@@ -49,4 +49,8 @@ class Offre extends Model
         return $this->hasOne(MatchingPreference::class, 'offer_id');
     }
     
+    public function applications()
+    {
+        return $this->hasMany(Application::class, 'offre_id');
+    }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\Recruiter\OffresController;
 use App\Http\Controllers\Recruiter\ProfilRecruterController;
 use App\Http\Controllers\Recruiter\SkillOffreController;
 use App\Http\Controllers\Recruiter\MatchingPreferenceController;
+use App\Http\Controllers\Recruiter\ApplicationController;
 
 
 
@@ -125,6 +126,13 @@ Route::middleware(['auth'])->group(function () {
     // Routes pour les préférences de matching
     Route::get('/offers/{offreId}/preferences', [MatchingPreferenceController::class, 'index'])->name('preference.index');
     Route::post('/offers/{offreId}/preferences', [MatchingPreferenceController::class, 'storePreference'])->name('preference.store');
+
+    // Routes pour les candidatures
+    Route::get('/candidatures', [ApplicationController::class, 'index'])->name('candidatures.index');
+    Route::get('/candidatures/{offre}', [ApplicationController::class, 'index'])->name('candidatures.offre');
+    Route::get('/candidatures/{offre}/application/{application}', [ApplicationController::class, 'show'])->name('candidatures.show');
+    Route::put('/candidatures/{offre}/application/{application}/status', [ApplicationController::class, 'updateStatus'])->name('candidatures.update-status');
+    
 });
 
 

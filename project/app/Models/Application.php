@@ -15,7 +15,6 @@ class Application extends Model
         'resume_id',
         'cv_id',
         'status',
-        'match_score',
         'feedback',
         'applied_at',
     ];

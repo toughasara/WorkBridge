@@ -129,7 +129,7 @@
                     <span>Emplois</span>
                 </a>
                 
-                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('candidature*') ? 'active' : '' }}">
+                <a href="{{ route('candidatures.index') }}" class="nav-link {{ request()->routeIs('candidature*') ? 'active' : '' }}">
                     <i class="fas fa-user-tie nav-icon"></i>
                     <span>Candidatures</span>
                 </a>
