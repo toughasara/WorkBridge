@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="mb-6">
-        <a href="{{ route('recruter.candidatures.index', ['offre' => $offre->id]) }}" class="text-blue-600 hover:text-blue-800">
+        <a href="{{ route('candidatures.index', ['offre' => $offre->id]) }}" class="text-blue-600 hover:text-blue-800">
             <i class="fas fa-arrow-left mr-2"></i> Retour aux candidatures
         </a>
     </div>
@@ -113,44 +113,52 @@
                             <div class="mb-6">
                                 <h3 class="text-md font-medium text-gray-900 mb-3">Expériences professionnelles</h3>
                                 
-                                @forelse($resume->experiences as $experience)
-                                    <div class="mb-4 border-l-2 border-gray-200 pl-4">
-                                        <div class="flex justify-between">
-                                            <h4 class="font-medium">{{ $experience->title }}</h4>
-                                            <span class="text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($experience->start_date)->format('M Y') }} - 
-                                                {{ $experience->end_date ? \Carbon\Carbon::parse($experience->end_date)->format('M Y') : 'Présent' }}
-                                            </span>
+                                @if($resume && $resume->experiences)
+                                    @forelse($resume->experiences as $experience)
+                                        <div class="mb-4 border-l-2 border-gray-200 pl-4">
+                                            <div class="flex justify-between">
+                                                <h4 class="font-medium">{{ $experience->title }}</h4>
+                                                <span class="text-sm text-gray-500">
+                                                    {{ \Carbon\Carbon::parse($experience->start_date)->format('M Y') }} - 
+                                                    {{ $experience->end_date ? \Carbon\Carbon::parse($experience->end_date)->format('M Y') : 'Présent' }}
+                                                </span>
+                                            </div>
+                                            <p class="text-sm text-gray-600">{{ $experience->company }}</p>
+                                            <p class="text-sm text-gray-600 mt-1">{{ $experience->location }}</p>
+                                            <p class="text-sm mt-2">{{ $experience->description }}</p>
                                         </div>
-                                        <p class="text-sm text-gray-600">{{ $experience->company }}</p>
-                                        <p class="text-sm text-gray-600 mt-1">{{ $experience->location }}</p>
-                                        <p class="text-sm mt-2">{{ $experience->description }}</p>
-                                    </div>
-                                @empty
-                                    <p class="text-gray-500">Aucune expérience professionnelle renseignée</p>
-                                @endforelse
+                                    @empty
+                                        <p class="text-gray-500">Aucune expérience professionnelle renseignée</p>
+                                    @endforelse
+                                @else
+                                    <p>Le CV n'est pas disponible.</p>
+                                @endif
                             </div>
                             
                             <!-- Formations -->
                             <div class="mb-6">
                                 <h3 class="text-md font-medium text-gray-900 mb-3">Formation</h3>
                                 
-                                @forelse($resume->educations as $education)
-                                    <div class="mb-4 border-l-2 border-gray-200 pl-4">
-                                        <div class="flex justify-between">
-                                            <h4 class="font-medium">{{ $education->degree }}</h4>
-                                            <span class="text-sm text-gray-500">
-                                                {{ \Carbon\Carbon::parse($education->start_date)->format('Y') }} - 
-                                                {{ $education->end_date ? \Carbon\Carbon::parse($education->end_date)->format('Y') : 'Présent' }}
-                                            </span>
+                                @if($resume && $resume->educations)
+                                    @forelse($resume->educations as $education)
+                                        <div class="mb-4 border-l-2 border-gray-200 pl-4">
+                                            <div class="flex justify-between">
+                                                <h4 class="font-medium">{{ $education->degree }}</h4>
+                                                <span class="text-sm text-gray-500">
+                                                    {{ \Carbon\Carbon::parse($education->start_date)->format('Y') }} - 
+                                                    {{ $education->end_date ? \Carbon\Carbon::parse($education->end_date)->format('Y') : 'Présent' }}
+                                                </span>
+                                            </div>
+                                            <p class="text-sm text-gray-600">{{ $education->institution }}</p>
+                                            <p class="text-sm text-gray-600 mt-1">{{ $education->location }}</p>
+                                            <p class="text-sm mt-2">{{ $education->description }}</p>
                                         </div>
-                                        <p class="text-sm text-gray-600">{{ $education->institution }}</p>
-                                        <p class="text-sm text-gray-600 mt-1">{{ $education->location }}</p>
-                                        <p class="text-sm mt-2">{{ $education->description }}</p>
-                                    </div>
-                                @empty
-                                    <p class="text-gray-500">Aucune formation renseignée</p>
-                                @endforelse
+                                    @empty
+                                        <p class="text-gray-500">Aucune formation renseignée</p>
+                                    @endforelse
+                                @else
+                                    <p>Le CV n'est pas disponible.</p>
+                                @endif
                             </div>
                             
                             <!-- Compétences -->

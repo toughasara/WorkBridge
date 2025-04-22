@@ -57,7 +57,7 @@ class ApplicationController extends Controller
         $user = Auth::user();
         $offre = Offre::where('user_id', $user->id)->findOrFail($offerId);
         
-        $application = Application::where('offer_id', $offerId)
+        $application = Application::where('offre_id', $offerId)
             ->with(['user', 'resume'])
             ->findOrFail($applicationId);
         
@@ -75,7 +75,7 @@ class ApplicationController extends Controller
         $user = Auth::user();
         $offre = Offre::where('user_id', $user->id)->findOrFail($offerId);
         
-        $application = Application::where('offer_id', $offerId)
+        $application = Application::where('offre_id', $offerId)
             ->findOrFail($applicationId);
         
         $request->validate([
