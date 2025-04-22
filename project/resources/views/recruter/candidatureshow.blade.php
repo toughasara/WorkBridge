@@ -117,14 +117,13 @@
                                     @forelse($resume->experiences as $experience)
                                         <div class="mb-4 border-l-2 border-gray-200 pl-4">
                                             <div class="flex justify-between">
-                                                <h4 class="font-medium">{{ $experience->title }}</h4>
+                                                <h4 class="font-medium">{{ $experience->job_title }}</h4>
                                                 <span class="text-sm text-gray-500">
                                                     {{ \Carbon\Carbon::parse($experience->start_date)->format('M Y') }} - 
                                                     {{ $experience->end_date ? \Carbon\Carbon::parse($experience->end_date)->format('M Y') : 'Présent' }}
                                                 </span>
                                             </div>
-                                            <p class="text-sm text-gray-600">{{ $experience->company }}</p>
-                                            <p class="text-sm text-gray-600 mt-1">{{ $experience->location }}</p>
+                                            <p class="text-sm text-gray-600">{{ $experience->company_name }}</p>
                                             <p class="text-sm mt-2">{{ $experience->description }}</p>
                                         </div>
                                     @empty
@@ -139,19 +138,18 @@
                             <div class="mb-6">
                                 <h3 class="text-md font-medium text-gray-900 mb-3">Formation</h3>
                                 
-                                @if($resume && $resume->educations)
-                                    @forelse($resume->educations as $education)
+                                @if($resume && $resume->education)
+                                    @forelse($resume->education as $edu)
                                         <div class="mb-4 border-l-2 border-gray-200 pl-4">
                                             <div class="flex justify-between">
-                                                <h4 class="font-medium">{{ $education->degree }}</h4>
+                                                <h4 class="font-medium">{{ $edu->degree }}</h4>
                                                 <span class="text-sm text-gray-500">
-                                                    {{ \Carbon\Carbon::parse($education->start_date)->format('Y') }} - 
-                                                    {{ $education->end_date ? \Carbon\Carbon::parse($education->end_date)->format('Y') : 'Présent' }}
+                                                    {{ \Carbon\Carbon::parse($edu->start_date)->format('Y') }} - 
+                                                    {{ $edu->end_date ? \Carbon\Carbon::parse($edu->end_date)->format('Y') : 'Présent' }}
                                                 </span>
                                             </div>
-                                            <p class="text-sm text-gray-600">{{ $education->institution }}</p>
-                                            <p class="text-sm text-gray-600 mt-1">{{ $education->location }}</p>
-                                            <p class="text-sm mt-2">{{ $education->description }}</p>
+                                            <p class="text-sm text-gray-600">{{ $edu->institution_name }}</p>
+                                            <p class="text-sm text-gray-600 mt-1">{{ $edu->field_of_study }}</p>
                                         </div>
                                     @empty
                                         <p class="text-gray-500">Aucune formation renseignée</p>

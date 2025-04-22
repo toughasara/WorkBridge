@@ -45,7 +45,8 @@ class Resume extends Model
     // Relation many-to-many avec la table `languages`
     public function languages()
     {
-        return $this->belongsToMany(Language::class, 'resume_language');
+        return $this->belongsToMany(Language::class, 'resume_language')
+                    ->withPivot('level');
     }
     
 }
