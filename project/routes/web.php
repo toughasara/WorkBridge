@@ -45,6 +45,12 @@ use App\Http\Controllers\Candidat\CondidatureController;
 */
 
 // aythentification routes
+// Route::middleware(['guest.redirect'])->group(function () {
+//     Route::get('login', [AuthController::class, 'login'])->name('login');
+//     Route::get('register', [AuthController::class, 'register'])->name('register');
+// });
+
+
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('store', [AuthController::class, 'store'])->name('store');
@@ -74,20 +80,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
     Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
     
-    
-    // affichier details d'une offres
-    Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.details');
-
-    //affichier les offres
-    Route::get('/candidat/offres', [JobController::class, 'index'])->name('candidat.offres.index');
-
-    // application
-    Route::post('/candidat/offres/{id}/postuler', [CondidatureController::class, 'postuler'])->name('candidat.offres.postuler');
-
 });
 
 // routes pour le profil de candidat
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:candidat'])->group(function () {
 
     Route::get('/profil/candidat', [ProfilCandidatController::class, 'showProfil'])->name('profil.candidat');
 
@@ -104,11 +100,21 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('resumes.skills', SkillController::class)->except(['index', 'show']);
 
     Route::resource('resumes.language', LanguageController::class)->except(['index', 'show']);
+    
+    // affichier details d'une offres
+    Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.details');
+
+    //affichier les offres
+    Route::get('/candidat/offres', [JobController::class, 'index'])->name('candidat.offres.index');
+
+    // application
+    Route::post('/candidat/offres/{id}/postuler', [CondidatureController::class, 'postuler'])->name('candidat.offres.postuler');
 
 });
 
+
 // routes pour le profil de recruiter
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:recruteur'])->group(function () {
     
     Route::resource('company', CompanyController::class);
 
@@ -138,10 +144,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-
-
 // routes d'admine
-// Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','role:admin'])->group(function () {
 
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -154,9 +158,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/JobApproval/{job}/approve', [JobApprovalController::class, 'approve'])->name('admin.JobApproval.approve');
     Route::post('/admin/JobApproval/{job}/reject', [JobApprovalController::class, 'reject'])->name('admin.JobApproval.reject');
 
-// });
-
-
+});
 
 
 Route::get('/', function () {
