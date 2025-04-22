@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\Offre;
 use App\Models\Resume;
 use App\Models\Cv;
+use Illuminate\Support\Facades\Storage;
 use App\Services\MatchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +66,18 @@ class ApplicationController extends Controller
         $cv = Cv::where('user_id', $application->user_id)->first();
         
         return view('recruter/candidatureshow', compact('offre', 'application', 'resume', 'cv'));
+    }
+
+    public function showCv($id)
+    {
+        $cv = Cv::findOrFail($id);
+
+        $filePath = Storage::path($cv->filePath);
+        
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$cv->filename.'"'
+        ]);
     }
     
     /**

@@ -204,7 +204,7 @@
                         @endif
                         
                         <!-- CV téléchargé -->
-                        @if($cv && $cv->file_path)
+                        @if($cv && $cv->filePath)
                             <div class="mt-6">
                                 <h3 class="text-md font-medium text-gray-900 mb-3">CV téléchargé</h3>
                                 
@@ -218,11 +218,13 @@
                                             <p class="text-xs text-gray-500">PDF • {{ round($cv->file_size / 1024) }} Ko</p>
                                         </div>
                                     </div>
-                                    <a href="{{ asset('storage/' . $cv->file_path) }}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
-                                        <i class="fas fa-download mr-2"></i> Télécharger
+                                    <a href="{{ route('candidatures.cv.show', $cv->id) }}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
+                                        <i class="fas fa-eye mr-2"></i> Voir
                                     </a>
                                 </div>
                             </div>
+                        @else
+                            <h3 class="text-md font-medium text-gray-900 mb-3">Candidat n'a pas de CV</h3>
                         @endif
                     </div>
                     

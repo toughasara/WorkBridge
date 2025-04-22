@@ -132,6 +132,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/candidatures/{offre}', [ApplicationController::class, 'index'])->name('candidatures.offre');
     Route::get('/candidatures/{offre}/application/{application}', [ApplicationController::class, 'show'])->name('candidatures.show');
     Route::put('/candidatures/{offre}/application/{application}/status', [ApplicationController::class, 'updateStatus'])->name('candidatures.update-status');
+    // voire cv de candidat 
+    Route::get('/candidatures/cv/{id}', [ApplicationController::class, 'showCv'])->name('candidatures.cv.show');
     
 });
 
