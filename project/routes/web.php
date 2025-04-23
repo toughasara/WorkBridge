@@ -55,8 +55,12 @@ Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('store', [AuthController::class, 'store'])->name('store');
 Route::post('loginUser', [AuthController::class, 'loginUser'])->name('loginUser');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-Route::post('Dashboard', [AuthController::class, 'redirectBasedOnRole'])->name('Dashboard');
-
+Route::get('dashboard/redirect', function () {
+    return app(\App\Http\Middleware\RedirectBasedOnRole::class)->handle(
+        request(),
+        function ($request) { return abort(403); }
+    );
+})->name('dashboard.redirect')->middleware('auth');
 
 Route::post('register', [AuthController::class, 'register'])->name('admin');
 
@@ -124,7 +128,13 @@ Route::middleware(['auth', 'role:recruteur'])->group(function () {
     
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     
-    Route::resource('recruiter/offers', OffresController::class)->middleware(['offer.owner']);
+    Route::resource('recruiter/offers', OffresController::class)
+    ->only(['index', 'create', 'store']); // Pas de middleware ici
+
+    Route::middleware('offer.owner')->group(function () {
+        Route::resource('recruiter/offers', OffresController::class)
+            ->except(['index', 'create', 'store']);
+    });
     
     Route::resource('offres.skills', SkillController::class)->except(['index', 'show']);
     Route::resource('offres.language', SkillController::class)->except(['index', 'show']);

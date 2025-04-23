@@ -54,6 +54,7 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
+        'redirect.role' => \App\Http\Middleware\RedirectBasedOnRole::class,
         'offer.owner' => \App\Http\Middleware\CheckOfferOwnership::class,
         'role' => \App\Http\Middleware\CheckUserRole::class,
         'check.company' => \App\Http\Middleware\CheckCompanyInfo::class,

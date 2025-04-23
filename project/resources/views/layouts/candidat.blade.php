@@ -80,7 +80,7 @@
                         <i class="fas fa-bell"></i>
                     </a>
                     <div class="relative">
-                        <a href="{{ route('profile') }}" class="nav-icon" title="Profil">
+                        <a href="{{ route('profil.candidat') }}" class="nav-icon" title="Profil">
                             <i class="fas fa-user-circle text-xl"></i>
                         </a>
                     </div>
