@@ -129,7 +129,7 @@ Route::middleware(['auth', 'role:recruteur'])->group(function () {
     Route::get('/recruiter/profile', [ProfilRecruterController::class, 'showProfile'])->name('recruiter.profile');
     
     Route::resource('recruiter/offers', OffresController::class)
-    ->only(['index', 'create', 'store']); // Pas de middleware ici
+    ->only(['index', 'create', 'store']);
 
     Route::middleware('offer.owner')->group(function () {
         Route::resource('recruiter/offers', OffresController::class)
