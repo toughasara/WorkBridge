@@ -47,12 +47,6 @@
                             <option value="rejected">Refusé</option>
                             <option value="interview">Entretien</option>
                         </select>
-                        <select id="sort-by" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <option value="match_desc">Score de matching ↓</option>
-                            <option value="match_asc">Score de matching ↑</option>
-                            <option value="date_desc">Date (récent)</option>
-                            <option value="date_asc">Date (ancien)</option>
-                        </select>
                     </div>
                 </div>
                 
@@ -195,30 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.style.display = 'none';
                 }
             });
-        });
-    }
-    
-    // Tri des candidatures
-    const sortBy = document.getElementById('sort-by');
-    if (sortBy) {
-        sortBy.addEventListener('change', function() {
-            const value = this.value;
-            const container = document.getElementById('applications-container');
-            const rows = Array.from(container.querySelectorAll('.application-row'));
-            
-            rows.sort((a, b) => {
-                if (value === 'match_desc' || value === 'match_asc') {
-                    const scoreA = parseFloat(a.querySelector('.bg-blue-600').style.width) || 0;
-                    const scoreB = parseFloat(b.querySelector('.bg-blue-600').style.width) || 0;
-                    return value === 'match_desc' ? scoreB - scoreA : scoreA - scoreB;
-                } else {
-                    const dateA = new Date(a.querySelector('td:nth-child(2) .text-sm').textContent);
-                    const dateB = new Date(b.querySelector('td:nth-child(2) .text-sm').textContent);
-                    return value === 'date_desc' ? dateB - dateA : dateA - dateB;
-                }
-            });
-            
-            rows.forEach(row => container.appendChild(row));
         });
     }
     
