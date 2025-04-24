@@ -124,7 +124,7 @@
             
             <!-- Navigation Links -->
             <nav class="flex-1 px-2">
-                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('offre') && !request()->routeIs('offre.create') ? 'active' : '' }}">
+                <a href="{{ route('offers.index') }}" class="nav-link {{ request()->routeIs('offres') && !request()->routeIs('offre.create') ? 'active' : '' }}">
                     <i class="fas fa-briefcase nav-icon"></i>
                     <span>Emplois</span>
                 </a>
