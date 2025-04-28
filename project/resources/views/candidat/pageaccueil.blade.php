@@ -236,10 +236,7 @@
         })
         .then(data => {
             if (data.success) {
-                // Afficher un message de succès
                 showNotification(data.message, 'success');
-                
-                // Mettre à jour le bouton
                 button.innerHTML = '<i class="fas fa-check mr-2"></i> Candidature envoyée';
                 button.classList.remove('bg-blue-700', 'hover:bg-blue-800');
                 button.classList.add('bg-gray-400', 'cursor-not-allowed');
@@ -278,13 +275,13 @@
         
         notification.classList.remove('hidden');
         
-        // Cacher la notification après 5 secondes
+        // callback function pour masquer notif apret 5s
         setTimeout(() => {
             notification.classList.add('hidden');
         }, 5000);
     }
+
     function loadOfferDetails(jobId, element) {
-    // Afficher le loader
     const detailsContainer = document.getElementById('job-details-container');
     detailsContainer.innerHTML = `
         <div class="empty-state">
@@ -293,13 +290,10 @@
         </div>
     `;
 
-    // Configuration de la requête
-    const headers = {
+    fetch(`/candidat/offres/${jobId}`, { 
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
-    };
-
-    fetch(`/candidat/offres/${jobId}`, { headers })
+    })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => {
@@ -314,12 +308,12 @@
                 document.querySelectorAll('form[data-ajax-application]').forEach(form => {
                     form.addEventListener('submit', (e) => handleApplication(e, jobId));
                 });
-                // Mettre à jour l'URL
+                // mettre a jour url
                 const url = new URL(window.location);
                 url.searchParams.set('job_id', jobId);
                 window.history.pushState({}, '', url);
                 
-                // Gestion des classes actives
+                // gestion des offres active
                 document.querySelectorAll('.job-card').forEach(card => {
                     card.classList.remove('active');
                 });
@@ -343,7 +337,7 @@
 }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Gestion du clic sur les cartes
+        // gestion de clique sur une offre
         document.querySelectorAll('.job-card').forEach(card => {
             card.addEventListener('click', function(e) {
                 const jobId = this.getAttribute('data-job-id');
