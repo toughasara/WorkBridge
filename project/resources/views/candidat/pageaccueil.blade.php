@@ -282,59 +282,59 @@
     }
 
     function loadOfferDetails(jobId, element) {
-    const detailsContainer = document.getElementById('job-details-container');
-    detailsContainer.innerHTML = `
-        <div class="empty-state">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
-            <p class="text-gray-500 mt-4">Chargement des détails...</p>
-        </div>
-    `;
+        const detailsContainer = document.getElementById('job-details-container');
+        detailsContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+                <p class="text-gray-500 mt-4">Chargement des détails...</p>
+            </div>
+        `;
 
-    fetch(`/candidat/offres/${jobId}`, { 
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.message || 'Erreur serveur');
-                });
-            }
-            return response.json();
+        fetch(`/candidat/offres/${jobId}`, { 
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
         })
-        .then(data => {
-            if (data.success) {
-                detailsContainer.innerHTML = data.html;
-                document.querySelectorAll('form[data-ajax-application]').forEach(form => {
-                    form.addEventListener('submit', (e) => handleApplication(e, jobId));
-                });
-                // mettre a jour url
-                const url = new URL(window.location);
-                url.searchParams.set('job_id', jobId);
-                window.history.pushState({}, '', url);
-                
-                // gestion des offres active
-                document.querySelectorAll('.job-card').forEach(card => {
-                    card.classList.remove('active');
-                });
-                element.classList.add('active');
-            } else {
-                throw new Error(data.message || 'Réponse inattendue');
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            detailsContainer.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Erreur serveur');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    detailsContainer.innerHTML = data.html;
+                    document.querySelectorAll('form[data-ajax-application]').forEach(form => {
+                        form.addEventListener('submit', (e) => handleApplication(e, jobId));
+                    });
+                    // mettre a jour url
+                    const url = new URL(window.location);
+                    url.searchParams.set('job_id', jobId);
+                    window.history.pushState({}, '', url);
+                    
+                    // gestion des offres active
+                    document.querySelectorAll('.job-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    element.classList.add('active');
+                } else {
+                    throw new Error(data.message || 'Réponse inattendue');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                detailsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Erreur</h3>
+                        <p class="text-gray-500 mt-1">${error.message}</p>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Erreur</h3>
-                    <p class="text-gray-500 mt-1">${error.message}</p>
-                </div>
-            `;
-        });
-}
+                `;
+            });
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         // gestion de clique sur une offre

@@ -278,7 +278,7 @@
             </div>
             
             <div id="skills-list" class="skills-container">
-                @foreach($skills->take(5) as $skill)
+                @foreach($skills->take(6) as $skill)
                     <label class="skill-item {{ $selectedSkills->contains($skill->id) ? 'selected' : '' }}">                        
                         <input type="checkbox" name="skills[]" value="{{ $skill->id }}" 
                             {{ $selectedSkills->contains($skill->id) ? 'checked' : '' }} class="skill-checkbox">                        
@@ -353,8 +353,6 @@
         const skillsList = document.getElementById('skills-list');
         const loadingElement = document.getElementById('loading');
         const noResultsElement = document.getElementById('no-results');
-        const newSkillInput = document.getElementById('new-skill');
-        const addSkillBtn = document.getElementById('add-skill-btn');
         const selectedSkillsContainer = document.getElementById('selected-skills-container');
         const selectedSkillsList = document.getElementById('selected-skills-list');
         const form = document.getElementById('skills-form');
@@ -504,86 +502,6 @@
             updateSelectedSkillsDisplay();
         }
         
-        // Fonction pour ajouter une nouvelle compétence
-        function addNewSkill() {
-            const skillName = newSkillInput.value.trim();
-            
-            if (!skillName) {
-                return;
-            }
-            
-            // Simuler l'ajout d'une nouvelle compétence (à remplacer par un appel AJAX réel)
-            fetch('/api/skills', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ name: skillName })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const skill = data.skill;
-                    
-                    // Ajouter la compétence à la liste
-                    const skillItem = document.createElement('label');
-                    skillItem.className = 'skill-item selected';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'skills[]';
-                    checkbox.value = skill.id;
-                    checkbox.className = 'skill-checkbox';
-                    checkbox.checked = true;
-                    
-                    const skillNameElement = document.createElement('span');
-                    skillNameElement.className = 'skill-name';
-                    skillNameElement.textContent = skill.name;
-                    
-                    skillItem.appendChild(checkbox);
-                    skillItem.appendChild(skillNameElement);
-                    skillsList.appendChild(skillItem);
-                    
-                    // Ajouter l'événement de changement
-                    checkbox.addEventListener('change', handleSkillSelection);
-                    
-                    // Ajouter la compétence à la liste des sélectionnées
-                    selectedSkills.add(skill.id.toString());
-                    
-                    // Ajouter le tag de compétence sélectionnée
-                    const skillTag = document.createElement('div');
-                    skillTag.className = 'selected-skill-tag';
-                    skillTag.dataset.skillId = skill.id;
-                    skillTag.innerHTML = `
-                        ${skill.name}
-                        <span class="remove-skill" data-skill-id="${skill.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                        </span>
-                    `;
-                    selectedSkillsList.appendChild(skillTag);
-                    
-                    // Ajouter l'événement de suppression
-                    skillTag.querySelector('.remove-skill').addEventListener('click', handleRemoveSkill);
-                    
-                    // Mettre à jour l'affichage
-                    updateSelectedSkillsDisplay();
-                    
-                    // Réinitialiser le champ de saisie
-                    newSkillInput.value = '';
-                    
-                    // Afficher la liste des compétences si elle était cachée
-                    noResultsElement.style.display = 'none';
-                    skillsList.style.display = 'grid';
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de l\'ajout d\'une compétence:', error);
-            });
-        }
-        
         // Ajouter les écouteurs d'événements
         searchInput.addEventListener('input', function() {
             const query = this.value.trim();
@@ -606,18 +524,7 @@
         document.querySelectorAll('.remove-skill').forEach(button => {
             button.addEventListener('click', handleRemoveSkill);
         });
-        
-        // Ajouter l'événement pour ajouter une nouvelle compétence
-        addSkillBtn.addEventListener('click', addNewSkill);
-        
-        // Ajouter l'événement pour ajouter une nouvelle compétence en appuyant sur Entrée
-        newSkillInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                addNewSkill();
-            }
-        });
-        
+                
         // Mettre à jour l'affichage initial
         updateSelectedSkillsDisplay();
     });
