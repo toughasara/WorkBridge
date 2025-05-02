@@ -210,12 +210,6 @@
         font-style: italic;
     }
     
-    .loading {
-        text-align: center;
-        padding: 1rem;
-        color: #6b7280;
-    }
-    
     .spinner {
         display: inline-block;
         width: 1.5rem;
@@ -287,11 +281,6 @@
                 @endforeach
             </div>
             
-            <div id="loading" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <span>Chargement des compétences...</span>
-            </div>
-            
             <div id="no-results" class="no-results" style="display: none;">
                 <p>Aucune compétence trouvée. Vous pouvez ajouter une nouvelle compétence ci-dessous.</p>
             </div>
@@ -351,16 +340,15 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('search-skills');
         const skillsList = document.getElementById('skills-list');
-        const loadingElement = document.getElementById('loading');
         const noResultsElement = document.getElementById('no-results');
         const selectedSkillsContainer = document.getElementById('selected-skills-container');
         const selectedSkillsList = document.getElementById('selected-skills-list');
         const form = document.getElementById('skills-form');
         
-        // Ensemble pour suivre les compétences sélectionnées
+        // collection des competences selectionnees
         const selectedSkills = new Set();
         
-        // Initialiser les compétences déjà sélectionnées
+        // Initialiser les competences deja selectionner
         document.querySelectorAll('.skill-item.selected').forEach(item => {
             const checkbox = item.querySelector('.skill-checkbox');
             if (checkbox && checkbox.checked) {
@@ -368,7 +356,7 @@
             }
         });
         
-        // Fonction pour mettre à jour l'affichage des compétences sélectionnées
+        // affiche ou masquer le contenu des competences selectionner
         function updateSelectedSkillsDisplay() {
             if (selectedSkills.size > 0) {
                 selectedSkillsContainer.style.display = '';
@@ -377,66 +365,66 @@
             }
         }
         
-        // Fonction pour rechercher des compétences
+        // Fonction pour rechercher des competences
         function searchSkills(query) {
-            loadingElement.style.display = '';
-            skillsList.style.display = 'none';
-            noResultsElement.style.display = 'none';
+            const searchTerm = query.toLowerCase().trim();
+            const allSkills = @json($skills);
             
-            // Simuler un délai de chargement (à remplacer par un appel AJAX réel)
-            setTimeout(() => {
-                fetch(`/api/skills/search?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        loadingElement.style.display = 'none';
-                        
-                        if (data.skills.length === 0) {
-                            noResultsElement.style.display = '';
-                            skillsList.style.display = 'none';
-                        } else {
-                            noResultsElement.style.display = 'none';
-                            skillsList.style.display = 'grid';
-                            
-                            // Effacer la liste actuelle
-                            skillsList.innerHTML = '';
-                            
-                            // Ajouter les compétences trouvées
-                            data.skills.forEach(skill => {
-                                const isSelected = selectedSkills.has(skill.id.toString());
-                                
-                                const skillItem = document.createElement('label');
-                                skillItem.className = `skill-item ${isSelected ? 'selected' : ''}`;
-                                
-                                const checkbox = document.createElement('input');
-                                checkbox.type = 'checkbox';
-                                checkbox.name = 'skills[]';
-                                checkbox.value = skill.id;
-                                checkbox.className = 'skill-checkbox';
-                                checkbox.checked = isSelected;
-                                
-                                const skillName = document.createElement('span');
-                                skillName.className = 'skill-name';
-                                skillName.textContent = skill.name;
-                                
-                                skillItem.appendChild(checkbox);
-                                skillItem.appendChild(skillName);
-                                skillsList.appendChild(skillItem);
-                                
-                                // Ajouter l'événement de changement
-                                checkbox.addEventListener('change', handleSkillSelection);
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la recherche de compétences:', error);
-                        loadingElement.style.display = 'none';
-                        noResultsElement.style.display = '';
-                        skillsList.style.display = 'none';
-                    });
-            }, 500);
+            noResultsElement.style.display = 'none';
+
+            // si la recherche est vide, affichier les competences initiales
+            if (searchTerm === '') {
+                const initialSkills = allSkills.slice(0, 6);
+                renderSkills(initialSkills);
+                return;
+            }
+
+            // filtrer les competences
+            const filteredSkills = allSkills.filter(skill => 
+                skill.name.toLowerCase().includes(searchTerm)
+            );
+
+            // afficher le resultat
+            if (filteredSkills.length === 0) {
+                noResultsElement.style.display = '';
+                skillsList.style.display = 'none';
+            } else {
+                const Skillsfiltered = filteredSkills.slice(0, 6);
+                renderSkills(Skillsfiltered);
+            }
+        }
+
+        // fonction pour affichier competences rechercher 
+        function renderSkills(skillsToRender) {
+            skillsList.innerHTML = '';
+            skillsList.style.display = 'grid';
+
+            skillsToRender.forEach(skill => {
+                const isSelected = selectedSkills.has(skill.id.toString());
+                
+                const skillItem = document.createElement('label');
+                skillItem.className = `skill-item ${isSelected ? 'selected' : ''}`;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'skills[]';
+                checkbox.value = skill.id;
+                checkbox.className = 'skill-checkbox';
+                checkbox.checked = isSelected;
+                
+                const skillName = document.createElement('span');
+                skillName.className = 'skill-name';
+                skillName.textContent = skill.name;
+                
+                skillItem.appendChild(checkbox);
+                skillItem.appendChild(skillName);
+                skillsList.appendChild(skillItem);
+                
+                checkbox.addEventListener('change', handleSkillSelection);
+            });
         }
         
-        // Fonction pour gérer la sélection d'une compétence
+        // Fonction pour gerer le selection d'une competence
         function handleSkillSelection(event) {
             const checkbox = event.target;
             const skillItem = checkbox.closest('.skill-item');
@@ -444,7 +432,7 @@
             const skillName = skillItem.querySelector('.skill-name').textContent;
             
             if (checkbox.checked) {
-                // Ajouter la compétence à la liste des sélectionnées
+                // ajouter la competence a la liste des selectionnes
                 selectedSkills.add(skillId);
                 skillItem.classList.add('selected');
                 
@@ -462,10 +450,10 @@
                 `;
                 selectedSkillsList.appendChild(skillTag);
                 
-                // Ajouter l'événement de suppression
+                // ajouter l'evenment de supprition
                 skillTag.querySelector('.remove-skill').addEventListener('click', handleRemoveSkill);
             } else {
-                // Supprimer la compétence de la liste des sélectionnées
+                // Supprimer la competence de la liste des selectionnes
                 selectedSkills.delete(skillId);
                 skillItem.classList.remove('selected');
                 
@@ -483,17 +471,17 @@
         function handleRemoveSkill(event) {
             const skillId = event.currentTarget.dataset.skillId;
             
-            // Supprimer la compétence de la liste des sélectionnées
+            // Supprimer la competence de la liste des selectionnes
             selectedSkills.delete(skillId);
             
-            // Décocher la case à cocher correspondante
+            // Decocher la checkbox correspondante
             const checkbox = document.querySelector(`.skill-checkbox[value="${skillId}"]`);
             if (checkbox) {
                 checkbox.checked = false;
                 checkbox.closest('.skill-item').classList.remove('selected');
             }
             
-            // Supprimer le tag de compétence
+            // Supprimer le tag de competence
             const skillTag = event.currentTarget.closest('.selected-skill-tag');
             if (skillTag) {
                 skillTag.remove();
@@ -502,30 +490,27 @@
             updateSelectedSkillsDisplay();
         }
         
-        // Ajouter les écouteurs d'événements
+        // ajouter les ecoteurs d'event
         searchInput.addEventListener('input', function() {
             const query = this.value.trim();
             if (query.length >= 2) {
                 searchSkills(query);
             } else if (query.length === 0) {
-                // Réinitialiser la recherche
-                loadingElement.style.display = 'none';
-                noResultsElement.style.display = 'none';
-                skillsList.style.display = 'grid';
+                searchSkills('');
             }
         });
         
-        // Ajouter l'événement de sélection aux compétences initiales
+        // ajouter event de selection aux competences affichier
         document.querySelectorAll('.skill-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', handleSkillSelection);
         });
         
-        // Ajouter l'événement de suppression aux compétences sélectionnées initiales
+        // ajouter event de suppression aux competences selectionner
         document.querySelectorAll('.remove-skill').forEach(button => {
             button.addEventListener('click', handleRemoveSkill);
         });
-                
-        // Mettre à jour l'affichage initial
+        
+        // mettre a jour l'affichage initiale
         updateSelectedSkillsDisplay();
     });
 </script>
