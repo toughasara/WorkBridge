@@ -436,7 +436,7 @@
                 selectedSkills.add(skillId);
                 skillItem.classList.add('selected');
                 
-                // Ajouter le tag de compétence sélectionnée
+                // Ajouter le tag de competence selectionnes
                 const skillTag = document.createElement('div');
                 skillTag.className = 'selected-skill-tag';
                 skillTag.dataset.skillId = skillId;
@@ -450,7 +450,7 @@
                 `;
                 selectedSkillsList.appendChild(skillTag);
                 
-                // ajouter l'evenment de supprition
+                // ajouter event de supprition
                 skillTag.querySelector('.remove-skill').addEventListener('click', handleRemoveSkill);
             } else {
                 // Supprimer la competence de la liste des selectionnes
