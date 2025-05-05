@@ -3,6 +3,7 @@
 @section('title', 'Sélectionner des compétences')
 @section('styles')
 <style>
+    /* Les styles CSS restent inchangés */
     .form-group {
         margin-bottom: 1.5rem;
         position: relative;
@@ -272,13 +273,7 @@
             </div>
             
             <div id="skills-list" class="skills-container">
-                @foreach($skills->take(6) as $skill)
-                    <label class="skill-item {{ $selectedSkills->contains($skill->id) ? 'selected' : '' }}">                        
-                        <input type="checkbox" name="skills[]" value="{{ $skill->id }}" 
-                            {{ $selectedSkills->contains($skill->id) ? 'checked' : '' }} class="skill-checkbox">                        
-                        <span class="skill-name">{{ $skill->name }}</span>
-                    </label>
-                @endforeach
+                {{-- Cette section sera remplie par JavaScript lors du chargement de la page --}}
             </div>
             
             <div id="no-results" class="no-results" style="display: none;">
@@ -345,61 +340,113 @@
         const selectedSkillsList = document.getElementById('selected-skills-list');
         const form = document.getElementById('skills-form');
         
-        // collection des competences selectionnees
-        const selectedSkills = new Set();
+        // Récupérer toutes les compétences et les compétences sélectionnées
+        const allSkills = @json($skills);
+        const initialSelectedSkillIds = @json($selectedSkills->pluck('id')->toArray());
         
-        // Initialiser les competences deja selectionner
-        document.querySelectorAll('.skill-item.selected').forEach(item => {
-            const checkbox = item.querySelector('.skill-checkbox');
-            if (checkbox && checkbox.checked) {
-                selectedSkills.add(checkbox.value);
-            }
-        });
+        // Collection des compétences sélectionnées (Set pour éviter les doublons)
+        const selectedSkills = new Set(initialSelectedSkillIds.map(id => id.toString()));
         
-        // affiche ou masquer le contenu des competences selectionner
+        // Créer des champs cachés pour toutes les compétences sélectionnées
+        function updateHiddenFields() {
+            // Supprimer les anciens champs cachés
+            document.querySelectorAll('input[name="hidden_skills[]"]').forEach(field => field.remove());
+            
+            // Ajouter de nouveaux champs cachés pour chaque compétence sélectionnée
+            selectedSkills.forEach(skillId => {
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = 'skills[]';
+                hiddenField.value = skillId;
+                form.appendChild(hiddenField);
+            });
+        }
+        
+        // Afficher ou masquer le conteneur des compétences sélectionnées
         function updateSelectedSkillsDisplay() {
             if (selectedSkills.size > 0) {
                 selectedSkillsContainer.style.display = '';
             } else {
                 selectedSkillsContainer.style.display = 'none';
             }
+            
+            // Mettre à jour les champs cachés
+            updateHiddenFields();
         }
         
-        // Fonction pour rechercher des competences
+        // Fonction pour rechercher des compétences
         function searchSkills(query) {
             const searchTerm = query.toLowerCase().trim();
-            const allSkills = @json($skills);
             
             noResultsElement.style.display = 'none';
 
-            // si la recherche est vide, affichier les competences initiales
+            // Si la recherche est vide, afficher les compétences initiales
             if (searchTerm === '') {
-                const initialSkills = allSkills.slice(0, 6);
-                renderSkills(initialSkills);
+                renderInitialSkills();
                 return;
             }
 
-            // filtrer les competences
+            // Filtrer les compétences
             const filteredSkills = allSkills.filter(skill => 
                 skill.name.toLowerCase().includes(searchTerm)
             );
 
-            // afficher le resultat
+            // Afficher le résultat
             if (filteredSkills.length === 0) {
                 noResultsElement.style.display = '';
                 skillsList.style.display = 'none';
             } else {
-                const Skillsfiltered = filteredSkills.slice(0, 6);
-                renderSkills(Skillsfiltered);
+                renderSkills(filteredSkills);
             }
         }
 
-        // fonction pour affichier competences rechercher 
+        // Fonction pour afficher les compétences initiales
+        function renderInitialSkills() {
+            // Créer un tableau pour stocker toutes les compétences à afficher
+            let skillsToDisplay = [];
+            
+            // 1. D'abord, trouver toutes les compétences sélectionnées
+            const selectedSkillsArray = allSkills.filter(skill => 
+                selectedSkills.has(skill.id.toString())
+            );
+            
+            // 2. Ajouter les compétences sélectionnées à notre tableau d'affichage
+            skillsToDisplay = [...selectedSkillsArray];
+            
+            // 3. Si nous avons moins de 6 compétences sélectionnées, ajouter d'autres compétences non sélectionnées
+            if (selectedSkillsArray.length < 6) {
+                const nonSelectedSkills = allSkills.filter(skill => 
+                    !selectedSkills.has(skill.id.toString())
+                );
+                
+                // Ajouter suffisamment de compétences non sélectionnées pour atteindre 6 (ou moins si pas assez disponibles)
+                const remainingSlots = 6 - selectedSkillsArray.length;
+                const additionalSkills = nonSelectedSkills.slice(0, remainingSlots);
+                
+                skillsToDisplay = [...skillsToDisplay, ...additionalSkills];
+            }
+            
+            // Afficher les compétences
+            renderSkills(skillsToDisplay);
+        }
+
+        // Fonction pour afficher les compétences
         function renderSkills(skillsToRender) {
             skillsList.innerHTML = '';
             skillsList.style.display = 'grid';
-
-            skillsToRender.forEach(skill => {
+            
+            // Trier les compétences pour que les sélectionnées apparaissent en premier
+            const sortedSkills = [...skillsToRender].sort((a, b) => {
+                const aSelected = selectedSkills.has(a.id.toString());
+                const bSelected = selectedSkills.has(b.id.toString());
+                
+                if (aSelected && !bSelected) return -1;
+                if (!aSelected && bSelected) return 1;
+                return 0;
+            });
+            
+            // Afficher toutes les compétences dans notre tableau
+            sortedSkills.forEach(skill => {
                 const isSelected = selectedSkills.has(skill.id.toString());
                 
                 const skillItem = document.createElement('label');
@@ -424,7 +471,7 @@
             });
         }
         
-        // Fonction pour gerer le selection d'une competence
+        // Fonction pour gérer la sélection d'une compétence
         function handleSkillSelection(event) {
             const checkbox = event.target;
             const skillItem = checkbox.closest('.skill-item');
@@ -432,11 +479,11 @@
             const skillName = skillItem.querySelector('.skill-name').textContent;
             
             if (checkbox.checked) {
-                // ajouter la competence a la liste des selectionnes
+                // Ajouter la compétence à la liste des sélectionnées
                 selectedSkills.add(skillId);
                 skillItem.classList.add('selected');
                 
-                // Ajouter le tag de competence selectionnes
+                // Ajouter le tag de compétence sélectionnée
                 const skillTag = document.createElement('div');
                 skillTag.className = 'selected-skill-tag';
                 skillTag.dataset.skillId = skillId;
@@ -450,10 +497,10 @@
                 `;
                 selectedSkillsList.appendChild(skillTag);
                 
-                // ajouter event de supprition
+                // Ajouter event de suppression
                 skillTag.querySelector('.remove-skill').addEventListener('click', handleRemoveSkill);
             } else {
-                // Supprimer la competence de la liste des selectionnes
+                // Supprimer la compétence de la liste des sélectionnées
                 selectedSkills.delete(skillId);
                 skillItem.classList.remove('selected');
                 
@@ -471,48 +518,54 @@
         function handleRemoveSkill(event) {
             const skillId = event.currentTarget.dataset.skillId;
             
-            // Supprimer la competence de la liste des selectionnes
+            // Supprimer la compétence de la liste des sélectionnées
             selectedSkills.delete(skillId);
             
-            // Decocher la checkbox correspondante
+            // Décocher la checkbox correspondante
             const checkbox = document.querySelector(`.skill-checkbox[value="${skillId}"]`);
             if (checkbox) {
                 checkbox.checked = false;
                 checkbox.closest('.skill-item').classList.remove('selected');
             }
             
-            // Supprimer le tag de competence
+            // Supprimer le tag de compétence
             const skillTag = event.currentTarget.closest('.selected-skill-tag');
             if (skillTag) {
                 skillTag.remove();
             }
             
             updateSelectedSkillsDisplay();
+            
+            // Rafraîchir l'affichage des compétences pour maintenir la règle des 6 compétences
+            renderInitialSkills();
         }
         
-        // ajouter les ecoteurs d'event
+        // Ajouter les écouteurs d'événements
         searchInput.addEventListener('input', function() {
             const query = this.value.trim();
             if (query.length >= 2) {
                 searchSkills(query);
             } else if (query.length === 0) {
-                searchSkills('');
+                renderInitialSkills();
             }
         });
         
-        // ajouter event de selection aux competences affichier
-        document.querySelectorAll('.skill-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', handleSkillSelection);
-        });
-        
-        // ajouter event de suppression aux competences selectionner
+        // Ajouter event de suppression aux compétences sélectionnées
         document.querySelectorAll('.remove-skill').forEach(button => {
             button.addEventListener('click', handleRemoveSkill);
         });
         
-        // mettre a jour l'affichage initiale
+        // Intercepter la soumission du formulaire pour s'assurer que toutes les compétences sont incluses
+        form.addEventListener('submit', function(event) {
+            // Mettre à jour les champs cachés une dernière fois
+            updateHiddenFields();
+        });
+        
+        // Initialiser l'affichage des compétences
+        renderInitialSkills();
+        
+        // Mettre à jour l'affichage initial
         updateSelectedSkillsDisplay();
     });
 </script>
 @endsection
-
