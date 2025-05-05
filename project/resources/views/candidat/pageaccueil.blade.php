@@ -85,6 +85,13 @@
         color: #d1d5db;
         margin-bottom: 1rem;
     }
+    .search-loader {
+        display: none;
+        margin-left: 0.5rem;
+    }
+    .search-loader.active {
+        display: inline-block;
+    }
 </style>
 @endsection
 
@@ -94,7 +101,7 @@
     <div class="search-container py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <form action="{{ route('candidat.offres.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form id="search-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label for="keywords" class="block text-sm font-medium text-gray-700 mb-1">Mots-clés</label>
                         <input type="text" name="keywords" id="keywords" placeholder="Titre, compétences ou entreprise" 
@@ -106,8 +113,14 @@
                             class="search-input" value="{{ request('location') }}">
                     </div>
                     <div class="flex items-end">
-                        <button type="submit" class="search-button w-full">
+                        <button type="submit" class="search-button w-full flex items-center justify-center">
                             <i class="fas fa-search mr-2"></i> Rechercher
+                            <div class="search-loader">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
                         </button>
                     </div>
                 </form>
@@ -118,9 +131,9 @@
     <!-- Jobs Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-900">
-                @if(isset($searchResults))
-                    {{ $jobs->total() }} offres trouvées
+            <h2 class="text-xl font-semibold text-gray-900" id="search-results-count">
+                @if(isset($jobs) && $jobs->count() > 0)
+                    {{ $jobs->count() }} offres trouvées
                 @else
                     Offres d'emploi recommandées
                 @endif
@@ -130,47 +143,9 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Job Listings -->
             <div class="lg:col-span-1">
-                <div class="job-list">
-                    @if(count($jobs) > 0)
-                        @foreach($jobs as $job)
-                        <div class="job-card bg-white rounded-lg border p-4 mb-4 {{ request('job_id') == $job->id ? 'active' : '' }}" 
-                            data-job-id="{{ $job->id }}">                               
-                            <div class="flex items-start">
-                                    <div class="company-logo mr-4">
-                                    @if($job->company)
-                                        <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
-                                    @else
-                                        <p class="text-gray-600 text-sm">Entreprise non spécifiée</p>
-                                    @endif
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-900">{{ $job->title }}</h3>
-                                        @if($job->company)
-                                            <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
-                                        @else
-                                            <p class="text-gray-600 text-sm">Entreprise non spécifiée</p>
-                                        @endif
-                                        <p class="text-gray-500 text-sm">{{ $job->location }}</p>
-                                    </div>
-                                    @if(isset($job->match_score))
-                                        <div class="mt-3">
-                                            <div class="flex justify-between items-center mb-1">
-                                                <span class="text-xs font-medium text-indigo-700">Score de matching</span>
-                                                <span class="text-xs font-medium text-indigo-700">{{ $job->match_score }}%</span>
-                                            </div>
-                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: {{ $job->match_score }}%"></div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    <div class="text-gray-500 text-xs">
-                                        {{ $job->created_at->diffForHumans() }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                        <div class="mt-4">
-                        </div>
+                <div class="job-list" id="job-list-container">
+                    @if(isset($jobs) && $jobs->count() > 0)
+                        @include('candidat.partials.job_list', ['jobs' => $jobs])
                     @else
                         <div class="empty-state">
                             <div class="empty-icon">
@@ -264,6 +239,11 @@
         const notification = document.getElementById('notification-message');
         const notificationText = document.getElementById('notification-text');
         
+        if (!notification || !notificationText) {
+            alert(message);
+            return;
+        }
+        
         notificationText.textContent = message;
         notification.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
         
@@ -291,8 +271,10 @@
         `;
 
         fetch(`/candidat/offres/${jobId}`, { 
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            }
         })
             .then(response => {
                 if (!response.ok) {
@@ -336,14 +318,117 @@
             });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // gestion de clique sur une offre
+    function setupJobCardListeners() {
         document.querySelectorAll('.job-card').forEach(card => {
             card.addEventListener('click', function(e) {
                 const jobId = this.getAttribute('data-job-id');
                 loadOfferDetails(jobId, this);
             });
         });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurer le formulaire de recherche AJAX
+        const searchForm = document.getElementById('search-form');
+        const jobListContainer = document.getElementById('job-list-container');
+        const searchResultsCount = document.getElementById('search-results-count');
+        const searchLoader = document.querySelector('.search-loader');
+        
+        // Modifions la partie du script qui gère la soumission du formulaire de recherche
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Afficher le loader
+            searchLoader.classList.add('active');
+            
+            // Récupérer les données du formulaire
+            const formData = new FormData(searchForm);
+            const searchParams = new URLSearchParams(formData);
+            
+            // Log pour le débogage
+            console.log('Sending search request to:', `/candidat/offres/search?${searchParams.toString()}`);
+            
+            // Effectuer la recherche AJAX
+            fetch(`/candidat/offres/search?${searchParams.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                // Check if the response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.message || `Erreur serveur (${response.status})`);
+                        });
+                    }
+                    return response.json();
+                } else {
+                    // If not JSON, get the text and log it
+                    return response.text().then(text => {
+                        console.error('Unexpected response format:', text.substring(0, 500) + '...');
+                        throw new Error(`Réponse non-JSON reçue (${response.status})`);
+                    });
+                }
+            })
+            .then(data => {
+                // Masquer le loader
+                searchLoader.classList.remove('active');
+                
+                console.log('Search response data:', data);
+                
+                if (data.success) {
+                    // Mettre à jour la liste des offres
+                    jobListContainer.innerHTML = data.html;
+                    
+                    // Mettre à jour le compteur de résultats
+                    searchResultsCount.textContent = `${data.count} offres trouvées`;
+                    
+                    // Réinitialiser le conteneur de détails
+                    document.getElementById('job-details-container').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="far fa-file-alt"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900">Sélectionnez une offre</h3>
+                            <p class="text-gray-500 mt-1">Cliquez sur une offre pour voir les détails</p>
+                        </div>
+                    `;
+                    
+                    // Mettre à jour l'URL
+                    const url = new URL(window.location);
+                    url.searchParams.set('keywords', formData.get('keywords'));
+                    url.searchParams.set('location', formData.get('location'));
+                    url.searchParams.delete('job_id');
+                    window.history.pushState({}, '', url);
+                    
+                    // Réattacher les écouteurs d'événements
+                    setupJobCardListeners();
+                } else {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        showNotification(data.message || 'Erreur lors de la recherche', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                // Masquer le loader
+                searchLoader.classList.remove('active');
+                console.error('Erreur détaillée:', error);
+                showNotification('Une erreur est survenue lors de la recherche. Vérifiez la console pour plus de détails.', 'error');
+            });
+        });
+        
+        // Configurer les écouteurs d'événements pour les cartes d'offres
+        setupJobCardListeners();
 
         // Gestion du clic initial si une offre est sélectionnée
         const initialJobId = new URLSearchParams(window.location.search).get('job_id');

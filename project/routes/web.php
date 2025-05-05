@@ -69,24 +69,25 @@ Route::get('candidat', [ProfilCandidatController::class, 'index'])->name('candid
 Route::post('candidat/information/store', [ProfilCandidatController::class, 'store'])->name('candidat.info.store');
 
 // routes pour la navigation du candidat
-Route::middleware(['auth'])->group(function () {
-    Route::get('/candidat/home', [ProfilCandidatController::class, 'index'])->name('home');
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/candidat/home', [ProfilCandidatController::class, 'index'])->name('home');
     
-    Route::get('/candidat/interviews', [ProfilCandidatController::class, 'index'])->name('interviews');
+//     Route::get('/candidat/interviews', [ProfilCandidatController::class, 'index'])->name('interviews');
     
-    Route::get('/candidat/saved-jobs', [ProfilCandidatController::class, 'index'])->name('saved.jobs');
+    // Route::get('/candidat/saved-jobs', [ProfilCandidatController::class, 'index'])->name('saved.jobs');
     
-    Route::get('/candidat/messages', [ProfilCandidatController::class, 'index'])->name('messages');
+//     Route::get('/candidat/messages', [ProfilCandidatController::class, 'index'])->name('messages');
     
-    Route::get('/candidat/notifications', [ProfilCandidatController::class, 'index'])->name('notifications');
+//     Route::get('/candidat/notifications', [ProfilCandidatController::class, 'index'])->name('notifications');
     
-    Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
-    Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
+//     Route::get('/candidat/profile', [ProfilCandidatController::class, 'index'])->name('profile');
+//     Route::get('/candidat/profile/resume', [ProfilCandidatController::class, 'show'])->name('profile');
     
-});
+// });
 
 // routes pour le profil de candidat
 Route::middleware(['auth', 'role:candidat'])->group(function () {
+    Route::get('/candidat/home', [ProfilCandidatController::class, 'index'])->name('home');
 
     Route::get('/profil/candidat', [ProfilCandidatController::class, 'showProfil'])->name('profil.candidat');
 
@@ -104,6 +105,9 @@ Route::middleware(['auth', 'role:candidat'])->group(function () {
 
     Route::resource('resumes.language', LanguageController::class)->except(['index', 'show']);
     
+    // search offres
+    Route::get('/candidat/offres/search', [JobController::class, 'search'])->name('candidat.offres.search');
+
     // affichier details d'une offres
     Route::get('/candidat/offres/{id}', [JobController::class, 'getOfferDetails'])->name('candidat.offres.details');
 
@@ -112,10 +116,6 @@ Route::middleware(['auth', 'role:candidat'])->group(function () {
 
     // application
     Route::post('/candidat/offres/{id}/postuler', [CondidatureController::class, 'postuler'])->name('candidat.offres.postuler');
-
-    // search offres
-    Route::get('/candidat/offres/search', [JobController::class, 'search'])->name('candidat.offres.search');
-
 });
 
 

@@ -64,21 +64,11 @@
                         <a href="{{ route('candidat.offres.index') }}" class="nav-link {{ request()->routeIs('candidat.offres.index') ? 'active' : '' }}">
                             Page d'accueil
                         </a>
-                        
-                        <!-- <a href="{{ route('saved.jobs') }}" class="nav-link {{ request()->routeIs('saved.jobs') ? 'active' : '' }}">
-                            Postes enregistrés
-                        </a> -->
                     </div>
                 </div>
                 
                 <!-- Right Side Icons -->
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('messages') }}" class="nav-icon" title="Messages">
-                        <i class="fas fa-comment-alt"></i>
-                    </a>
-                    <a href="{{ route('notifications') }}" class="nav-icon" title="Notifications">
-                        <i class="fas fa-bell"></i>
-                    </a>
                     <div class="relative">
                         <a href="{{ route('profil.candidat') }}" class="nav-icon" title="Profil">
                             <i class="fas fa-user-circle text-xl"></i>
