@@ -16,7 +16,17 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        //
+        //if recruiter params contain  manual
+             //Manual MatchService 
+                // if manual wheight params are present  
+                   // true
+                   // false : use array decalared in Model 
+        // Recruiter params contain  AI
+           // call openAI service (you can give manual wheights or let gpt decide)  
+
+        // 
+
+        
     }
 
     /**

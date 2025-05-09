@@ -100,18 +100,6 @@
         background-color: #f9fafb;
     }
     
-    .sortable {
-        cursor: pointer;
-        position: relative;
-    }
-    
-    .sortable::after {
-        content: '↕';
-        position: absolute;
-        right: 0.5rem;
-        color: #9ca3af;
-    }
-    
     .status-badge {
         display: inline-flex;
         align-items: center;
@@ -253,6 +241,26 @@
         font-size: 0.875rem;
         font-style: italic;
     }
+    
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .settings-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        color: #4b5563;
+    }
+    
+    .settings-button:hover {
+        background-color: #f3f4f6;
+        color: #2557a7;
+    }
 </style>
 @endsection
 
@@ -273,14 +281,21 @@
             Nouveau
         </div>
         
-        <select class="filter-select" id="status-filter">
+        <!-- <select class="filter-select" id="status-filter">
             <option value="">Statut (Tous)</option>
             <option value="publiée" {{ request('status') == 'publiée' ? 'selected' : '' }}>Publiée</option>
             <option value="brouillon" {{ request('status') == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
             <option value="en attente" {{ request('status') == 'en attente' ? 'selected' : '' }}>En attente</option>
-            <option value="ouvert" {{ request('status') == 'ouvert' ? 'selected' : '' }}>Ouvert</option>
-            <option value="fermé" {{ request('status') == 'fermé' ? 'selected' : '' }}>Fermé</option>
+            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
             <option value="suspendu" {{ request('status') == 'suspendu' ? 'selected' : '' }}>Suspendu</option>
+        </select> -->
+        <select id="filter-status" class="filter-select">
+            <option value="all">Tous les statuts</option>
+            <option value="pending">Publiée</option>
+            <option value="pending">Brouillon</option>
+            <option value="accepted">En attente</option>
+            <option value="rejected">Rejected</option>
+            <option value="interview">Suspendu</option>
         </select>
         
         <div class="search-container">
@@ -297,9 +312,9 @@
             <table class="offers-table">
                 <thead>
                     <tr>
-                        <th class="sortable" data-sort="title">Intitulé du poste</th>
+                        <th>Intitulé du poste</th>
                         <th>Candidatures</th>
-                        <th class="sortable" data-sort="created_at">Date de publication</th>
+                        <th>Date de publication</th>
                         <th>Statut de l'emploi</th>
                         <th>Actions</th>
                     </tr>
@@ -319,8 +334,8 @@
                                         <span class="application-message">Aucune candidature pour le moment</span>
                                     @elseif($offre->statut == 'brouillon')
                                         <span class="application-message">L'offre n'est pas encore publiée</span>
-                                    @elseif($offre->statut == 'fermé')
-                                        <span class="application-message">Offre fermée</span>
+                                    @elseif($offre->statut == 'rejected')
+                                        <span class="application-message">Votre Offre n'a pas accepter</span>
                                     @elseif($offre->statut == 'en attente')
                                         <span class="application-message">Votre offre d'emploi n'est pas encore publiée sur WorkBridge</span>
                                     @else
@@ -342,8 +357,8 @@
                                     <span class="status-badge status-draft">Brouillon</span>
                                 @elseif($offre->statut == 'en attente')
                                     <span class="status-badge status-pending">En attente</span>
-                                @elseif($offre->statut == 'fermé')
-                                    <span class="status-badge status-closed">Fermée</span>
+                                @elseif($offre->statut == 'rejected')
+                                    <span class="status-badge status-closed">Rejectede</span>
                                 @elseif($offre->statut == 'suspendu')
                                     <span class="status-badge status-suspended">Suspendue</span>
                                 @else
@@ -351,30 +366,35 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="dropdown">
-                                    <button class="action-button" onclick="toggleDropdown('dropdown-{{ $offre->id }}')">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <div id="dropdown-{{ $offre->id }}" class="dropdown-content">
-                                        <a href="{{ route('offers.edit', $offre->id) }}">
-                                            <i class="fas fa-edit mr-2"></i> Modifier l'emploi
-                                        </a>
-                                        <a href="{{ route('offers.show', $offre->id) }}">
-                                            <i class="fas fa-eye mr-2"></i> Voir les détails
-                                        </a>
-                                        @if($offre->statut == 'brouillon')
-                                            <a href="#">
-                                                <i class="fas fa-paper-plane mr-2"></i> Publier l'offre
+                                <div class="action-buttons">
+                                    <a href="{{ route('preference.index', $offre->id) }}" class="settings-button" title="Paramètres de matching">
+                                        <i class="fas fa-cog"></i>
+                                    </a>
+                                    <div class="dropdown">
+                                        <button class="action-button" onclick="toggleDropdown('dropdown-{{ $offre->id }}')">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div id="dropdown-{{ $offre->id }}" class="dropdown-content">
+                                            <a href="{{ route('offers.edit', $offre->id) }}">
+                                                <i class="fas fa-edit mr-2"></i> Modifier l'emploi
                                             </a>
-                                        @endif
-                                        @if($offre->statut == 'publiée')
-                                            <a href="#">
-                                                <i class="fas fa-times-circle mr-2"></i> Fermer l'offre
+                                            <a href="{{ route('offers.show', $offre->id) }}">
+                                                <i class="fas fa-eye mr-2"></i> Voir les détails
                                             </a>
-                                        @endif
-                                        <a href="#" onclick="confirmDelete('{{ $offre->id }}')">
-                                            <i class="fas fa-trash-alt mr-2"></i> Supprimer
-                                        </a>
+                                            @if($offre->statut == 'brouillon')
+                                                <a href="#">
+                                                    <i class="fas fa-paper-plane mr-2"></i> Publier l'offre
+                                                </a>
+                                            @endif
+                                            @if($offre->statut == 'publiée')
+                                                <a href="#">
+                                                    <i class="fas fa-times-circle mr-2"></i> Fermer l'offre
+                                                </a>
+                                            @endif
+                                            <a href="#" onclick="confirmDelete('{{ $offre->id }}')">
+                                                <i class="fas fa-trash-alt mr-2"></i> Supprimer
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -429,20 +449,25 @@
         const dropdown = document.getElementById(id);
         dropdown.classList.toggle('show');
         
-        // Assurez-vous que le dropdown est visible dans la fenêtre
+        // dropdown etre visible
         if (dropdown.classList.contains('show')) {
             const rect = dropdown.getBoundingClientRect();
             const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
             
-            // Si le dropdown dépasse le bas de l'écran, l'afficher vers le haut
-            if (rect.bottom > viewHeight) {
-                dropdown.style.bottom = '100%';
-                dropdown.style.top = 'auto';
-                dropdown.style.marginBottom = '5px';
-            } else {
-                dropdown.style.top = 'auto';
+            // si il depasse le bas de form , s'affiche an haut
+            if (rect.top < 0) {
+                dropdown.style.top = '100%';
                 dropdown.style.bottom = 'auto';
-            }
+                dropdown.style.marginTop = '5px';
+            } else if (rect.bottom > viewHeight) {
+                dropdown.style.top = 'auto';
+                dropdown.style.bottom = '100%';
+                dropdown.style.marginTop = '5px';
+            } else if (rect.top < 0 && rect.bottom > viewHeight) {
+                dropdown.style.top = '100%';
+                dropdown.style.bottom = 'auto';
+                dropdown.style.marginTop = '5px';
+            } 
         }
         
         // Close other dropdowns
@@ -455,7 +480,7 @@
         }
     }
     
-    // Close dropdowns when clicking outside
+    // fermer dropdown si en clique dohort
     window.onclick = function(event) {
         if (!event.target.matches('.action-button') && !event.target.matches('.fa-ellipsis-v')) {
             const dropdowns = document.getElementsByClassName('dropdown-content');
@@ -509,34 +534,6 @@
         }
     });
     
-    // Handle sorting
-    document.querySelectorAll('.sortable').forEach(header => {
-        header.addEventListener('click', function() {
-            const sort = this.dataset.sort;
-            const currentSort = new URLSearchParams(window.location.search).get('sort') || '';
-            const currentDirection = new URLSearchParams(window.location.search).get('direction') || 'asc';
-            
-            let direction = 'asc';
-            if (sort === currentSort && currentDirection === 'asc') {
-                direction = 'desc';
-            }
-            
-            const searchValue = document.getElementById('search-input').value;
-            const statusValue = document.getElementById('status-filter').value;
-            
-            let url = '{{ route("offers.index") }}?sort=' + sort + '&direction=' + direction;
-            
-            if (searchValue) {
-                url += '&search=' + encodeURIComponent(searchValue);
-            }
-            
-            if (statusValue) {
-                url += '&status=' + encodeURIComponent(statusValue);
-            }
-            
-            window.location.href = url;
-        });
-    });
     
     // Delete confirmation
     function confirmDelete(id) {
@@ -553,4 +550,3 @@
     }
 </script>
 @endsection
-

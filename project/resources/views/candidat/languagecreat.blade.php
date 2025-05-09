@@ -246,26 +246,6 @@
             transform: rotate(360deg);
         }
     }
-    
-    .show-more-btn {
-        display: block;
-        width: 100%;
-        padding: 0.75rem;
-        text-align: center;
-        background-color: #f3f4f6;
-        border: 1px dashed #d1d5db;
-        border-radius: 0.375rem;
-        color: #4b5563;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 1rem;
-    }
-    
-    .show-more-btn:hover {
-        background-color: #e5e7eb;
-        color: #374151;
-    }
 </style>
 @endsection
 
@@ -296,7 +276,7 @@
     </div>
     @endif
     
-    <form action="{{ route('resumes.language.store', $resume->id) }}" method="POST">
+    <form action="{{ route('resumes.language.store', $resume->id) }}" method="POST" id="languages-form">
         @csrf
         
         <div class="form-section">
@@ -312,49 +292,15 @@
                 <input type="text" id="search-languages" class="form-input search-input" placeholder="Rechercher des langues...">
             </div>
             
+            <!-- Conteneur pour les langues -->
             <div id="languages-list" class="space-y-4">
-                @foreach($languages->take(5) as $language)
-                    <div class="language-item {{ $selectedLanguages->contains('id', $language->id) ? 'selected' : '' }}" id="language-item-{{ $language->id }}">
-                        <input type="checkbox" id="language-{{ $language->id }}" name="languages[{{ $language->id }}][selected]" value="1" class="language-checkbox" {{ $selectedLanguages->contains('id', $language->id) ? 'checked' : '' }}>
-                        <div class="language-info">
-                            <div class="language-name">{{ $language->name }}</div>
-                        </div>
-                        <div class="language-level-select">
-                            <select name="languages[{{ $language->id }}][level]" class="form-select" {{ $selectedLanguages->contains('id', $language->id) ? '' : 'disabled' }}>
-                                <option value="débutant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'débutant' ? 'selected' : '' }}>Débutant</option>
-                                <option value="intermédiaire" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'intermédiaire' ? 'selected' : '' }}>Intermédiaire</option>
-                                <option value="avancé" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'avancé' ? 'selected' : '' }}>Avancé</option>
-                                <option value="courant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'courant' ? 'selected' : '' }}>Courant</option>
-                                <option value="natif" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'natif' ? 'selected' : '' }}>Langue maternelle</option>
-                            </select>
-                        </div>
-                    </div>
-                @endforeach
-                
-                @foreach($languages->skip(10) as $language)
-                    <div class="language-item {{ $selectedLanguages->contains('id', $language->id) ? 'selected' : '' }} hidden-language" id="language-item-{{ $language->id }}" style="display: none;">
-                        <input type="checkbox" id="language-{{ $language->id }}" name="languages[{{ $language->id }}][selected]" value="1" class="language-checkbox" {{ $selectedLanguages->contains('id', $language->id) ? 'checked' : '' }}>
-                        <div class="language-info">
-                            <div class="language-name">{{ $language->name }}</div>
-                        </div>
-                        <div class="language-level-select">
-                            <select name="languages[{{ $language->id }}][level]" class="form-select" {{ $selectedLanguages->contains('id', $language->id) ? '' : 'disabled' }}>
-                                <option value="débutant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'débutant' ? 'selected' : '' }}>Débutant</option>
-                                <option value="intermédiaire" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'intermédiaire' ? 'selected' : '' }}>Intermédiaire</option>
-                                <option value="avancé" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'avancé' ? 'selected' : '' }}>Avancé</option>
-                                <option value="courant" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'courant' ? 'selected' : '' }}>Courant</option>
-                                <option value="natif" {{ $selectedLanguages->where('id', $language->id)->first() && $selectedLanguages->where('id', $language->id)->first()->pivot->level == 'natif' ? 'selected' : '' }}>Langue maternelle</option>
-                            </select>
-                        </div>
-                    </div>
-                @endforeach
+                <!-- Les langues seront ajoutées ici par JavaScript -->
             </div>
             
-            @if($languages->count() > 10)
-                <button type="button" id="show-more-btn" class="show-more-btn">
-                    Afficher plus de langues
-                </button>
-            @endif
+            <!-- Conteneur pour les champs cachés des langues sélectionnées -->
+            <div id="hidden-languages-fields">
+                <!-- Les champs cachés seront ajoutés ici par JavaScript -->
+            </div>
             
             <div id="no-results" class="no-results" style="display: none;">
                 <p>Aucune langue trouvée correspondant à votre recherche.</p>
@@ -363,17 +309,7 @@
             <div id="selected-languages-container" class="selected-languages" style="{{ count($selectedLanguages) > 0 ? '' : 'display: none;' }}">
                 <div class="selected-languages-title">Langues sélectionnées</div>
                 <div id="selected-languages-list" class="flex flex-wrap">
-                    @foreach($selectedLanguages as $language)
-                        <div class="selected-language-tag" data-language-id="{{ $language->id }}">
-                            {{ $language->name }}
-                            <span class="language-level-badge">{{ $language->pivot->level }}</span>
-                            <span class="remove-language" data-language-id="{{ $language->id }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                                </svg>
-                            </span>
-                        </div>
-                    @endforeach
+                    <!-- Les tags des langues sélectionnées seront ajoutés ici par JavaScript -->
                 </div>
             </div>
         </div>
@@ -404,17 +340,25 @@
         const noResultsElement = document.getElementById('no-results');
         const selectedLanguagesContainer = document.getElementById('selected-languages-container');
         const selectedLanguagesList = document.getElementById('selected-languages-list');
-        const showMoreBtn = document.getElementById('show-more-btn');
+        const hiddenLanguagesFields = document.getElementById('hidden-languages-fields');
+        const form = document.getElementById('languages-form');
         
-        // Ensemble pour suivre les langues sélectionnées
-        const selectedLanguages = new Set();
+        // Toutes les langues disponibles
+        const allLanguages = @json($languages);
+        
+        // Langues déjà sélectionnées avec leurs niveaux
+        const selectedLanguagesData = @json($selectedLanguages);
+        
+        // Map pour stocker les langues sélectionnées et leurs niveaux
+        const selectedLanguages = new Map();
         
         // Initialiser les langues déjà sélectionnées
-        document.querySelectorAll('.language-item.selected').forEach(item => {
-            const checkbox = item.querySelector('.language-checkbox');
-            if (checkbox && checkbox.checked) {
-                selectedLanguages.add(checkbox.id.split('-')[1]);
-            }
+        selectedLanguagesData.forEach(language => {
+            selectedLanguages.set(language.id.toString(), {
+                id: language.id.toString(),
+                name: language.name,
+                level: language.pivot.level
+            });
         });
         
         // Fonction pour mettre à jour l'affichage des langues sélectionnées
@@ -426,129 +370,283 @@
             }
         }
         
+        // Fonction pour mettre à jour les champs cachés
+        function updateHiddenFields() {
+            hiddenLanguagesFields.innerHTML = '';
+            
+            selectedLanguages.forEach((language, id) => {
+                const selectedField = document.createElement('input');
+                selectedField.type = 'hidden';
+                selectedField.name = `languages[${id}][selected]`;
+                selectedField.value = '1';
+                
+                const levelField = document.createElement('input');
+                levelField.type = 'hidden';
+                levelField.name = `languages[${id}][level]`;
+                levelField.value = language.level;
+                
+                hiddenLanguagesFields.appendChild(selectedField);
+                hiddenLanguagesFields.appendChild(levelField);
+            });
+        }
+        
+        // Fonction pour rendre les langues initiales
+        function renderInitialLanguages() {
+            // Récupérer toutes les langues sélectionnées
+            const selectedLanguagesArray = Array.from(selectedLanguages.values());
+            
+            // Si des langues sont sélectionnées
+            if (selectedLanguagesArray.length > 0) {
+                // Afficher toutes les langues sélectionnées
+                const languagesToRender = [...selectedLanguagesArray];
+                
+                // Si moins de 5 langues sont sélectionnées, ajouter d'autres langues non sélectionnées
+                if (selectedLanguagesArray.length < 5) {
+                    const nonSelectedLanguages = allLanguages.filter(language => 
+                        !selectedLanguages.has(language.id.toString())
+                    );
+                    
+                    // Ajouter des langues non sélectionnées jusqu'à avoir 5 langues au total
+                    const remainingCount = 5 - selectedLanguagesArray.length;
+                    languagesToRender.push(...nonSelectedLanguages.slice(0, remainingCount));
+                }
+                
+                renderLanguages(languagesToRender);
+            } else {
+                // Si aucune langue n'est sélectionnée, afficher les 5 premières langues
+                renderLanguages(allLanguages.slice(0, 5));
+            }
+            
+            // Mettre à jour les champs cachés
+            updateHiddenFields();
+            
+            // Mettre à jour l'affichage des langues sélectionnées
+            updateSelectedLanguagesDisplay();
+            
+            // Rendre les tags des langues sélectionnées
+            renderSelectedLanguageTags();
+        }
+        
         // Fonction pour rechercher des langues
         function searchLanguages(query) {
-            query = query.toLowerCase();
-            let hasResults = false;
-            let allHidden = true;
+            const searchTerm = query.toLowerCase().trim();
             
-            // Afficher toutes les langues si la recherche est active
-            const isSearchActive = query.length > 0;
+            noResultsElement.style.display = 'none';
             
-            // Parcourir toutes les langues et filtrer
-            document.querySelectorAll('.language-item').forEach(item => {
-                const languageName = item.querySelector('.language-name').textContent.toLowerCase();
-                
-                if (isSearchActive) {
-                    // Mode recherche: afficher uniquement les correspondances
-                    if (languageName.includes(query)) {
-                        item.style.display = '';
-                        hasResults = true;
-                        allHidden = false;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                } else {
-                    // Mode normal: respecter la limite initiale
-                    if (item.classList.contains('hidden-language')) {
-                        item.style.display = 'none';
-                    } else {
-                        item.style.display = '';
-                        allHidden = false;
-                    }
-                }
-            });
-            
-            // Afficher ou masquer le message "Aucun résultat"
-            if (isSearchActive && !hasResults) {
-                noResultsElement.style.display = '';
-            } else {
-                noResultsElement.style.display = 'none';
+            // Si la recherche est vide, afficher les langues initiales
+            if (searchTerm === '') {
+                renderInitialLanguages();
+                return;
             }
             
-            // Afficher ou masquer le bouton "Afficher plus"
-            if (showMoreBtn) {
-                showMoreBtn.style.display = isSearchActive ? 'none' : '';
+            // Filtrer les langues
+            const filteredLanguages = allLanguages.filter(language => 
+                language.name.toLowerCase().includes(searchTerm)
+            );
+            
+            // Afficher le résultat
+            if (filteredLanguages.length === 0) {
+                noResultsElement.style.display = 'block';
+                languagesList.innerHTML = '';
+            } else {
+                // Trier les langues pour que les sélectionnées apparaissent en premier
+                const sortedLanguages = [...filteredLanguages].sort((a, b) => {
+                    const aSelected = selectedLanguages.has(a.id.toString());
+                    const bSelected = selectedLanguages.has(b.id.toString());
+                    
+                    if (aSelected && !bSelected) return -1;
+                    if (!aSelected && bSelected) return 1;
+                    return 0;
+                });
+                
+                renderLanguages(sortedLanguages);
             }
         }
         
-        // Fonction pour gérer la sélection d'une langue
-        function handleLanguageSelection(event) {
-            const checkbox = event.target;
-            const languageItem = checkbox.closest('.language-item');
-            const languageId = checkbox.id.split('-')[1];
-            const languageName = languageItem.querySelector('.language-name').textContent;
-            const levelSelect = languageItem.querySelector('select');
+        // Fonction pour rendre les langues
+        function renderLanguages(languagesToRender) {
+            languagesList.innerHTML = '';
             
-            if (checkbox.checked) {
-                // Ajouter la langue à la liste des sélectionnées
-                selectedLanguages.add(languageId);
-                languageItem.classList.add('selected');
-                levelSelect.disabled = false;
+            languagesToRender.forEach(language => {
+                const languageId = language.id.toString();
+                const isSelected = selectedLanguages.has(languageId);
+                const languageData = isSelected ? selectedLanguages.get(languageId) : { level: 'débutant' };
                 
-                // Ajouter le tag de langue sélectionnée
-                const languageTag = document.createElement('div');
-                languageTag.className = 'selected-language-tag';
-                languageTag.dataset.languageId = languageId;
-                languageTag.innerHTML = `
-                    ${languageName}
-                    <span class="language-level-badge">${levelSelect.value}</span>
-                    <span class="remove-language" data-language-id="${languageId}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                    </span>
+                const languageItem = document.createElement('div');
+                languageItem.className = `language-item ${isSelected ? 'selected' : ''}`;
+                languageItem.id = `language-item-${languageId}`;
+                
+                languageItem.innerHTML = `
+                    <input type="checkbox" id="language-${languageId}" 
+                        name="languages[${languageId}][selected]" value="1" 
+                        class="language-checkbox" ${isSelected ? 'checked' : ''}>
+                    <div class="language-info">
+                        <div class="language-name">${language.name}</div>
+                    </div>
+                    <div class="language-level-select">
+                        <select name="languages[${languageId}][level]" class="form-select" 
+                                ${isSelected ? '' : 'disabled'} data-language-id="${languageId}">
+                            <option value="débutant" ${languageData.level === 'débutant' ? 'selected' : ''}>Débutant</option>
+                            <option value="intermédiaire" ${languageData.level === 'intermédiaire' ? 'selected' : ''}>Intermédiaire</option>
+                            <option value="avancé" ${languageData.level === 'avancé' ? 'selected' : ''}>Avancé</option>
+                            <option value="courant" ${languageData.level === 'courant' ? 'selected' : ''}>Courant</option>
+                            <option value="natif" ${languageData.level === 'natif' ? 'selected' : ''}>Langue maternelle</option>
+                        </select>
+                    </div>
                 `;
-                selectedLanguagesList.appendChild(languageTag);
                 
-                // Ajouter l'événement de suppression
-                languageTag.querySelector('.remove-language').addEventListener('click', handleRemoveLanguage);
+                languagesList.appendChild(languageItem);
                 
-                // Ajouter l'événement de changement de niveau
-                levelSelect.addEventListener('change', function() {
-                    const levelBadge = languageTag.querySelector('.language-level-badge');
-                    levelBadge.textContent = this.value;
+                // Gestion des événements
+                const checkbox = languageItem.querySelector('.language-checkbox');
+                const select = languageItem.querySelector('select');
+                
+                // Événement de changement de case à cocher
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Ajouter la langue à la liste des sélectionnées
+                        selectedLanguages.set(languageId, {
+                            id: languageId,
+                            name: language.name,
+                            level: select.value
+                        });
+                        
+                        // Activer le sélecteur de niveau
+                        select.disabled = false;
+                        
+                        // Ajouter la classe selected
+                        languageItem.classList.add('selected');
+                        
+                        // Ajouter le tag de langue sélectionnée
+                        addLanguageTag(languageId, language.name, select.value);
+                    } else {
+                        // Supprimer la langue de la liste des sélectionnées
+                        selectedLanguages.delete(languageId);
+                        
+                        // Désactiver le sélecteur de niveau
+                        select.disabled = true;
+                        
+                        // Supprimer la classe selected
+                        languageItem.classList.remove('selected');
+                        
+                        // Supprimer le tag de langue
+                        removeLanguageTag(languageId);
+                    }
+                    
+                    // Mettre à jour les champs cachés
+                    updateHiddenFields();
+                    
+                    // Mettre à jour l'affichage des langues sélectionnées
+                    updateSelectedLanguagesDisplay();
                 });
-            } else {
+                
+                // Événement de changement de niveau
+                select.addEventListener('change', function() {
+                    if (selectedLanguages.has(languageId)) {
+                        // Mettre à jour le niveau de la langue
+                        const languageData = selectedLanguages.get(languageId);
+                        languageData.level = this.value;
+                        selectedLanguages.set(languageId, languageData);
+                        
+                        // Mettre à jour le badge de niveau dans le tag
+                        const levelBadge = document.querySelector(`.selected-language-tag[data-language-id="${languageId}"] .language-level-badge`);
+                        if (levelBadge) {
+                            levelBadge.textContent = this.value;
+                        }
+                        
+                        // Mettre à jour les champs cachés
+                        updateHiddenFields();
+                    }
+                });
+                
+                // Événement de clic sur l'élément de langue
+                languageItem.addEventListener('click', function(e) {
+                    // Ne pas déclencher si on clique sur la case à cocher ou le sélecteur
+                    if (!e.target.classList.contains('language-checkbox') && !e.target.classList.contains('form-select')) {
+                        checkbox.checked = !checkbox.checked;
+                        
+                        // Déclencher l'événement change manuellement
+                        const event = new Event('change');
+                        checkbox.dispatchEvent(event);
+                    }
+                });
+            });
+        }
+        
+        // Fonction pour ajouter un tag de langue sélectionnée
+        function addLanguageTag(languageId, languageName, level) {
+            // Vérifier si le tag existe déjà
+            const existingTag = document.querySelector(`.selected-language-tag[data-language-id="${languageId}"]`);
+            if (existingTag) {
+                return;
+            }
+            
+            const languageTag = document.createElement('div');
+            languageTag.className = 'selected-language-tag';
+            languageTag.dataset.languageId = languageId;
+            languageTag.innerHTML = `
+                ${languageName}
+                <span class="language-level-badge">${level}</span>
+                <span class="remove-language" data-language-id="${languageId}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+            `;
+            
+            selectedLanguagesList.appendChild(languageTag);
+            
+            // Ajouter l'événement de suppression
+            languageTag.querySelector('.remove-language').addEventListener('click', function() {
+                const languageId = this.dataset.languageId;
+                
                 // Supprimer la langue de la liste des sélectionnées
                 selectedLanguages.delete(languageId);
-                languageItem.classList.remove('selected');
-                levelSelect.disabled = true;
                 
-                // Supprimer le tag de langue
-                const languageTag = selectedLanguagesList.querySelector(`.selected-language-tag[data-language-id="${languageId}"]`);
-                if (languageTag) {
-                    languageTag.remove();
+                // Décocher la case à cocher correspondante
+                const checkbox = document.getElementById(`language-${languageId}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                    
+                    // Désactiver le sélecteur de niveau
+                    const select = checkbox.closest('.language-item').querySelector('select');
+                    select.disabled = true;
+                    
+                    // Supprimer la classe selected
+                    checkbox.closest('.language-item').classList.remove('selected');
                 }
-            }
-            
-            updateSelectedLanguagesDisplay();
+                
+                // Supprimer le tag
+                this.closest('.selected-language-tag').remove();
+                
+                // Mettre à jour les champs cachés
+                updateHiddenFields();
+                
+                // Mettre à jour l'affichage des langues sélectionnées
+                updateSelectedLanguagesDisplay();
+                
+                // Rafraîchir la liste des langues pour maintenir la règle des 5 langues
+                if (searchInput.value.trim() === '') {
+                    renderInitialLanguages();
+                }
+            });
         }
         
-        // Fonction pour gérer la suppression d'une langue
-        function handleRemoveLanguage(event) {
-            const languageId = event.currentTarget.dataset.languageId;
-            
-            // Supprimer la langue de la liste des sélectionnées
-            selectedLanguages.delete(languageId);
-            
-            // Décocher la case à cocher correspondante
-            const checkbox = document.getElementById(`language-${languageId}`);
-            if (checkbox) {
-                checkbox.checked = false;
-                const languageItem = checkbox.closest('.language-item');
-                languageItem.classList.remove('selected');
-                const levelSelect = languageItem.querySelector('select');
-                levelSelect.disabled = true;
-            }
-            
-            // Supprimer le tag de langue
-            const languageTag = event.currentTarget.closest('.selected-language-tag');
+        // Fonction pour supprimer un tag de langue
+        function removeLanguageTag(languageId) {
+            const languageTag = document.querySelector(`.selected-language-tag[data-language-id="${languageId}"]`);
             if (languageTag) {
                 languageTag.remove();
             }
+        }
+        
+        // Fonction pour rendre les tags des langues sélectionnées
+        function renderSelectedLanguageTags() {
+            selectedLanguagesList.innerHTML = '';
             
-            updateSelectedLanguagesDisplay();
+            selectedLanguages.forEach((language, id) => {
+                addLanguageTag(id, language.name, language.level);
+            });
         }
         
         // Ajouter les écouteurs d'événements
@@ -556,44 +654,14 @@
             searchLanguages(this.value.trim());
         });
         
-        // Ajouter l'événement pour afficher plus de langues
-        if (showMoreBtn) {
-            showMoreBtn.addEventListener('click', function() {
-                document.querySelectorAll('.hidden-language').forEach(item => {
-                    item.style.display = '';
-                    item.classList.remove('hidden-language');
-                });
-                this.style.display = 'none';
-            });
-        }
-        
-        // Ajouter l'événement de sélection aux langues
-        document.querySelectorAll('.language-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', handleLanguageSelection);
+        // Ajouter l'écouteur d'événement pour la soumission du formulaire
+        form.addEventListener('submit', function() {
+            // Mettre à jour les champs cachés avant la soumission
+            updateHiddenFields();
         });
         
-        // Ajouter l'événement de suppression aux langues sélectionnées
-        document.querySelectorAll('.remove-language').forEach(button => {
-            button.addEventListener('click', handleRemoveLanguage);
-        });
-        
-        // Ajouter l'événement de clic sur les éléments de langue
-        document.querySelectorAll('.language-item').forEach(function(item) {
-            item.addEventListener('click', function(e) {
-                // Ne pas déclencher si on clique sur la case à cocher ou le sélecteur
-                if (!e.target.classList.contains('language-checkbox') && !e.target.classList.contains('form-select')) {
-                    const checkbox = this.querySelector('.language-checkbox');
-                    checkbox.checked = !checkbox.checked;
-                    
-                    // Déclencher l'événement change manuellement
-                    const event = new Event('change');
-                    checkbox.dispatchEvent(event);
-                }
-            });
-        });
-        
-        // Mettre à jour l'affichage initial
-        updateSelectedLanguagesDisplay();
+        // Initialiser l'affichage
+        renderInitialLanguages();
     });
 </script>
 @endsection

@@ -14,7 +14,6 @@ class Cv extends Model
         'filePath',
     ];
 
-    // Relation belongsTo avec le modèle `User`
     public function user()
     {
         return $this->belongsTo(User::class);

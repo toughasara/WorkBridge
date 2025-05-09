@@ -63,7 +63,14 @@ class CvController extends Controller
      */
     public function show($id)
     {
-        //
+        $cv = Cv::findOrFail($id);
+
+        $filePath = Storage::path($cv->filePath);
+        
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$cv->filename.'"'
+        ]);
     }
 
     /**

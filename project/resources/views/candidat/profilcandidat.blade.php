@@ -161,7 +161,7 @@
     .cv-file-menu-item.text-danger:hover {
         background-color: #fef2f2;
     }
-    
+
     .cv-actions {
         display: flex;
         flex-direction: column;
@@ -198,11 +198,11 @@
     <!-- Informations du profil -->
     <div class="profile-header">
         <div class="profile-avatar">
-            {{ substr($user->name ?? 'User Name', 0, 1) }}{{ substr(explode(' ', $user->name ?? 'User Name')[1] ?? '', 0, 1) }}
+            {{ substr($user->name ?? 'NAda El Meriouchi', 0, 1) }}{{ substr(explode(' ', $user->name ?? 'User Name')[1] ?? '', 0, 1) }}
         </div>
         <div class="profile-info">
-            <h1>{{ $user->name ?? 'User Name' }}</h1>
-            <div class="text-gray-500">{{ $user->email ?? 'useremail@gmail.com' }}</div>
+            <h1>{{ $user->name ?? 'NAda El Meriouchi' }}</h1>
+            <div class="text-gray-500">{{ $user->email ?? 'nada@gmail.com' }}</div>
             
             <div class="profile-contact">
                 @if(isset($resume->phone))
@@ -239,6 +239,10 @@
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <div class="cv-file-menu" id="cvMenu">
+                    <a href="{{ route('cv.show', $cv->id) }}" class="cv-file-menu-item" target="_blank">
+                        <i class="fas fa-eye"></i>
+                        <span>Voir</span>
+                    </a>
                     <label for="replace-cv" class="cv-file-menu-item">
                         <i class="fas fa-sync-alt"></i>
                         <span>Remplacer le fichier</span>

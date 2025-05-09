@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Skill;
 use App\Models\Language;
-
+use App\Services\MatchService;
 
 
 
@@ -18,10 +18,12 @@ class OffresController extends Controller
 {
 
     private OffreServiceInterface $offreService;
+    protected $matchService;
 
-    public function __construct(OffreServiceInterface $offreService)
+    public function __construct(OffreServiceInterface $offreService, MatchService $matchService)
     {
         $this->offreService = $offreService;
+        $this->matchService = $matchService;
     }
 
     /**

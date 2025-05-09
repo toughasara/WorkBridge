@@ -42,9 +42,41 @@ class LanguageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Resume $resume)
     {
-        //
+        $request->validate([
+            'languages' => 'required|array',
+            'languages.*.selected' => 'sometimes|boolean',
+            'languages.*.level' => 'required_with:languages.*.selected|in:débutant,intermédiaire,avancé,courant,natif',
+            'new_language_name' => 'sometimes|string|max:255|unique:languages,name',
+            'new_language_level' => 'required_with:new_language_name|in:débutant,intermédiaire,avancé,courant,natif',
+        ]);
+
+        // Préparer les données pour sync
+        $languagesToSync = [];
+        
+        // Traiter les langues existantes
+        foreach ($request->languages as $languageId => $data) {
+            if (isset($data['selected']) && $data['selected']) {
+                $languagesToSync[$languageId] = ['level' => $data['level']];
+            }
+        }
+        
+        // Traiter la nouvelle langue si elle existe
+        if ($request->filled('new_language_name')) {
+            $newLanguage = Language::firstOrCreate([
+                'name' => $request->new_language_name
+            ]);
+            
+            $languagesToSync[$newLanguage->id] = ['level' => $request->new_language_level];
+        }
+        
+        // Synchroniser les langues avec le CV
+        $resume->languages()->sync($languagesToSync);
+
+        return redirect()
+            ->route('resume.view', $resume->id)
+            ->with('success', 'Vos langues ont été mises à jour avec succès.');
     }
 
     /**
@@ -87,8 +119,10 @@ class LanguageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Resume $resume, Language $language)
     {
-        //
+        $resume->languages()->detach($language->id);
+
+        return redirect()->route('resume.view')->with('success', 'Langue supprimée avec succès.');
     }
 }

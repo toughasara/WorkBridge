@@ -4,8 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class CheckProfileCompletion
+class RedirectBasedOnRole
 {
     /**
      * Handle an incoming request.
@@ -18,19 +19,18 @@ class CheckProfileCompletion
     {
         $user = Auth::user();
 
-        if ($role === 'recruteur') {
-            if (!$user->company) {
-                return redirect()->route('recruter.completeProfile');
+        if ($user) {
+            switch ($user->role_id) {
+                case 1:
+                    return redirect()->route('admin.dashboard');
+                case 2:
+                    return redirect()->route('profil.candidat');
+                case 3:
+                    return redirect()->route('recruiter');
+                default:
+                    return redirect()->route('welcome');
             }
         }
-
-        if ($role === 'candidat') {
-            if (!$user->resume) { 
-                return redirect()->route('candidat.completeProfile');
-            }
-        }
-
-        // Si le profil est complété, autorise l'accès à la route demandée
         return $next($request);
     }
 }

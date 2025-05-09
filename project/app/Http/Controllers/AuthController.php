@@ -44,7 +44,7 @@ class AuthController extends Controller
         // Connexion de l'utilisateur après l'inscription
         Auth::login($user);
 
-        return $this->redirectBasedOnRole($user);
+        return redirect()->route('dashboard.redirect');
     }
 
     // Connexion
@@ -62,7 +62,7 @@ class AuthController extends Controller
                 ]);
             }
 
-            return $this->redirectBasedOnRole($user);     
+            return redirect()->route('dashboard.redirect');     
         }
 
         return back()->withErrors([
@@ -70,26 +70,12 @@ class AuthController extends Controller
         ]);
     }
 
-    // Déconnexion
     public function logout()
     {
         Auth::logout();
 
-        return redirect()->route('register');
+        return redirect()->route('login');
     }
 
-    protected function redirectBasedOnRole($user)
-    {
-        switch ($user->role_id) {
-            case 1:
-                return redirect()->route('admin.dashboard');
-            case 2:
-                return redirect()->route('profil.candidat');
-            case 3:
-                return redirect()->route('recruiter');
-            default:
-                return redirect()->route('home');
-        }
-    }
 }
 

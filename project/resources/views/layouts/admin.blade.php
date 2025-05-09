@@ -121,12 +121,12 @@
                     <span>Statistiques</span>
                 </a>
                 
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                <a href="{{ route('admin.UserManagement') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                     <i class="fas fa-users nav-icon"></i>
                     <span>Gestion des utilisateurs</span>
                 </a>
                 
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.offers*') ? 'active' : '' }}">
+                <a href="{{ route('admin.JobApproval') }}" class="nav-link {{ request()->routeIs('admin.offers*') ? 'active' : '' }}">
                     <i class="fas fa-briefcase nav-icon"></i>
                     <span>Gestion des offres</span>
                 </a>
