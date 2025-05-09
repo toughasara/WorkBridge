@@ -19,13 +19,11 @@ class Offre extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relation many-to-many avec la table `skills`
     public function skills()
     {
         return $this->belongsToMany(Skill::class, 'offer_skill', 'offer_id', 'skill_id');
     }
 
-    // Relation many-to-many avec la table `languages`
     public function languages()
     {
         return $this->belongsToMany(Language::class, 'offer_language', 'offer_id', 'language_id')
@@ -37,10 +35,10 @@ class Offre extends Model
         return $this->hasOneThrough(
             Company::class,
             User::class,
-            'id', // Clé étrangère sur la table users
-            'user_id', // Clé étrangère sur la table companies
-            'user_id', // Clé locale sur la table offres
-            'id' // Clé locale sur la table users
+            'id', 
+            'user_id',
+            'user_id',
+            'id'
         );
     }
 

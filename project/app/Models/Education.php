@@ -18,7 +18,6 @@ class Education extends Model
         'end_date',
     ];
 
-    // Relation belongsTo avec le modèle `Resume`
     public function resume()
     {
         return $this->belongsTo(Resume::class);

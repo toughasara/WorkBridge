@@ -48,12 +48,6 @@
         font-weight: bold;
         color: #6b7280;
     }
-    .search-input {
-        @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
-    }
-    .search-button {
-        @apply bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out;
-    }
     .job-list {
         height: calc(100vh - 16rem);
         overflow-y: auto;
@@ -329,103 +323,9 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         // Configurer le formulaire de recherche AJAX
-        const searchForm = document.getElementById('search-form');
         const jobListContainer = document.getElementById('job-list-container');
         const searchResultsCount = document.getElementById('search-results-count');
         const searchLoader = document.querySelector('.search-loader');
-        
-        // Modifions la partie du script qui gère la soumission du formulaire de recherche
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Afficher le loader
-            searchLoader.classList.add('active');
-            
-            // Récupérer les données du formulaire
-            const formData = new FormData(searchForm);
-            const searchParams = new URLSearchParams(formData);
-            
-            // Log pour le débogage
-            console.log('Sending search request to:', `/candidat/offres/search?${searchParams.toString()}`);
-            
-            // Effectuer la recherche AJAX
-            fetch(`/candidat/offres/search?${searchParams.toString()}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                console.log('Response headers:', [...response.headers.entries()]);
-                
-                // Check if the response is JSON
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw new Error(err.message || `Erreur serveur (${response.status})`);
-                        });
-                    }
-                    return response.json();
-                } else {
-                    // If not JSON, get the text and log it
-                    return response.text().then(text => {
-                        console.error('Unexpected response format:', text.substring(0, 500) + '...');
-                        throw new Error(`Réponse non-JSON reçue (${response.status})`);
-                    });
-                }
-            })
-            .then(data => {
-                // Masquer le loader
-                searchLoader.classList.remove('active');
-                
-                console.log('Search response data:', data);
-                
-                if (data.success) {
-                    // Mettre à jour la liste des offres
-                    jobListContainer.innerHTML = data.html;
-                    
-                    // Mettre à jour le compteur de résultats
-                    searchResultsCount.textContent = `${data.count} offres trouvées`;
-                    
-                    // Réinitialiser le conteneur de détails
-                    document.getElementById('job-details-container').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="far fa-file-alt"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900">Sélectionnez une offre</h3>
-                            <p class="text-gray-500 mt-1">Cliquez sur une offre pour voir les détails</p>
-                        </div>
-                    `;
-                    
-                    // Mettre à jour l'URL
-                    const url = new URL(window.location);
-                    url.searchParams.set('keywords', formData.get('keywords'));
-                    url.searchParams.set('location', formData.get('location'));
-                    url.searchParams.delete('job_id');
-                    window.history.pushState({}, '', url);
-                    
-                    // Réattacher les écouteurs d'événements
-                    setupJobCardListeners();
-                } else {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    } else {
-                        showNotification(data.message || 'Erreur lors de la recherche', 'error');
-                    }
-                }
-            })
-            .catch(error => {
-                // Masquer le loader
-                searchLoader.classList.remove('active');
-                console.error('Erreur détaillée:', error);
-                showNotification('Une erreur est survenue lors de la recherche. Vérifiez la console pour plus de détails.', 'error');
-            });
-        });
         
         // Configurer les écouteurs d'événements pour les cartes d'offres
         setupJobCardListeners();

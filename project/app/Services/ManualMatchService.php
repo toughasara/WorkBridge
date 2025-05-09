@@ -10,9 +10,9 @@ class ManualMatchService
 {
     public function calculate(int $resumeId, int $OfferId, array $weights): int
     {
-        // $cacheKey = "manual_match_{$resumeId}_{$OfferId}_" . md5(json_encode($weights));
+        $cacheKey = "manual_match_{$resumeId}_{$OfferId}_" . md5(json_encode($weights));
         
-        // return Cache::remember($cacheKey, now()->addHours(1), function() use ($resumeId, $OfferId, $weights) {
+        return Cache::remember($cacheKey, now()->addHours(1), function() use ($resumeId, $OfferId, $weights) {
             $resume = Resume::with(['skills', 'languages', 'experiences'])->findOrFail($resumeId);
             $Offre = Offre::with(['skills', 'languages'])->findOrFail($OfferId);
 
@@ -29,7 +29,7 @@ class ManualMatchService
             ) * 100;
 
             return min(100, max(0, (int) round($totalScore)));
-        // });
+        });
     }
 
     protected function calculateSkillsScore(Resume $resume, Offre $Offre): float
@@ -87,10 +87,8 @@ class ManualMatchService
     protected function calculateExperienceScore(Resume $resume, Offre $Offre): float
     {
         $requiredExperience = $Offre->experience;
-      
-        $userExperience = $resume->experiences->sum(function($exp) {
 
-            
+        $userExperience = $resume->experiences->sum(function($exp) {
             return $exp->end_date 
                 ? $exp->start_date->diffInYears($exp->end_date)
                 : $exp->start_date->diffInYears(now());

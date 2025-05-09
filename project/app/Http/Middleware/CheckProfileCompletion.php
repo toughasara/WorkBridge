@@ -18,17 +18,14 @@ class CheckProfileCompletion
     {
         $user = Auth::user();
 
-        // Vérification si l'utilisateur a un profil complet
         if ($role === 'recruteur') {
-            // Si l'utilisateur est recruteur, vérifie s'il a des informations sur l'entreprise
-            if (!$user->company) { // Vérifie s'il a un enregistrement dans la table company
+            if (!$user->company) {
                 return redirect()->route('recruter.completeProfile');
             }
         }
 
         if ($role === 'candidat') {
-            // Si l'utilisateur est candidat, vérifie s'il a un CV
-            if (!$user->resume) { // Vérifie s'il a un enregistrement dans la table resume
+            if (!$user->resume) { 
                 return redirect()->route('candidat.completeProfile');
             }
         }

@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = `/candidatures/${offerId}`;
         });
     });
-    
+
     // Filtrage par statut
     const filterStatus = document.getElementById('filter-status');
     if (filterStatus) {
@@ -202,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!offerId) return;
             
-            // Mise à jour via AJAX
             fetch(`/candidatures/${offerId}/application/${applicationId}/status`, {
                 method: 'PUT',
                 headers: {
@@ -214,14 +213,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Mettre à jour l'attribut data-status de la ligne
                     this.closest('.application-row').setAttribute('data-status', newStatus);
                     
-                    // Afficher la notification
                     const notification = document.getElementById('status-notification');
                     notification.classList.remove('translate-y-full', 'opacity-0');
                     
-                    // Masquer la notification après 3 secondes
                     setTimeout(() => {
                         notification.classList.add('translate-y-full', 'opacity-0');
                     }, 3000);

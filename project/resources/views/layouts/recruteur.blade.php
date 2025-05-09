@@ -167,23 +167,7 @@
             <header class="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between">
                 <h1 class="text-xl font-semibold text-gray-800">@yield('header-title', 'Tableau de bord')</h1>
                 
-                <div class="flex items-center space-x-6">
-                    <!-- Messages -->
-                    <div class="relative">
-                        <a href="{{ route('messages') }}" class="text-gray-600 hover:text-gray-900 relative">
-                            <i class="fas fa-comment-alt text-xl"></i>
-                            <span class="badge">2</span>
-                        </a>
-                    </div>
-                    
-                    <!-- Notifications -->
-                    <div class="relative">
-                        <a href="{{ route('notifications') }}" class="text-gray-600 hover:text-gray-900 relative">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span class="badge">3</span>
-                        </a>
-                    </div>
-                    
+                <div class="flex items-center space-x-6">        
                     <!-- Profile Dropdown -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
