@@ -48,12 +48,6 @@
         font-weight: bold;
         color: #6b7280;
     }
-    .search-input {
-        @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
-    }
-    .search-button {
-        @apply bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out;
-    }
     .job-list {
         height: calc(100vh - 16rem);
         overflow-y: auto;
@@ -85,6 +79,13 @@
         color: #d1d5db;
         margin-bottom: 1rem;
     }
+    .search-loader {
+        display: none;
+        margin-left: 0.5rem;
+    }
+    .search-loader.active {
+        display: inline-block;
+    }
 </style>
 @endsection
 
@@ -94,7 +95,7 @@
     <div class="search-container py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow-lg p-6">
-                <form action="{{ route('candidat.offres.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form id="search-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label for="keywords" class="block text-sm font-medium text-gray-700 mb-1">Mots-clés</label>
                         <input type="text" name="keywords" id="keywords" placeholder="Titre, compétences ou entreprise" 
@@ -106,8 +107,14 @@
                             class="search-input" value="{{ request('location') }}">
                     </div>
                     <div class="flex items-end">
-                        <button type="submit" class="search-button w-full">
+                        <button type="submit" class="search-button w-full flex items-center justify-center">
                             <i class="fas fa-search mr-2"></i> Rechercher
+                            <div class="search-loader">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
                         </button>
                     </div>
                 </form>
@@ -118,9 +125,9 @@
     <!-- Jobs Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-900">
-                @if(isset($searchResults))
-                    {{ $jobs->total() }} offres trouvées
+            <h2 class="text-xl font-semibold text-gray-900" id="search-results-count">
+                @if(isset($jobs) && $jobs->count() > 0)
+                    {{ $jobs->count() }} offres trouvées
                 @else
                     Offres d'emploi recommandées
                 @endif
@@ -130,47 +137,9 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Job Listings -->
             <div class="lg:col-span-1">
-                <div class="job-list">
-                    @if(count($jobs) > 0)
-                        @foreach($jobs as $job)
-                        <div class="job-card bg-white rounded-lg border p-4 mb-4 {{ request('job_id') == $job->id ? 'active' : '' }}" 
-                            data-job-id="{{ $job->id }}">                               
-                            <div class="flex items-start">
-                                    <div class="company-logo mr-4">
-                                    @if($job->company)
-                                        <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
-                                    @else
-                                        <p class="text-gray-600 text-sm">Entreprise non spécifiée</p>
-                                    @endif
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-900">{{ $job->title }}</h3>
-                                        @if($job->company)
-                                            <p class="text-gray-600 text-sm">{{ $job->company->name }}</p>
-                                        @else
-                                            <p class="text-gray-600 text-sm">Entreprise non spécifiée</p>
-                                        @endif
-                                        <p class="text-gray-500 text-sm">{{ $job->location }}</p>
-                                    </div>
-                                    @if(isset($job->match_score))
-                                        <div class="mt-3">
-                                            <div class="flex justify-between items-center mb-1">
-                                                <span class="text-xs font-medium text-indigo-700">Score de matching</span>
-                                                <span class="text-xs font-medium text-indigo-700">{{ $job->match_score }}%</span>
-                                            </div>
-                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: {{ $job->match_score }}%"></div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    <div class="text-gray-500 text-xs">
-                                        {{ $job->created_at->diffForHumans() }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                        <div class="mt-4">
-                        </div>
+                <div class="job-list" id="job-list-container">
+                    @if(isset($jobs) && $jobs->count() > 0)
+                        @include('candidat.partials.job_list', ['jobs' => $jobs])
                     @else
                         <div class="empty-state">
                             <div class="empty-icon">
@@ -236,10 +205,7 @@
         })
         .then(data => {
             if (data.success) {
-                // Afficher un message de succès
                 showNotification(data.message, 'success');
-                
-                // Mettre à jour le bouton
                 button.innerHTML = '<i class="fas fa-check mr-2"></i> Candidature envoyée';
                 button.classList.remove('bg-blue-700', 'hover:bg-blue-800');
                 button.classList.add('bg-gray-400', 'cursor-not-allowed');
@@ -267,6 +233,11 @@
         const notification = document.getElementById('notification-message');
         const notificationText = document.getElementById('notification-text');
         
+        if (!notification || !notificationText) {
+            alert(message);
+            return;
+        }
+        
         notificationText.textContent = message;
         notification.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
         
@@ -278,78 +249,86 @@
         
         notification.classList.remove('hidden');
         
-        // Cacher la notification après 5 secondes
+        // callback function pour masquer notif apret 5s
         setTimeout(() => {
             notification.classList.add('hidden');
         }, 5000);
     }
+
     function loadOfferDetails(jobId, element) {
-    // Afficher le loader
-    const detailsContainer = document.getElementById('job-details-container');
-    detailsContainer.innerHTML = `
-        <div class="empty-state">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
-            <p class="text-gray-500 mt-4">Chargement des détails...</p>
-        </div>
-    `;
+        const detailsContainer = document.getElementById('job-details-container');
+        detailsContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mx-auto"></div>
+                <p class="text-gray-500 mt-4">Chargement des détails...</p>
+            </div>
+        `;
 
-    // Configuration de la requête
-    const headers = {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-    };
-
-    fetch(`/candidat/offres/${jobId}`, { headers })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.message || 'Erreur serveur');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                detailsContainer.innerHTML = data.html;
-                document.querySelectorAll('form[data-ajax-application]').forEach(form => {
-                    form.addEventListener('submit', (e) => handleApplication(e, jobId));
-                });
-                // Mettre à jour l'URL
-                const url = new URL(window.location);
-                url.searchParams.set('job_id', jobId);
-                window.history.pushState({}, '', url);
-                
-                // Gestion des classes actives
-                document.querySelectorAll('.job-card').forEach(card => {
-                    card.classList.remove('active');
-                });
-                element.classList.add('active');
-            } else {
-                throw new Error(data.message || 'Réponse inattendue');
+        fetch(`/candidat/offres/${jobId}`, { 
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             }
         })
-        .catch(error => {
-            console.error('Erreur:', error);
-            detailsContainer.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Erreur serveur');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    detailsContainer.innerHTML = data.html;
+                    document.querySelectorAll('form[data-ajax-application]').forEach(form => {
+                        form.addEventListener('submit', (e) => handleApplication(e, jobId));
+                    });
+                    // mettre a jour url
+                    const url = new URL(window.location);
+                    url.searchParams.set('job_id', jobId);
+                    window.history.pushState({}, '', url);
+                    
+                    // gestion des offres active
+                    document.querySelectorAll('.job-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    element.classList.add('active');
+                } else {
+                    throw new Error(data.message || 'Réponse inattendue');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                detailsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Erreur</h3>
+                        <p class="text-gray-500 mt-1">${error.message}</p>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Erreur</h3>
-                    <p class="text-gray-500 mt-1">${error.message}</p>
-                </div>
-            `;
-        });
-}
+                `;
+            });
+    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Gestion du clic sur les cartes
+    function setupJobCardListeners() {
         document.querySelectorAll('.job-card').forEach(card => {
             card.addEventListener('click', function(e) {
                 const jobId = this.getAttribute('data-job-id');
                 loadOfferDetails(jobId, this);
             });
         });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurer le formulaire de recherche AJAX
+        const jobListContainer = document.getElementById('job-list-container');
+        const searchResultsCount = document.getElementById('search-results-count');
+        const searchLoader = document.querySelector('.search-loader');
+        
+        // Configurer les écouteurs d'événements pour les cartes d'offres
+        setupJobCardListeners();
 
         // Gestion du clic initial si une offre est sélectionnée
         const initialJobId = new URLSearchParams(window.location.search).get('job_id');

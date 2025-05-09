@@ -57,7 +57,7 @@
                 @if (Route::has('login'))
                 <div class="hidden sm:flex sm:items-center sm:ml-6">
                     @auth
-                        <a href="{{ route('Dashboard') }}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Dashboard</a>
+                        <a href="{{ route('dashboard.redirect') }}" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Dashboard</a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium">Déconnexion</button>

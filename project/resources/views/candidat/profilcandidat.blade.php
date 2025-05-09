@@ -161,7 +161,7 @@
     .cv-file-menu-item.text-danger:hover {
         background-color: #fef2f2;
     }
-    
+
     .cv-actions {
         display: flex;
         flex-direction: column;
@@ -198,11 +198,11 @@
     <!-- Informations du profil -->
     <div class="profile-header">
         <div class="profile-avatar">
-            {{ substr($user->name ?? 'User Name', 0, 1) }}{{ substr(explode(' ', $user->name ?? 'User Name')[1] ?? '', 0, 1) }}
+            {{ substr($user->name ?? 'NAda El Meriouchi', 0, 1) }}{{ substr(explode(' ', $user->name ?? 'User Name')[1] ?? '', 0, 1) }}
         </div>
         <div class="profile-info">
-            <h1>{{ $user->name ?? 'User Name' }}</h1>
-            <div class="text-gray-500">{{ $user->email ?? 'useremail@gmail.com' }}</div>
+            <h1>{{ $user->name ?? 'NAda El Meriouchi' }}</h1>
+            <div class="text-gray-500">{{ $user->email ?? 'nada@gmail.com' }}</div>
             
             <div class="profile-contact">
                 @if(isset($resume->phone))

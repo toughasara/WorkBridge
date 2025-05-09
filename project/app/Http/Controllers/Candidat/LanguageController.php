@@ -119,8 +119,10 @@ class LanguageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Resume $resume, Language $language)
     {
-        //
+        $resume->languages()->detach($language->id);
+
+        return redirect()->route('resume.view')->with('success', 'Langue supprimée avec succès.');
     }
 }

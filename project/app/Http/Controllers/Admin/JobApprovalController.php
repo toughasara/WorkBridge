@@ -14,7 +14,7 @@ class JobApprovalController extends Controller
         $pendingJobs = Offre::with(['user.company'])
             ->where('statut', 'en attente')
             ->latest()
-            ->paginate(8);
+            ->paginate(5);
 
         return view('admin.jobapproval', compact('pendingJobs'));
     }

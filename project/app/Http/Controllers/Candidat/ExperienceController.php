@@ -38,9 +38,6 @@ class ExperienceController extends Controller
      */
     public function store(Request $request, Resume $resume)
     {
-        // dd($request->all());
-        // dd($resume);
-        // dd($request);
         $request->validate([
             'company_name' => 'required',
             'job_title' => 'required',

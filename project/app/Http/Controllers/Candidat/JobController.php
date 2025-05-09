@@ -8,6 +8,7 @@ use App\Models\Offre;
 use App\Models\Resume;
 use App\Services\MatchService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class JobController extends Controller
 {
@@ -38,7 +39,7 @@ class JobController extends Controller
         $matchedOffers = collect();
         foreach ($allOffers as $offre) {
             $score = $this->matchService->calculate($resume, $offre);
-            if ($score >= 1) {
+            if ($score >= 50) {
                 $offre->match_score = $score;
                 $matchedOffers->push($offre);
             }
@@ -54,7 +55,7 @@ class JobController extends Controller
 
     public function getOfferDetails($id)
     {
-        // try {
+        try {
             $offer = Offre::with(['company', 'skills', 'languages'])
                 ->where('id', $id)
                 ->where('statut', 'publiée')
@@ -69,16 +70,16 @@ class JobController extends Controller
 
             return response()->json([
                 'success' => true,
-                'html' => view('candidat.offerdetails', compact('offer'))->render()
+                'html' => view('candidat.partials.offer_details', compact('offer'))->render()
             ]);
             
-        // } catch (\Exception $e) {
-        //     \Log::error("Erreur dans getOfferDetails: " . $e->getMessage());
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Erreur serveur'
-        //     ], 500);
-        // }
+        } catch (\Exception $e) {
+            \Log::error("Erreur dans getOfferDetails: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur'
+            ], 500);
+        }
     }
 
 }

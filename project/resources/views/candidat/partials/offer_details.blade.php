@@ -65,12 +65,18 @@
             <div>
                 <p class="text-gray-500 text-sm">Soyez parmi les premiers à postuler</p>
             </div>
-            <form method="POST" action="{{ route('candidat.offres.postuler', $offer->id) }}" data-ajax-application>
-                @csrf
-                <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
-                    <i class="fas fa-paper-plane mr-2"></i> Postuler maintenant
+            @if(auth()->user()->hasAppliedToJob($offer->id))
+                <button class="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out" disabled>
+                    <i class="fas fa-check mr-2"></i> Candidature envoyée
                 </button>
-            </form>
+            @else
+                <form method="POST" action="{{ route('candidat.offres.postuler', $offer->id) }}" data-ajax-application>
+                    @csrf
+                    <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
+                        <i class="fas fa-paper-plane mr-2"></i> Postuler maintenant
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 

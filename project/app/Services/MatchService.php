@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class MatchService
 {
+    
     public function __construct(
         private ManualMatchService $manualService,
         private OpenAIMatchService $aiService,
@@ -17,16 +18,14 @@ class MatchService
 
     public function calculate(Resume $resume, Offre $offer): int
     {
-        // $cacheKey = "match_{$resume->id}_{$offer->id}";
+        $cacheKey = "match_{$resume->id}_{$offer->id}";
         
-        // return Cache::remember($cacheKey, now()->addHours(1), function() use ($resume, $offer) {
+        return Cache::remember($cacheKey, now()->addHours(1), function() use ($resume, $offer) {
             $preferences = $offer->matchingPreference;
 
             if ($preferences && $preferences->use_ai) {
                 try {
                     $data = $this->dataPreparer->prepare($resume, $offer);
-                    $result = $this->aiService->calculate($data);
-                    dd(hhhhhhh);
                     return $this->aiService->calculate($data);
                 } catch (\Exception $e) {
                     $weights = MatchingPreference::defaultWeights();
@@ -42,6 +41,6 @@ class MatchService
             ] : MatchingPreference::defaultWeights();
 
             return $this->manualService->calculate($resume->id, $offer->id, $weights);
-        // });
+        });
     }
 }

@@ -10,9 +10,9 @@ class OpenAIMatchService
 
     public function calculate(array $data): int
     {
-        // $cacheKey = "ai_match_" . md5(json_encode($data));
-        
-        // return Cache::remember($cacheKey, now()->addHours(6), function() use ($data) {
+        $cacheKey = "ai_match_" . md5(json_encode($data));
+
+        return Cache::remember($cacheKey, now()->addHours(6), function() use ($data) {
             $prompt = $this->generatePrompt($data);
 
             $response = Http::withHeaders([
@@ -41,7 +41,7 @@ class OpenAIMatchService
             }
 
             return $this->parseResponse($responseData);
-        // });
+        });
     }
 
     protected function generatePrompt(array $data): string
@@ -77,9 +77,6 @@ class OpenAIMatchService
 
     protected function parseResponse($response): int
     {
-        if (!isset($response['choices'][0]['message']['content'])) {
-            throw new \Exception("Invalid OpenAI API response structure");
-        }
         $score = (int) trim($response->choices[0]->message->content);
         return min(100, max(0, $score));
     }

@@ -35,7 +35,8 @@ class AppServiceProvider extends ServiceProvider
             OffreRepositoryInterface::class,
             OffreRepository::class
         );
-        
+
+        // Services
         $this->app->bind(
             OffreServiceInterface::class,
             OffreService::class
